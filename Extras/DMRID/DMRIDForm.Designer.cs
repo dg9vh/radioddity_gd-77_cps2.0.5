@@ -198,8 +198,7 @@
             "12",
             "13",
             "14",
-            "15",
-            "16"});
+            "15"});
 			this.cmbStringLen.Location = new System.Drawing.Point(148, 43);
 			this.cmbStringLen.Name = "cmbStringLen";
 			this.cmbStringLen.Size = new System.Drawing.Size(56, 21);
