@@ -39,7 +39,6 @@
 			this.lblIDStart = new System.Windows.Forms.Label();
 			this.lblMessage = new System.Windows.Forms.Label();
 			this.btnSelectAll = new System.Windows.Forms.Button();
-			this.btnDownloadDMRMARC = new System.Windows.Forms.Button();
 			this.button1 = new System.Windows.Forms.Button();
 			this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -152,16 +151,6 @@
 			this.btnSelectAll.UseVisualStyleBackColor = true;
 			this.btnSelectAll.Click += new System.EventHandler(this.btnSelectAll_Click);
 			// 
-			// btnDownloadDMRMARC
-			// 
-			this.btnDownloadDMRMARC.Location = new System.Drawing.Point(582, 133);
-			this.btnDownloadDMRMARC.Name = "btnDownloadDMRMARC";
-			this.btnDownloadDMRMARC.Size = new System.Drawing.Size(197, 28);
-			this.btnDownloadDMRMARC.TabIndex = 2;
-			this.btnDownloadDMRMARC.Text = "Download from radioid.net";
-			this.btnDownloadDMRMARC.UseVisualStyleBackColor = true;
-			this.btnDownloadDMRMARC.Click += new System.EventHandler(this.btnDownloadDMRMARC_Click);
-			// 
 			// button1
 			// 
 			this.button1.Location = new System.Drawing.Point(643, 426);
@@ -252,7 +241,6 @@
 			this.Controls.Add(this.txtAgeMaxDays);
 			this.Controls.Add(this.lblIDStart);
 			this.Controls.Add(this.txtIDStart);
-			this.Controls.Add(this.btnDownloadDMRMARC);
 			this.Controls.Add(this.btnDownloadLastHeard);
 			this.Controls.Add(this.btnSelectAll);
 			this.Controls.Add(this.button1);
@@ -286,7 +274,6 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn name;
 		private System.Windows.Forms.DataGridViewTextBoxColumn lastheard;
 		private System.Windows.Forms.Button btnSelectAll;
-		private System.Windows.Forms.Button btnDownloadDMRMARC;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.TextBox txtDownloadURL;
 		private System.Windows.Forms.TextBox textBox1;
