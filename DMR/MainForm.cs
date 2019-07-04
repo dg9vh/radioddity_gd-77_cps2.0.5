@@ -3021,10 +3021,10 @@ namespace DMR
 			CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.dataRead;
 			commPrgForm = new CommPrgForm(true);// true =  close download form as soon as download is complete
 			commPrgForm.StartPosition = FormStartPosition.CenterParent;
-			CodeplugComms.startAddress = 0x8f000;
+			CodeplugComms.startAddress = CalibrationForm.CALIBRATION_MEMORY_LOCATION;
 			CodeplugComms.transferLength = 0x20;
 			DialogResult result = commPrgForm.ShowDialog();
-			if (MainForm.CommsBuffer[0x8f000] == 0x00 && MainForm.CommsBuffer[0x8f001] == 0x00)
+			if (MainForm.CommsBuffer[CalibrationForm.CALIBRATION_MEMORY_LOCATION] == 0x00 && MainForm.CommsBuffer[CalibrationForm.CALIBRATION_MEMORY_LOCATION + CalibrationForm.CALIBRATION_MEMORY_LOCATION] == 0x00)
 			{
 				MessageBox.Show(Settings.dicCommon["EnableMemoryAccessMode"]);
 				return;

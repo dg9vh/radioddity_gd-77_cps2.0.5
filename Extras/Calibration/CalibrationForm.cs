@@ -15,17 +15,21 @@ namespace DMR
 {
 	public partial class CalibrationForm : Form
 	{
+		//private const int MEMORY_LOCATION = 0x8F000;//0x7c00;
+		public static int CALIBRATION_MEMORY_LOCATION = 0x7c00;
+		private const int VHF_OFFSET = 0x70;
+
 		public CalibrationForm()
 		{
 			InitializeComponent();
 			// Need to setup the VHF and UHF data storage class first, as its used when initialising the components
 			int calibrationDataSize = Marshal.SizeOf(typeof(CalibrationData));
 			byte[] array = new byte[calibrationDataSize];
-			Array.Copy(MainForm.CommsBuffer, 0x8F000, array, 0, calibrationDataSize);
+			Array.Copy(MainForm.CommsBuffer, CALIBRATION_MEMORY_LOCATION, array, 0, calibrationDataSize);
 			this.calibrationBandControlUHF.data  = (CalibrationData)ByteToData(array);
 
 			array = new byte[calibrationDataSize];
-			Array.Copy(MainForm.CommsBuffer, 0x8F070, array, 0, calibrationDataSize);
+			Array.Copy(MainForm.CommsBuffer, CALIBRATION_MEMORY_LOCATION + VHF_OFFSET, array, 0, calibrationDataSize);
 			this.calibrationBandControlVHF.data  = (CalibrationData)ByteToData(array);
 		}
 
@@ -40,22 +44,24 @@ namespace DMR
 			CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.dataRead;
 			CommPrgForm commPrgForm = new CommPrgForm(true);// true =  close download form as soon as download is complete
 			commPrgForm.StartPosition = FormStartPosition.CenterParent;
-			CodeplugComms.startAddress = 0x8f000;
+			CodeplugComms.startAddress = CALIBRATION_MEMORY_LOCATION;
 			CodeplugComms.transferLength = 0x20;
 			DialogResult result = commPrgForm.ShowDialog();
-			if (MainForm.CommsBuffer[0x8f000] == 0x00 && MainForm.CommsBuffer[0x8f001] == 0x00)
+
+			/*
+			if (MainForm.CommsBuffer[MEMORY_LOCATION] == 0x00 && MainForm.CommsBuffer[MEMORY_LOCATION+1] == 0x00)
 			{
 				MessageBox.Show(Settings.dicCommon["EnableMemoryAccessMode"]);
 				return;
-			}
+			}*/
 
 			int calibrationDataSize = Marshal.SizeOf(typeof(CalibrationData));
 
 			byte[] array = DataToByte(this.calibrationBandControlUHF.data);
-			Array.Copy(array, 0, MainForm.CommsBuffer, 0x8F000, calibrationDataSize);
+			Array.Copy(array, 0, MainForm.CommsBuffer, CALIBRATION_MEMORY_LOCATION, calibrationDataSize);
 
 			array = DataToByte(this.calibrationBandControlVHF.data);
-			Array.Copy(array, 0, MainForm.CommsBuffer, 0x8F070, calibrationDataSize);
+			Array.Copy(array, 0, MainForm.CommsBuffer, CALIBRATION_MEMORY_LOCATION + VHF_OFFSET, calibrationDataSize);
 
 			CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.calibrationWrite;
 

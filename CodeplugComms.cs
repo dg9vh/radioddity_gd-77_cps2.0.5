@@ -97,13 +97,13 @@ internal class CodeplugComms
 				this.thread = new Thread(writeData);
 				break;
 			case CommunicationType.calibrationRead:
-				startAddress = 0x80000;
-				transferLength = 0x10000;
+				startAddress = DMR.CalibrationForm.CALIBRATION_MEMORY_LOCATION;//0x80000;
+				transferLength = 0x1000;
 				this.thread = new Thread(readData);
 				break;
 			case CommunicationType.calibrationWrite:
-				startAddress = 0x80000;
-				transferLength = 0x10000;
+				startAddress = DMR.CalibrationForm.CALIBRATION_MEMORY_LOCATION;//0x80000;
+				transferLength = 0x1000;
 				this.thread = new Thread(writeData);
 				break;
 			case CommunicationType.dataWrite:
