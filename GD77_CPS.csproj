@@ -132,6 +132,12 @@
       <DependentUpon>MultiNUDControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Extras\Calibration\PowerSettingData.cs" />
+    <Compile Include="Extras\OpenGD77\OpenGD77Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extras\OpenGD77\OpenGD77Form.Designer.cs">
+      <DependentUpon>OpenGD77Form.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -393,6 +399,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Extras\Calibration\MultiNUDControl.resx">
       <DependentUpon>MultiNUDControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extras\OpenGD77\OpenGD77Form.resx">
+      <DependentUpon>OpenGD77Form.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

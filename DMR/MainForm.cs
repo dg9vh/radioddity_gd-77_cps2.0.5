@@ -207,6 +207,7 @@ namespace DMR
 		private ToolStripMenuItem tsmiContactsDownload;
 		private ToolStripMenuItem tsmiDMRID;
 		private ToolStripMenuItem tsmiCalibration;
+		private ToolStripMenuItem tsmiOpenGD77;
 
 
 		private DeserializeDockContent m_deserializeDockContent;
@@ -335,6 +336,8 @@ namespace DMR
 			this.tsmiContactsDownload = new ToolStripMenuItem();
 			this.tsmiDMRID = new ToolStripMenuItem();
 			this.tsmiCalibration = new ToolStripMenuItem();
+			this.tsmiOpenGD77 = new ToolStripMenuItem();
+			
 			
 			this.tsmiWindow = new ToolStripMenuItem();
 			this.tsmiCascade = new ToolStripMenuItem();
@@ -681,11 +684,12 @@ namespace DMR
 			this.tsmiExtras.Name = "tsmiExtras";
 			this.tsmiExtras.Size = new Size(77, 21);
 			this.tsmiExtras.Text = "Extras";
-			this.tsmiExtras.DropDownItems.AddRange(new ToolStripItem[3]
+			this.tsmiExtras.DropDownItems.AddRange(new ToolStripItem[]
 			{
 				this.tsmiContactsDownload,
 				this.tsmiCalibration,
 				this.tsmiDMRID,
+				tsmiOpenGD77
 			});
 
 			this.tsmiContactsDownload.Name = "tsmiContactsDownload";
@@ -708,6 +712,12 @@ namespace DMR
 			this.tsmiCalibration.Enabled = true;
 			this.tsmiCalibration.Click += new EventHandler(this.tsbtnCalibration_Click);
 
+			this.tsmiOpenGD77.Name = "tsmiOpenGD77";
+			//this.tsmiCalibration.ShortcutKeys = (Keys)131154;
+			this.tsmiOpenGD77.Size = new Size(156, 22);
+			this.tsmiOpenGD77.Text = "OpenGD77 support";
+			this.tsmiOpenGD77.Enabled = true;
+			this.tsmiOpenGD77.Click += new EventHandler(this.tsmiOpenGD77_Click);
 
 			this.tsmiWindow.DropDownItems.AddRange(new ToolStripItem[4]
 			{
@@ -3045,6 +3055,17 @@ namespace DMR
 		}
 
 
+
+
+		private void tsmiOpenGD77_Click(object sender, EventArgs e)
+		{
+
+			this.closeAllForms();
+
+			OpenGD77Form cf = new OpenGD77Form();
+			cf.StartPosition = FormStartPosition.CenterParent;
+			cf.ShowDialog();
+		}
 
 		private void tsbtnRead_Click(object sender, EventArgs e)
 		{
