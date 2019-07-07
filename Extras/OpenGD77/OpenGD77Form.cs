@@ -408,8 +408,8 @@ namespace DMR
 			
 			dataBuff = new Byte[64 * 1024];
 			data_start=0;
-			data_length = 32768;
-			bufferDataTotal = 32768;
+			data_length = 64*1024;
+			bufferDataTotal = 64 * 1024;
 			perFormCommsTask();
 		}
 
