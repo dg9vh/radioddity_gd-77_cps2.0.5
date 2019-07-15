@@ -357,12 +357,21 @@ namespace DMR
 		{
 			SaveFileDialog saveFileDialog = new SaveFileDialog();
 			saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-			saveFileDialog.Filter = "bin files (*.bin)|*.bin|All files (*.*)|*.*";
+			switch (saveType)
+			{
+				case 0:
+					saveFileDialog.Filter = "eeprom files (*.bin)|*.bin";
+					break;
+				case 1:
+					saveFileDialog.Filter = "Flash files (*.bin)|*.bin";
+					break;
+			}
+
+			progressBar1.Value = 0;
 			saveFileDialog.FilterIndex = 1;
 			saveFileDialog.RestoreDirectory = true;
 			if (saveFileDialog.ShowDialog() == DialogResult.OK)
 			{
-				//saveFileDialog.InitialDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
 				File.WriteAllBytes(saveFileDialog.FileName, dataBuff);
 			}
 
@@ -397,12 +406,15 @@ namespace DMR
 			}
 		}
 
-		private void btnBackupAllMemory_Click(object sender, EventArgs e)
+		int saveType = 0;
+		private void btnBackupEEPROM_Click(object sender, EventArgs e)
 		{
 			if (port==null)
 			{
 				MessageBox.Show("Please select a comm port");
+				return;
 			}
+			saveType = 0;
 			data_mode = commsDataMode.DataModeReadEEPROM;
 			bufferDataPos = 0;
 			
@@ -412,6 +424,27 @@ namespace DMR
 			bufferDataTotal = 64 * 1024;
 			perFormCommsTask();
 		}
+
+		private void btnBackupFlash_Click(object sender, EventArgs e)
+		{
+			if (port==null)
+			{
+				MessageBox.Show("Please select a comm port");
+				return;
+			}
+
+			data_mode = commsDataMode.DataModeReadFlash;
+			data_pos = 0;
+			bufferDataPos = 0;
+			dataBuff = new Byte[1024 * 1024];
+			data_start = 0;
+			data_length = 1024 * 1024;
+			bufferDataTotal = 1024 * 1024;
+			saveType = 1;
+			perFormCommsTask();
+		}
+
+
 
 
 		void perFormCommsTask()
@@ -430,6 +463,7 @@ namespace DMR
 				MessageBox.Show(ex.Message);
 			}
 		}
+
 
 	}
 }
