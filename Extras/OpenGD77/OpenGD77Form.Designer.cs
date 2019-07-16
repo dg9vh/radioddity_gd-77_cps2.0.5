@@ -35,6 +35,8 @@
 			this.btnBackupEEPROM = new System.Windows.Forms.Button();
 			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.btnBackupFlash = new System.Windows.Forms.Button();
+			this.btnRestoreEEPROM = new System.Windows.Forms.Button();
+			this.btnRestoreFlash = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// comboBoxCOMPorts
@@ -101,13 +103,35 @@
 			this.btnBackupFlash.UseVisualStyleBackColor = true;
 			this.btnBackupFlash.Click += new System.EventHandler(this.btnBackupFlash_Click);
 			// 
+			// btnRestoreEEPROM
+			// 
+			this.btnRestoreEEPROM.Location = new System.Drawing.Point(16, 106);
+			this.btnRestoreEEPROM.Name = "btnRestoreEEPROM";
+			this.btnRestoreEEPROM.Size = new System.Drawing.Size(131, 23);
+			this.btnRestoreEEPROM.TabIndex = 3;
+			this.btnRestoreEEPROM.Text = "Restore EEPROM";
+			this.btnRestoreEEPROM.UseVisualStyleBackColor = true;
+			this.btnRestoreEEPROM.Click += new System.EventHandler(this.btnRestoreEEPROM_Click);
+			// 
+			// btnRestoreFlash
+			// 
+			this.btnRestoreFlash.Location = new System.Drawing.Point(16, 135);
+			this.btnRestoreFlash.Name = "btnRestoreFlash";
+			this.btnRestoreFlash.Size = new System.Drawing.Size(131, 23);
+			this.btnRestoreFlash.TabIndex = 5;
+			this.btnRestoreFlash.Text = "Restore Flash";
+			this.btnRestoreFlash.UseVisualStyleBackColor = true;
+			this.btnRestoreFlash.Click += new System.EventHandler(this.btnRestoreFlash_Click);
+			// 
 			// OpenGD77Form
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(505, 290);
+			this.Controls.Add(this.btnRestoreFlash);
 			this.Controls.Add(this.btnBackupFlash);
 			this.Controls.Add(this.progressBar1);
+			this.Controls.Add(this.btnRestoreEEPROM);
 			this.Controls.Add(this.btnBackupEEPROM);
 			this.Controls.Add(this.btnSelectCommPort);
 			this.Controls.Add(this.buttonRefreshCOMPortlist);
@@ -129,5 +153,7 @@
 		private System.Windows.Forms.Button btnBackupEEPROM;
 		private System.Windows.Forms.ProgressBar progressBar1;
 		private System.Windows.Forms.Button btnBackupFlash;
+		private System.Windows.Forms.Button btnRestoreEEPROM;
+		private System.Windows.Forms.Button btnRestoreFlash;
 	}
 }

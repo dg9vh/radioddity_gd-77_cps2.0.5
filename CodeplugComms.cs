@@ -1049,6 +1049,7 @@ internal class CodeplugComms
 												array7[5] = (byte)(num7 >> 16);
 												array7[6] = (byte)(num7 >> 8);
 												array7[7] = (byte)num7;
+												//Console.WriteLine(string.Format("Page\t0x{0:X8}", num7));
 												Array.Clear(array, 0, array.Length);
 												specifiedDevice.SendData(array7, 0, array7.Length);
 												specifiedDevice.ReceiveData(array);

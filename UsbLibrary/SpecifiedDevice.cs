@@ -75,6 +75,7 @@ namespace UsbLibrary
 
 		public bool SendData(byte[] data, int index, int length)
 		{
+
 #if false
 			//Console.WriteLine("SendData " + SpecifiedDevice.ByteArrayToString(data));
 
@@ -92,7 +93,8 @@ namespace UsbLibrary
 						//Console.WriteLine((data[1] * 256 + data[2] + offset) + "\t" + data[3]);
 						break;
 					case 0x57:
-						Console.WriteLine((data[1] * 256 + data[2] + offset) + "\t" + data[3]);
+						//Console.WriteLine(string.Format("0x{0:X8}\t", (data[1] * 256 + data[2] + offset), data[3]));
+						Console.WriteLine((data[1] * 256 + data[2] + offset) );//+ "\t" + data[3]);
 						break;
 				}
 			}

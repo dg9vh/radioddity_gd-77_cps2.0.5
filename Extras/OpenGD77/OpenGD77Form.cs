@@ -20,7 +20,6 @@ namespace DMR
 		private int data_pos = 0;
 		private commsDataMode data_mode = commsDataMode.DataModeNone;
 		private int data_sector = 0;
-	//	private Stream fileStream;
 		private byte[] dataBuff = null;
 
 		private bool running = false;
@@ -28,9 +27,13 @@ namespace DMR
 		private bool stop_worker = false;
 		private int old_progress = 0;
 		enum commsDataMode { DataModeNone = 0, DataModeReadFlash = 1, DataModeReadEEPROM = 2, DataModeWriteFlash = 3, DataModeWriteEEPROM = 4 };
+		enum taskCompleteAction { NONE, SAVE_EEPROM, SAVE_FLASH, SHOW_RESTORE_COMPLETE_MESSAGE }
+		taskCompleteAction onTaskComplete = taskCompleteAction.NONE;
 
 		private int bufferDataPos = 0;
 		private int bufferDataTotal = 0;
+		private SaveFileDialog _saveFileDialog = new SaveFileDialog();
+		private OpenFileDialog _openFileDialog = new OpenFileDialog();
 
 		public OpenGD77Form()
 		{
@@ -185,7 +188,6 @@ namespace DMR
 						}
 						else
 						{
-							Console.WriteLine("read finished");
 							close_data_mode();
 						}
 					}
@@ -220,13 +222,12 @@ namespace DMR
 										break;
 									}
 								}
-
 								if (send_data(data_pos, len, ref sendbuffer, ref readbuffer))
 								{
 									int progress = (data_pos - data_start) * 100 / data_length;
 									if (old_progress != progress)
 									{
-										Console.WriteLine(progress);
+										updateProgess();
 										old_progress = progress;
 									}
 
@@ -307,7 +308,8 @@ namespace DMR
 								int progress = (data_pos - data_start) * 100 / data_length;
 								if (old_progress != progress)
 								{
-									Console.Write(progress);
+									updateProgess();
+									Console.WriteLine(progress);
 									old_progress = progress;
 								}
 
@@ -355,27 +357,38 @@ namespace DMR
 
 		void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			SaveFileDialog saveFileDialog = new SaveFileDialog();
-			saveFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
-			switch (saveType)
+			if (onTaskComplete != taskCompleteAction.NONE)
 			{
-				case 0:
-					saveFileDialog.Filter = "eeprom files (*.bin)|*.bin";
-					break;
-				case 1:
-					saveFileDialog.Filter = "Flash files (*.bin)|*.bin";
-					break;
-			}
+				switch (onTaskComplete)
+				{
+					case taskCompleteAction.SAVE_EEPROM:
+						_saveFileDialog.Filter = "EEPROM files (*.bin)|*.bin";
+						_saveFileDialog.FilterIndex = 1;
+						if (_saveFileDialog.ShowDialog() == DialogResult.OK)
+						{
+							File.WriteAllBytes(_saveFileDialog.FileName, dataBuff);
+						}
+						break;
+					case taskCompleteAction.SAVE_FLASH:
+						_saveFileDialog.Filter = "Flash files (*.bin)|*.bin";
+						_saveFileDialog.FilterIndex = 1;
+						if (_saveFileDialog.ShowDialog() == DialogResult.OK)
+						{
+							File.WriteAllBytes(_saveFileDialog.FileName, dataBuff);
+						}
+						break;
+					case taskCompleteAction.SHOW_RESTORE_COMPLETE_MESSAGE:
+						MessageBox.Show("Restore complete");
+						break;
+						
+				}
 
-			progressBar1.Value = 0;
-			saveFileDialog.FilterIndex = 1;
-			saveFileDialog.RestoreDirectory = true;
-			if (saveFileDialog.ShowDialog() == DialogResult.OK)
-			{
-				File.WriteAllBytes(saveFileDialog.FileName, dataBuff);
-			}
+				old_progress = 0;
 
+				onTaskComplete = taskCompleteAction.NONE;
+			}
 			running = false;
+			progressBar1.Value = 0;
 		}
 
 
@@ -406,7 +419,23 @@ namespace DMR
 			}
 		}
 
-		int saveType = 0;
+		void perFormCommsTask()
+		{
+			try
+			{
+				worker = new BackgroundWorker();
+				worker.DoWork += new DoWorkEventHandler(worker_DoWork);
+				worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
+				worker.RunWorkerAsync();
+
+				running = true;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
+		}
+
 		private void btnBackupEEPROM_Click(object sender, EventArgs e)
 		{
 			if (port==null)
@@ -414,10 +443,10 @@ namespace DMR
 				MessageBox.Show("Please select a comm port");
 				return;
 			}
-			saveType = 0;
+			onTaskComplete = taskCompleteAction.SAVE_FLASH;
 			data_mode = commsDataMode.DataModeReadEEPROM;
 			bufferDataPos = 0;
-			
+			data_pos = 0;
 			dataBuff = new Byte[64 * 1024];
 			data_start=0;
 			data_length = 64*1024;
@@ -440,27 +469,105 @@ namespace DMR
 			data_start = 0;
 			data_length = 1024 * 1024;
 			bufferDataTotal = 1024 * 1024;
-			saveType = 1;
+			onTaskComplete = taskCompleteAction.SAVE_FLASH;
 			perFormCommsTask();
 		}
 
-
-
-
-		void perFormCommsTask()
+		bool arrayCompare(byte[] buf1, byte[] buf2)
 		{
-			try
-			{
-				worker = new BackgroundWorker();
-				worker.DoWork += new DoWorkEventHandler(worker_DoWork);
-				worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
-				worker.RunWorkerAsync();
+			int len = Math.Min(buf1.Length, buf2.Length);
 
-				running = true;
-			}
-			catch (Exception ex)
+			for (int i=0; i<len; i++)
 			{
-				MessageBox.Show(ex.Message);
+				if (buf1[i]!=buf2[i])
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		private void btnRestoreEEPROM_Click(object sender, EventArgs e)
+		{
+			if (port == null)
+			{
+				MessageBox.Show("Please select a comm port");
+				return;
+			}
+			if (DialogResult.Yes == MessageBox.Show("Are you sure you want to restore the EEPROM from a previously saved file?", "Warning", MessageBoxButtons.YesNo))
+			{
+				if (DialogResult.OK == _openFileDialog.ShowDialog())
+				{
+
+					dataBuff = File.ReadAllBytes(_openFileDialog.FileName);
+					if (dataBuff.Length == (64 * 1024))
+					{
+						byte []signature = {0x00 ,0x00 ,0x00 ,0x01 ,0x56 ,0x33 ,0x2E ,0x30 ,0x31};
+						if (arrayCompare(dataBuff,signature))
+						{
+							MessageBox.Show("Please set your radio into FM mode\nDo not press any buttons on the radio while the EEPROM is being restored");
+							data_mode = commsDataMode.DataModeWriteEEPROM;
+							data_pos = 0;
+							bufferDataPos = 0;
+							data_start = 0;
+							data_length = 64 * 1024;
+							bufferDataTotal = 64 * 1024;
+							onTaskComplete = taskCompleteAction.SHOW_RESTORE_COMPLETE_MESSAGE;
+							perFormCommsTask();		
+						}
+						else
+						{
+							MessageBox.Show("The file does not start with the correct signature bytes", "Error");
+						}
+					}
+					else
+					{
+						MessageBox.Show("The file is not the correct size.", "Error");
+					}
+				}
+			}
+		}
+
+		private void btnRestoreFlash_Click(object sender, EventArgs e)
+		{
+			if (port == null)
+			{
+				MessageBox.Show("Please select a comm port");
+				return;
+			}
+			if (DialogResult.Yes == MessageBox.Show("Are you sure you want to restore the Flash memory from a previously saved file?", "Warning", MessageBoxButtons.YesNo))
+			{
+				if (DialogResult.OK == _openFileDialog.ShowDialog())
+				{
+
+					dataBuff = File.ReadAllBytes(_openFileDialog.FileName);
+					if (dataBuff.Length == (1024 * 1024))
+					{
+						byte[] signature = { 0x54, 0x59, 0x54, 0x3A, 0x4D, 0x44, 0x2D, 0x37, 0x36, 0x30 };
+						if (arrayCompare(dataBuff, signature))
+						{
+							MessageBox.Show("Please set your radio into FM mode\nDo not press any buttons on the radio while the Flash memory is being restored");
+							data_mode = commsDataMode.DataModeWriteFlash;
+							data_pos = 0;
+							bufferDataPos = 0;
+							data_start = 0;
+							data_length = 1024 * 1024;
+							bufferDataTotal = 1024 * 1024;
+							onTaskComplete = taskCompleteAction.SHOW_RESTORE_COMPLETE_MESSAGE;
+							data_sector = -1;// Seems to be needed to force the first (4k ) page to be erased before it can be written
+							perFormCommsTask();		
+						}
+						else
+						{
+							MessageBox.Show("The file does not start with the correct signature bytes", "Error");
+						}
+					}
+					else
+					{
+						MessageBox.Show("The file is not the correct size.", "Error");
+					}
+				}
 			}
 		}
 
