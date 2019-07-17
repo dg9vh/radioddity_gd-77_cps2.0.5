@@ -34,11 +34,14 @@ namespace DMR
 		private int bufferDataTotal = 0;
 		private SaveFileDialog _saveFileDialog = new SaveFileDialog();
 		private OpenFileDialog _openFileDialog = new OpenFileDialog();
+		private String _gd77CommPort;
+		
 
 		public OpenGD77Form()
 		{
 			InitializeComponent();
 			loadCOMPortlist();
+
 		}
 
 		void loadCOMPortlist()
@@ -384,6 +387,7 @@ namespace DMR
 				}
 
 				old_progress = 0;
+				enableDisableAllButtons(true);
 
 				onTaskComplete = taskCompleteAction.NONE;
 			}
@@ -451,7 +455,10 @@ namespace DMR
 			data_start=0;
 			data_length = 64*1024;
 			bufferDataTotal = 64 * 1024;
+			enableDisableAllButtons(false);
 			perFormCommsTask();
+
+
 		}
 
 		private void btnBackupFlash_Click(object sender, EventArgs e)
@@ -470,7 +477,9 @@ namespace DMR
 			data_length = 1024 * 1024;
 			bufferDataTotal = 1024 * 1024;
 			onTaskComplete = taskCompleteAction.SAVE_FLASH;
+			enableDisableAllButtons(false);
 			perFormCommsTask();
+
 		}
 
 		bool arrayCompare(byte[] buf1, byte[] buf2)
@@ -514,7 +523,9 @@ namespace DMR
 							data_length = 64 * 1024;
 							bufferDataTotal = 64 * 1024;
 							onTaskComplete = taskCompleteAction.SHOW_RESTORE_COMPLETE_MESSAGE;
-							perFormCommsTask();		
+							enableDisableAllButtons(false);
+							perFormCommsTask();
+
 						}
 						else
 						{
@@ -556,7 +567,9 @@ namespace DMR
 							bufferDataTotal = 1024 * 1024;
 							onTaskComplete = taskCompleteAction.SHOW_RESTORE_COMPLETE_MESSAGE;
 							data_sector = -1;// Seems to be needed to force the first (4k ) page to be erased before it can be written
-							perFormCommsTask();		
+							enableDisableAllButtons(false);
+							perFormCommsTask();
+
 						}
 						else
 						{
@@ -571,6 +584,37 @@ namespace DMR
 			}
 		}
 
+		private void enableDisableAllButtons(bool show)
+		{
+			btnBackupEEPROM.Enabled = show;
+			btnBackupFlash.Enabled = show;
+			btnRestoreEEPROM.Enabled = show;
+			btnRestoreFlash.Enabled = show;
+		}
 
+
+		private void OpenGD77Form_Load(object sender, EventArgs e)
+		{
+			_gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("GD-77 Serial");
+			if (_gd77CommPort == null)
+			{
+				MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
+				this.Close();
+			}
+			else
+			{
+				try
+				{
+					port = new SerialPort(_gd77CommPort, 115200, Parity.None, 8, StopBits.One);
+					port.ReadTimeout = 1000;
+					port.Open();
+				}
+				catch (Exception)
+				{
+					port = null;
+					MessageBox.Show("Failed to open comm port", "Error");
+				}
+			}
+		}
 	}
 }

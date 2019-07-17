@@ -29,7 +29,6 @@
 		private void InitializeComponent()
 		{
 			this.comboBoxCOMPorts = new System.Windows.Forms.ComboBox();
-			this.lblCommPort = new System.Windows.Forms.Label();
 			this.buttonRefreshCOMPortlist = new System.Windows.Forms.Button();
 			this.btnSelectCommPort = new System.Windows.Forms.Button();
 			this.btnBackupEEPROM = new System.Windows.Forms.Button();
@@ -42,43 +41,37 @@
 			// comboBoxCOMPorts
 			// 
 			this.comboBoxCOMPorts.FormattingEnabled = true;
-			this.comboBoxCOMPorts.Location = new System.Drawing.Point(76, 10);
+			this.comboBoxCOMPorts.Location = new System.Drawing.Point(372, 10);
 			this.comboBoxCOMPorts.Name = "comboBoxCOMPorts";
 			this.comboBoxCOMPorts.Size = new System.Drawing.Size(121, 21);
 			this.comboBoxCOMPorts.TabIndex = 0;
-			// 
-			// lblCommPort
-			// 
-			this.lblCommPort.AutoSize = true;
-			this.lblCommPort.Location = new System.Drawing.Point(13, 13);
-			this.lblCommPort.Name = "lblCommPort";
-			this.lblCommPort.Size = new System.Drawing.Size(57, 13);
-			this.lblCommPort.TabIndex = 1;
-			this.lblCommPort.Text = "Comm port";
+			this.comboBoxCOMPorts.Visible = false;
 			// 
 			// buttonRefreshCOMPortlist
 			// 
-			this.buttonRefreshCOMPortlist.Location = new System.Drawing.Point(298, 10);
+			this.buttonRefreshCOMPortlist.Location = new System.Drawing.Point(418, 66);
 			this.buttonRefreshCOMPortlist.Name = "buttonRefreshCOMPortlist";
 			this.buttonRefreshCOMPortlist.Size = new System.Drawing.Size(75, 23);
 			this.buttonRefreshCOMPortlist.TabIndex = 2;
 			this.buttonRefreshCOMPortlist.Text = "Refresh ports list";
 			this.buttonRefreshCOMPortlist.UseVisualStyleBackColor = true;
+			this.buttonRefreshCOMPortlist.Visible = false;
 			this.buttonRefreshCOMPortlist.Click += new System.EventHandler(this.buttonRefreshCOMPortlist_Click);
 			// 
 			// btnSelectCommPort
 			// 
-			this.btnSelectCommPort.Location = new System.Drawing.Point(217, 10);
+			this.btnSelectCommPort.Location = new System.Drawing.Point(418, 37);
 			this.btnSelectCommPort.Name = "btnSelectCommPort";
 			this.btnSelectCommPort.Size = new System.Drawing.Size(75, 23);
 			this.btnSelectCommPort.TabIndex = 2;
 			this.btnSelectCommPort.Text = "Select";
 			this.btnSelectCommPort.UseVisualStyleBackColor = true;
+			this.btnSelectCommPort.Visible = false;
 			this.btnSelectCommPort.Click += new System.EventHandler(this.btnSelectCommPort_Click);
 			// 
 			// btnBackupEEPROM
 			// 
-			this.btnBackupEEPROM.Location = new System.Drawing.Point(16, 48);
+			this.btnBackupEEPROM.Location = new System.Drawing.Point(16, 12);
 			this.btnBackupEEPROM.Name = "btnBackupEEPROM";
 			this.btnBackupEEPROM.Size = new System.Drawing.Size(131, 23);
 			this.btnBackupEEPROM.TabIndex = 3;
@@ -95,7 +88,7 @@
 			// 
 			// btnBackupFlash
 			// 
-			this.btnBackupFlash.Location = new System.Drawing.Point(16, 77);
+			this.btnBackupFlash.Location = new System.Drawing.Point(16, 41);
 			this.btnBackupFlash.Name = "btnBackupFlash";
 			this.btnBackupFlash.Size = new System.Drawing.Size(131, 23);
 			this.btnBackupFlash.TabIndex = 5;
@@ -105,7 +98,7 @@
 			// 
 			// btnRestoreEEPROM
 			// 
-			this.btnRestoreEEPROM.Location = new System.Drawing.Point(16, 106);
+			this.btnRestoreEEPROM.Location = new System.Drawing.Point(16, 70);
 			this.btnRestoreEEPROM.Name = "btnRestoreEEPROM";
 			this.btnRestoreEEPROM.Size = new System.Drawing.Size(131, 23);
 			this.btnRestoreEEPROM.TabIndex = 3;
@@ -115,7 +108,7 @@
 			// 
 			// btnRestoreFlash
 			// 
-			this.btnRestoreFlash.Location = new System.Drawing.Point(16, 135);
+			this.btnRestoreFlash.Location = new System.Drawing.Point(16, 99);
 			this.btnRestoreFlash.Name = "btnRestoreFlash";
 			this.btnRestoreFlash.Size = new System.Drawing.Size(131, 23);
 			this.btnRestoreFlash.TabIndex = 5;
@@ -135,19 +128,17 @@
 			this.Controls.Add(this.btnBackupEEPROM);
 			this.Controls.Add(this.btnSelectCommPort);
 			this.Controls.Add(this.buttonRefreshCOMPortlist);
-			this.Controls.Add(this.lblCommPort);
 			this.Controls.Add(this.comboBoxCOMPorts);
 			this.Name = "OpenGD77Form";
 			this.Text = "OpenGD77 Support";
+			this.Load += new System.EventHandler(this.OpenGD77Form_Load);
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
 		}
 
 		#endregion
 
 		private System.Windows.Forms.ComboBox comboBoxCOMPorts;
-		private System.Windows.Forms.Label lblCommPort;
 		private System.Windows.Forms.Button buttonRefreshCOMPortlist;
 		private System.Windows.Forms.Button btnSelectCommPort;
 		private System.Windows.Forms.Button btnBackupEEPROM;

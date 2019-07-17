@@ -138,6 +138,7 @@
     <Compile Include="Extras\OpenGD77\OpenGD77Form.Designer.cs">
       <DependentUpon>OpenGD77Form.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extras\SetupDiWrap.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Code</SubType>
     </Compile>
