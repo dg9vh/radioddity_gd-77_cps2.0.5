@@ -36,12 +36,14 @@
 			this.btnBackupFlash = new System.Windows.Forms.Button();
 			this.btnRestoreEEPROM = new System.Windows.Forms.Button();
 			this.btnRestoreFlash = new System.Windows.Forms.Button();
+			this.btnReadCodeplug = new System.Windows.Forms.Button();
+			this.btnWriteCodeplug = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// comboBoxCOMPorts
 			// 
 			this.comboBoxCOMPorts.FormattingEnabled = true;
-			this.comboBoxCOMPorts.Location = new System.Drawing.Point(372, 10);
+			this.comboBoxCOMPorts.Location = new System.Drawing.Point(16, 224);
 			this.comboBoxCOMPorts.Name = "comboBoxCOMPorts";
 			this.comboBoxCOMPorts.Size = new System.Drawing.Size(121, 21);
 			this.comboBoxCOMPorts.TabIndex = 0;
@@ -49,7 +51,7 @@
 			// 
 			// buttonRefreshCOMPortlist
 			// 
-			this.buttonRefreshCOMPortlist.Location = new System.Drawing.Point(418, 66);
+			this.buttonRefreshCOMPortlist.Location = new System.Drawing.Point(224, 222);
 			this.buttonRefreshCOMPortlist.Name = "buttonRefreshCOMPortlist";
 			this.buttonRefreshCOMPortlist.Size = new System.Drawing.Size(75, 23);
 			this.buttonRefreshCOMPortlist.TabIndex = 2;
@@ -60,7 +62,7 @@
 			// 
 			// btnSelectCommPort
 			// 
-			this.btnSelectCommPort.Location = new System.Drawing.Point(418, 37);
+			this.btnSelectCommPort.Location = new System.Drawing.Point(143, 222);
 			this.btnSelectCommPort.Name = "btnSelectCommPort";
 			this.btnSelectCommPort.Size = new System.Drawing.Size(75, 23);
 			this.btnSelectCommPort.TabIndex = 2;
@@ -83,7 +85,7 @@
 			// 
 			this.progressBar1.Location = new System.Drawing.Point(16, 251);
 			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(466, 23);
+			this.progressBar1.Size = new System.Drawing.Size(477, 23);
 			this.progressBar1.TabIndex = 4;
 			// 
 			// btnBackupFlash
@@ -116,6 +118,26 @@
 			this.btnRestoreFlash.UseVisualStyleBackColor = true;
 			this.btnRestoreFlash.Click += new System.EventHandler(this.btnRestoreFlash_Click);
 			// 
+			// btnReadCodeplug
+			// 
+			this.btnReadCodeplug.Location = new System.Drawing.Point(362, 12);
+			this.btnReadCodeplug.Name = "btnReadCodeplug";
+			this.btnReadCodeplug.Size = new System.Drawing.Size(131, 23);
+			this.btnReadCodeplug.TabIndex = 3;
+			this.btnReadCodeplug.Text = "Read codeplug";
+			this.btnReadCodeplug.UseVisualStyleBackColor = true;
+			this.btnReadCodeplug.Click += new System.EventHandler(this.btnReadCodeplug_Click);
+			// 
+			// btnWriteCodeplug
+			// 
+			this.btnWriteCodeplug.Location = new System.Drawing.Point(362, 41);
+			this.btnWriteCodeplug.Name = "btnWriteCodeplug";
+			this.btnWriteCodeplug.Size = new System.Drawing.Size(131, 23);
+			this.btnWriteCodeplug.TabIndex = 3;
+			this.btnWriteCodeplug.Text = "Write codeplug";
+			this.btnWriteCodeplug.UseVisualStyleBackColor = true;
+			this.btnWriteCodeplug.Click += new System.EventHandler(this.btnWriteCodeplug_Click);
+			// 
 			// OpenGD77Form
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -125,12 +147,15 @@
 			this.Controls.Add(this.btnBackupFlash);
 			this.Controls.Add(this.progressBar1);
 			this.Controls.Add(this.btnRestoreEEPROM);
+			this.Controls.Add(this.btnWriteCodeplug);
+			this.Controls.Add(this.btnReadCodeplug);
 			this.Controls.Add(this.btnBackupEEPROM);
 			this.Controls.Add(this.btnSelectCommPort);
 			this.Controls.Add(this.buttonRefreshCOMPortlist);
 			this.Controls.Add(this.comboBoxCOMPorts);
 			this.Name = "OpenGD77Form";
 			this.Text = "OpenGD77 Support";
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OpenGD77Form_FormClosed);
 			this.Load += new System.EventHandler(this.OpenGD77Form_Load);
 			this.ResumeLayout(false);
 
@@ -146,5 +171,7 @@
 		private System.Windows.Forms.Button btnBackupFlash;
 		private System.Windows.Forms.Button btnRestoreEEPROM;
 		private System.Windows.Forms.Button btnRestoreFlash;
+		private System.Windows.Forms.Button btnReadCodeplug;
+		private System.Windows.Forms.Button btnWriteCodeplug;
 	}
 }
