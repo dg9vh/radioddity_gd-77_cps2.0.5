@@ -28,9 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.comboBoxCOMPorts = new System.Windows.Forms.ComboBox();
-			this.buttonRefreshCOMPortlist = new System.Windows.Forms.Button();
-			this.btnSelectCommPort = new System.Windows.Forms.Button();
 			this.btnBackupEEPROM = new System.Windows.Forms.Button();
 			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.btnBackupFlash = new System.Windows.Forms.Button();
@@ -38,38 +35,8 @@
 			this.btnRestoreFlash = new System.Windows.Forms.Button();
 			this.btnReadCodeplug = new System.Windows.Forms.Button();
 			this.btnWriteCodeplug = new System.Windows.Forms.Button();
+			this.txtMessage = new System.Windows.Forms.Label();
 			this.SuspendLayout();
-			// 
-			// comboBoxCOMPorts
-			// 
-			this.comboBoxCOMPorts.FormattingEnabled = true;
-			this.comboBoxCOMPorts.Location = new System.Drawing.Point(16, 224);
-			this.comboBoxCOMPorts.Name = "comboBoxCOMPorts";
-			this.comboBoxCOMPorts.Size = new System.Drawing.Size(121, 21);
-			this.comboBoxCOMPorts.TabIndex = 0;
-			this.comboBoxCOMPorts.Visible = false;
-			// 
-			// buttonRefreshCOMPortlist
-			// 
-			this.buttonRefreshCOMPortlist.Location = new System.Drawing.Point(224, 222);
-			this.buttonRefreshCOMPortlist.Name = "buttonRefreshCOMPortlist";
-			this.buttonRefreshCOMPortlist.Size = new System.Drawing.Size(75, 23);
-			this.buttonRefreshCOMPortlist.TabIndex = 2;
-			this.buttonRefreshCOMPortlist.Text = "Refresh ports list";
-			this.buttonRefreshCOMPortlist.UseVisualStyleBackColor = true;
-			this.buttonRefreshCOMPortlist.Visible = false;
-			this.buttonRefreshCOMPortlist.Click += new System.EventHandler(this.buttonRefreshCOMPortlist_Click);
-			// 
-			// btnSelectCommPort
-			// 
-			this.btnSelectCommPort.Location = new System.Drawing.Point(143, 222);
-			this.btnSelectCommPort.Name = "btnSelectCommPort";
-			this.btnSelectCommPort.Size = new System.Drawing.Size(75, 23);
-			this.btnSelectCommPort.TabIndex = 2;
-			this.btnSelectCommPort.Text = "Select";
-			this.btnSelectCommPort.UseVisualStyleBackColor = true;
-			this.btnSelectCommPort.Visible = false;
-			this.btnSelectCommPort.Click += new System.EventHandler(this.btnSelectCommPort_Click);
 			// 
 			// btnBackupEEPROM
 			// 
@@ -138,11 +105,20 @@
 			this.btnWriteCodeplug.UseVisualStyleBackColor = true;
 			this.btnWriteCodeplug.Click += new System.EventHandler(this.btnWriteCodeplug_Click);
 			// 
+			// txtMessage
+			// 
+			this.txtMessage.Location = new System.Drawing.Point(16, 223);
+			this.txtMessage.Name = "txtMessage";
+			this.txtMessage.Size = new System.Drawing.Size(477, 25);
+			this.txtMessage.TabIndex = 6;
+			this.txtMessage.Text = " OpenGD77 has been detected";
+			// 
 			// OpenGD77Form
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(505, 290);
+			this.Controls.Add(this.txtMessage);
 			this.Controls.Add(this.btnRestoreFlash);
 			this.Controls.Add(this.btnBackupFlash);
 			this.Controls.Add(this.progressBar1);
@@ -150,9 +126,6 @@
 			this.Controls.Add(this.btnWriteCodeplug);
 			this.Controls.Add(this.btnReadCodeplug);
 			this.Controls.Add(this.btnBackupEEPROM);
-			this.Controls.Add(this.btnSelectCommPort);
-			this.Controls.Add(this.buttonRefreshCOMPortlist);
-			this.Controls.Add(this.comboBoxCOMPorts);
 			this.Name = "OpenGD77Form";
 			this.Text = "OpenGD77 Support";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OpenGD77Form_FormClosed);
@@ -163,9 +136,6 @@
 
 		#endregion
 
-		private System.Windows.Forms.ComboBox comboBoxCOMPorts;
-		private System.Windows.Forms.Button buttonRefreshCOMPortlist;
-		private System.Windows.Forms.Button btnSelectCommPort;
 		private System.Windows.Forms.Button btnBackupEEPROM;
 		private System.Windows.Forms.ProgressBar progressBar1;
 		private System.Windows.Forms.Button btnBackupFlash;
@@ -173,5 +143,6 @@
 		private System.Windows.Forms.Button btnRestoreFlash;
 		private System.Windows.Forms.Button btnReadCodeplug;
 		private System.Windows.Forms.Button btnWriteCodeplug;
+		private System.Windows.Forms.Label txtMessage;
 	}
 }

@@ -15,25 +15,16 @@ namespace DMR
 	public partial class OpenGD77Form : Form
 	{
 		private SerialPort _port = null;
-//		private int data_start = 0;
-//		private int data_length = 0;
-//		private int data_pos = 0;
-//		private commsDataMode data_mode = commsDataMode.DataModeNone;
-//		private int data_sector = 0;
-//		private byte[] dataBuff = null;
 
 		private BackgroundWorker worker;
 		private int old_progress = 0;
-		public enum commsDataMode { DataModeNone = 0, DataModeReadFlash = 1, DataModeReadEEPROM = 2, DataModeWriteFlash = 3, DataModeWriteEEPROM = 4 };
-		public enum taskCompleteAction { NONE, SAVE_EEPROM, SAVE_FLASH, SHOW_RESTORE_COMPLETE_MESSAGE,READ_CODEPLUG, WRITE_CODEPLUG }
-		taskCompleteAction onTaskComplete = taskCompleteAction.NONE;
+		public enum CommsDataMode { DataModeNone = 0, DataModeReadFlash = 1, DataModeReadEEPROM = 2, DataModeWriteFlash = 3, DataModeWriteEEPROM = 4 };
+		public enum CommsAction { NONE, BACKUP_EEPROM, BACKUP_FLASH,RESTORE_EEPROM, RESTORE_FLASH ,READ_CODEPLUG, WRITE_CODEPLUG }
 
-//		private int bufferDataPos = 0;
-//		private int bufferDataTotal = 0;
 		private SaveFileDialog _saveFileDialog = new SaveFileDialog();
 		private OpenFileDialog _openFileDialog = new OpenFileDialog();
 		private String _gd77CommPort;
-//		int codeplugPhase = 0;
+
 		private byte[] codeplugBuf;
 		private byte[] codeplugBufEEPROM;
 		private byte[] codeplugBufFlash;
@@ -110,7 +101,10 @@ namespace DMR
 			byte[] readbuffer = new byte[512];
 			byte[] com_Buf = new byte[256];
 
-			int size = (dataObj.data_start + dataObj.data_length) - dataObj.data_pos;
+			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
+			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
+
+			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
 
 			while (size > 0)
 			{
@@ -121,10 +115,10 @@ namespace DMR
 
 				sendbuffer[0] = (byte)'R';
 				sendbuffer[1] = (byte)dataObj.mode;
-				sendbuffer[2] = (byte)((dataObj.data_pos >> 24) & 0xFF);
-				sendbuffer[3] = (byte)((dataObj.data_pos >> 16) & 0xFF);
-				sendbuffer[4] = (byte)((dataObj.data_pos >> 8) & 0xFF);
-				sendbuffer[5] = (byte)((dataObj.data_pos >> 0) & 0xFF);
+				sendbuffer[2] = (byte)((currentDataAddressInTheRadio >> 24) & 0xFF);
+				sendbuffer[3] = (byte)((currentDataAddressInTheRadio >> 16) & 0xFF);
+				sendbuffer[4] = (byte)((currentDataAddressInTheRadio >> 8) & 0xFF);
+				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
 				sendbuffer[6] = (byte)((size >> 8) & 0xFF);
 				sendbuffer[7] = (byte)((size >> 0) & 0xFF);
 				_port.Write(sendbuffer, 0, 8);
@@ -139,26 +133,25 @@ namespace DMR
 					int len = (readbuffer[1] << 8) + (readbuffer[2] << 0);
 					for (int i = 0; i < len; i++)
 					{
-						dataObj.dataBuff[dataObj.bufferDataPos++] = readbuffer[i + 3];
+						dataObj.dataBuff[currentDataAddressInLocalBuffer++] = readbuffer[i + 3];
 					}
 
-					int progress = (dataObj.data_pos - dataObj.data_start) * 100 / dataObj.data_length;
+					int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
 					if (old_progress != progress)
 					{
-						updateProgess(dataObj.bufferDataPos, dataObj.bufferDataTotal);
-						Console.WriteLine(progress + "%");
+						updateProgess(progress);
 						old_progress = progress;
 					}
 
-					dataObj.data_pos = dataObj.data_pos + len;
+					currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
 				}
 				else
 				{
-					Console.WriteLine(String.Format("read stopped (error at {0:X8})", dataObj.data_pos));
+					Console.WriteLine(String.Format("read stopped (error at {0:X8})", currentDataAddressInTheRadio));
 					close_data_mode();
 
 				}
-				size = (dataObj.data_start + dataObj.data_length) - dataObj.data_pos;
+				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
 			}
 			close_data_mode();
 		}
@@ -168,8 +161,12 @@ namespace DMR
 			byte[] sendbuffer = new byte[512];
 			byte[] readbuffer = new byte[512];
 			byte[] com_Buf = new byte[256];
+			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
 
-			int size = (dataObj.data_start + dataObj.data_length) - dataObj.data_pos;
+			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
+			dataObj.data_sector = -1;// Always needs to be initialised to -1 so the first flashWritePrepareSector is called
+
+			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
 			while (size > 0)
 			{
 				if (size > 32)
@@ -179,7 +176,7 @@ namespace DMR
 
 				if (dataObj.data_sector == -1)
 				{
-					if (!flashWritePrepareSector(dataObj.data_pos, ref sendbuffer, ref readbuffer,dataObj))
+					if (!flashWritePrepareSector(currentDataAddressInTheRadio, ref sendbuffer, ref readbuffer,dataObj))
 					{
 						close_data_mode();
 						break;
@@ -191,26 +188,26 @@ namespace DMR
 					int len = 0;
 					for (int i = 0; i < size; i++)
 					{
-						sendbuffer[i + 8] = dataObj.dataBuff[dataObj.bufferDataPos++];
+						sendbuffer[i + 8] = dataObj.dataBuff[currentDataAddressInLocalBuffer++];
 						len++;
 
-						if (dataObj.data_sector != ((dataObj.data_pos + len) / 4096))
+						if (dataObj.data_sector != ((currentDataAddressInTheRadio + len) / 4096))
 						{
 							break;
 						}
 					}
-					if (flashSendData(dataObj.data_pos, len, ref sendbuffer, ref readbuffer))
+					if (flashSendData(currentDataAddressInTheRadio, len, ref sendbuffer, ref readbuffer))
 					{
-						int progress = (dataObj.data_pos - dataObj.data_start) * 100 / dataObj.data_length;
+						int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
 						if (old_progress != progress)
 						{
-							updateProgess(dataObj.bufferDataPos, dataObj.bufferDataTotal);
+							updateProgess(progress);
 							old_progress = progress;
 						}
 
-						dataObj.data_pos = dataObj.data_pos + len;
+						currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
 
-						if (dataObj.data_sector != (dataObj.data_pos / 4096))
+						if (dataObj.data_sector != (currentDataAddressInTheRadio / 4096))
 						{
 							if (!flashWriteSector(ref sendbuffer, ref readbuffer,dataObj))
 							{
@@ -225,14 +222,14 @@ namespace DMR
 						break;
 					}
 				}
-				size = (dataObj.data_start + dataObj.data_length) - dataObj.data_pos;
+				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
 			}
 
 			if (dataObj.data_sector != -1)
 			{
 				if (!flashWriteSector(ref sendbuffer, ref readbuffer,dataObj))
 				{
-					Console.WriteLine(String.Format("Error. Write stopped (write sector error at {0:X8})", dataObj.data_pos));
+					Console.WriteLine(String.Format("Error. Write stopped (write sector error at {0:X8})", currentDataAddressInTheRadio));
 				};
 			}
 
@@ -245,7 +242,10 @@ namespace DMR
 			byte[] readbuffer = new byte[512];
 			byte[] com_Buf = new byte[256];
 
-			int size = (dataObj.data_start + dataObj.data_length) - dataObj.data_pos;
+			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
+			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
+
+			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
 			while (size > 0)
 			{
 				if (size > 32)
@@ -255,16 +255,16 @@ namespace DMR
 
 				if (dataObj.data_sector == -1)
 				{
-					dataObj.data_sector = dataObj.data_pos / 128;
+					dataObj.data_sector = currentDataAddressInTheRadio / 128;
 				}
 
 				int len = 0;
 				for (int i = 0; i < size; i++)
 				{
-					sendbuffer[i + 8] = (byte)dataObj.dataBuff[dataObj.bufferDataPos++];
+					sendbuffer[i + 8] = (byte)dataObj.dataBuff[currentDataAddressInLocalBuffer++];
 					len++;
 
-					if (dataObj.data_sector != ((dataObj.data_pos + len) / 128))
+					if (dataObj.data_sector != ((currentDataAddressInTheRadio + len) / 128))
 					{
 						dataObj.data_sector = -1;
 						break;
@@ -273,10 +273,10 @@ namespace DMR
 
 				sendbuffer[0] = (byte)'W';
 				sendbuffer[1] = 4;
-				sendbuffer[2] = (byte)((dataObj.data_pos >> 24) & 0xFF);
-				sendbuffer[3] = (byte)((dataObj.data_pos >> 16) & 0xFF);
-				sendbuffer[4] = (byte)((dataObj.data_pos >> 8) & 0xFF);
-				sendbuffer[5] = (byte)((dataObj.data_pos >> 0) & 0xFF);
+				sendbuffer[2] = (byte)((currentDataAddressInTheRadio >> 24) & 0xFF);
+				sendbuffer[3] = (byte)((currentDataAddressInTheRadio >> 16) & 0xFF);
+				sendbuffer[4] = (byte)((currentDataAddressInTheRadio >> 8) & 0xFF);
+				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
 				sendbuffer[6] = (byte)((len >> 8) & 0xFF);
 				sendbuffer[7] = (byte)((len >> 0) & 0xFF);
 				_port.Write(sendbuffer, 0, len + 8);
@@ -288,48 +288,61 @@ namespace DMR
 
 				if ((readbuffer[0] == sendbuffer[0]) && (readbuffer[1] == sendbuffer[1]))
 				{
-					int progress = (dataObj.data_pos - dataObj.data_start) * 100 / dataObj.data_length;
+					int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
 					if (old_progress != progress)
 					{
-						updateProgess(dataObj.bufferDataPos, dataObj.bufferDataTotal);
-						Console.WriteLine(progress);
+						updateProgess(progress);
 						old_progress = progress;
 					}
 
-					dataObj.data_pos = dataObj.data_pos + len;
+					currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
 				}
 				else
 				{
-					Console.WriteLine(String.Format("Error. Write stopped (write sector error at {0:X8})", dataObj.data_pos));
+					Console.WriteLine(String.Format("Error. Write stopped (write sector error at {0:X8})", currentDataAddressInTheRadio));
 					close_data_mode();
 				}
-				size = (dataObj.data_start + dataObj.data_length) - dataObj.data_pos;
+				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
 			}
 			close_data_mode();
 		}
 
-		void updateProgess(int bufferDataPos, int bufferDataTotal)
+		void updateProgess(int progressPercentage)
 		{
 			if (progressBar1.InvokeRequired)
 				progressBar1.Invoke(new MethodInvoker(delegate()
 				{
-					progressBar1.Value = bufferDataPos*100 / bufferDataTotal;
+					progressBar1.Value = progressPercentage;
 				}));
 			else
 			{
-				progressBar1.Value = bufferDataPos*100 / bufferDataTotal;
+				progressBar1.Value = progressPercentage;
 			}
 		}
 
+		void displayMessage(string message)
+		{
+			if (txtMessage.InvokeRequired)
+				txtMessage.Invoke(new MethodInvoker(delegate()
+				{
+					txtMessage.Text = message;
+				}));
+			else
+			{
+				txtMessage.Text = message;
+			}
+		}
+
+
 		void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			if (onTaskComplete != taskCompleteAction.NONE)
-			{
-				CommsTransferData dataObj = e.Result as CommsTransferData;
+			CommsTransferData dataObj = e.Result as CommsTransferData;
 
-				switch (onTaskComplete)
+			if (dataObj.action != CommsAction.NONE)
+			{
+				switch (dataObj.action)
 				{
-					case taskCompleteAction.SAVE_EEPROM:
+					case CommsAction.BACKUP_EEPROM:
 						_saveFileDialog.Filter = "EEPROM files (*.bin)|*.bin";
 						_saveFileDialog.FilterIndex = 1;
 						if (_saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -337,9 +350,9 @@ namespace DMR
 							File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
 						}
 						enableDisableAllButtons(true);
-						onTaskComplete = taskCompleteAction.NONE;
+						dataObj.action = CommsAction.NONE;
 						break;
-					case taskCompleteAction.SAVE_FLASH:
+					case CommsAction.BACKUP_FLASH:
 						_saveFileDialog.Filter = "Flash files (*.bin)|*.bin";
 						_saveFileDialog.FilterIndex = 1;
 						if (_saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -347,16 +360,27 @@ namespace DMR
 							File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
 						}
 						enableDisableAllButtons(true);
-						onTaskComplete = taskCompleteAction.NONE;
+						dataObj.action = CommsAction.NONE;
 						break;
-					case taskCompleteAction.SHOW_RESTORE_COMPLETE_MESSAGE:
+					case CommsAction.RESTORE_EEPROM:
+					case CommsAction.RESTORE_FLASH:
 						MessageBox.Show("Restore complete");
 						enableDisableAllButtons(true);
-						onTaskComplete = taskCompleteAction.NONE;
+						dataObj.action = CommsAction.NONE;
 						break;
-					case taskCompleteAction.READ_CODEPLUG:
+					case CommsAction.READ_CODEPLUG:
+						MessageBox.Show("Read Codeplug complete");
+						enableDisableAllButtons(true);
+						dataObj.action = CommsAction.NONE;
+
+						_saveFileDialog.Filter = "Codeplug files (*.bin)|*.bin";
+						_saveFileDialog.FilterIndex = 1;
+						if (_saveFileDialog.ShowDialog() == DialogResult.OK)
+						{
+							File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
+						}
 						break;
-					case taskCompleteAction.WRITE_CODEPLUG:
+					case CommsAction.WRITE_CODEPLUG:
 						break;					
 				}
 
@@ -370,19 +394,92 @@ namespace DMR
 			CommsTransferData dataObj = e.Argument as CommsTransferData;
 			try
 			{
-				switch (dataObj.mode)
+				switch (dataObj.action)
 				{
-					case commsDataMode.DataModeReadFlash:
-					case commsDataMode.DataModeReadEEPROM:
+					case CommsAction.BACKUP_FLASH:
+						dataObj.mode = CommsDataMode.DataModeReadFlash;
+						dataObj.dataBuff = new Byte[1024 * 1024];
+						dataObj.localDataBufferStartPosition = 0;
+						dataObj.startDataAddressInTheRadio = 0;
+						dataObj.transferLength = 1024 * 1024;
+
+						ReadFlashOrEEPROM(dataObj);
+						break;
+					case CommsAction.BACKUP_EEPROM:
+						dataObj.mode = CommsDataMode.DataModeReadEEPROM;
+						dataObj.dataBuff = new Byte[64 * 1024];
+
+						dataObj.localDataBufferStartPosition = 0;
+						dataObj.startDataAddressInTheRadio = 0;
+						dataObj.transferLength = 64*1024;
+						
 						ReadFlashOrEEPROM(dataObj);
 						break;
 
-					case commsDataMode.DataModeWriteFlash:
+					case CommsAction.RESTORE_FLASH:
+						dataObj.mode = CommsDataMode.DataModeWriteFlash;
+						dataObj.localDataBufferStartPosition = 0;
+						dataObj.startDataAddressInTheRadio = 0;
+						dataObj.transferLength = 1024 * 1024;
+
 						WriteFlash(dataObj);
 						break;
-					case commsDataMode.DataModeWriteEEPROM:
+					case CommsAction.RESTORE_EEPROM:
+						dataObj.mode = CommsDataMode.DataModeWriteEEPROM;
+						dataObj.localDataBufferStartPosition = 0;
+						dataObj.startDataAddressInTheRadio = 0;
+						dataObj.transferLength = 64 * 1024;
+
 						WriteEEPROM(dataObj);
 						break;
+					case CommsAction.READ_CODEPLUG:
+						dataObj.mode = CommsDataMode.DataModeReadEEPROM;
+						dataObj.localDataBufferStartPosition = 0x00E0;
+						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
+						dataObj.transferLength =  0x6000 - dataObj.localDataBufferStartPosition;
+						displayMessage("Reading EEPROM 0x80 - 0x5FFF");
+						ReadFlashOrEEPROM(dataObj);
+
+						dataObj.mode = CommsDataMode.DataModeReadEEPROM;
+						dataObj.localDataBufferStartPosition = 0x8000;
+						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
+						dataObj.transferLength = 0x10000 - dataObj.localDataBufferStartPosition;
+						displayMessage("Reading EEPROM 0x8000 - 0xFFFF");
+						ReadFlashOrEEPROM(dataObj);
+
+
+						dataObj.mode = CommsDataMode.DataModeReadFlash;
+						dataObj.localDataBufferStartPosition = 0x10000;
+						dataObj.startDataAddressInTheRadio = 0x80000;
+						dataObj.transferLength = 0x10000;
+						displayMessage("Reading Flash 0x80000 - 0x90000");
+						ReadFlashOrEEPROM(dataObj);
+						break;
+					case CommsAction.WRITE_CODEPLUG:
+						dataObj.dataBuff = MainForm.DataToByte();
+						dataObj.mode = CommsDataMode.DataModeWriteEEPROM;
+						dataObj.localDataBufferStartPosition = 0x0080;
+						dataObj.startDataAddressInTheRadio = 0x0080;
+						dataObj.transferLength =  0x6000 - 0x0080;
+						displayMessage("Writing EEPROM 0x80 - 0x5FFF");
+						WriteEEPROM(dataObj);
+
+						dataObj.mode = CommsDataMode.DataModeWriteEEPROM;
+						dataObj.localDataBufferStartPosition = 0x6200;
+						dataObj.startDataAddressInTheRadio = 0x6200;
+						dataObj.transferLength = 0x10000 - dataObj.localDataBufferStartPosition;
+						displayMessage("Writing EEPROM 0x6200 - 0xFFFF");
+						WriteEEPROM(dataObj);
+
+
+						dataObj.mode = CommsDataMode.DataModeWriteFlash;
+						dataObj.localDataBufferStartPosition = 0x10000;
+						dataObj.startDataAddressInTheRadio = 0x80000;
+						dataObj.transferLength = 0x10000;
+						displayMessage("Writing Flash 0x80000 - 0x90000");
+						WriteFlash(dataObj);
+						break;
+
 				}
 			}
 			catch (Exception ex)
@@ -414,18 +511,8 @@ namespace DMR
 				MessageBox.Show("Please select a comm port");
 				return;
 			}
-			CommsTransferData dataObj = new CommsTransferData();
-			dataObj.mode = commsDataMode.DataModeReadEEPROM;
-
-			onTaskComplete = taskCompleteAction.SAVE_FLASH;
-			dataObj.bufferDataPos = 0;
-			dataObj.data_pos = 0;
-			dataObj.dataBuff = new Byte[64 * 1024];
-			dataObj.data_start = 0;
-			dataObj.data_length = 64*1024;
-			dataObj.bufferDataTotal = 64 * 1024;
+			CommsTransferData dataObj = new CommsTransferData(CommsAction.BACKUP_EEPROM);
 			enableDisableAllButtons(false);
-
 			perFormCommsTask(dataObj);
 		}
 
@@ -437,18 +524,9 @@ namespace DMR
 				return;
 			}
 
-			CommsTransferData dataObj = new CommsTransferData();
-			dataObj.mode = commsDataMode.DataModeReadFlash;
-			dataObj.data_pos = 0;
-			dataObj.bufferDataPos = 0;
-			dataObj.dataBuff = new Byte[1024 * 1024];
-			dataObj.data_start = 0;
-			dataObj.data_length = 1024 * 1024;
-			dataObj.bufferDataTotal = 1024 * 1024;
-			onTaskComplete = taskCompleteAction.SAVE_FLASH;
+			CommsTransferData dataObj = new CommsTransferData(CommsAction.BACKUP_FLASH);
 			enableDisableAllButtons(false);
 			perFormCommsTask(dataObj);
-
 		}
 
 		bool arrayCompare(byte[] buf1, byte[] buf2)
@@ -462,7 +540,6 @@ namespace DMR
 					return false;
 				}
 			}
-
 			return true;
 		}
 
@@ -477,7 +554,7 @@ namespace DMR
 			{
 				if (DialogResult.OK == _openFileDialog.ShowDialog())
 				{
-					CommsTransferData dataObj = new CommsTransferData();
+					CommsTransferData dataObj = new CommsTransferData(CommsAction.RESTORE_EEPROM);
 					dataObj.dataBuff = File.ReadAllBytes(_openFileDialog.FileName);
 					if (dataObj.dataBuff.Length == (64 * 1024))
 					{
@@ -485,17 +562,8 @@ namespace DMR
 						if (arrayCompare(dataObj.dataBuff, signature))
 						{
 							MessageBox.Show("Please set your radio into FM mode\nDo not press any buttons on the radio while the EEPROM is being restored");
-
-							dataObj.mode = commsDataMode.DataModeWriteEEPROM;
-							dataObj.data_pos = 0;
-							dataObj.bufferDataPos = 0;
-							dataObj.data_start = 0;
-							dataObj.data_length = 64 * 1024;
-							dataObj.bufferDataTotal = 64 * 1024;
-							onTaskComplete = taskCompleteAction.SHOW_RESTORE_COMPLETE_MESSAGE;
 							enableDisableAllButtons(false);
 							perFormCommsTask(dataObj);
-
 						}
 						else
 						{
@@ -521,29 +589,17 @@ namespace DMR
 			{
 				if (DialogResult.OK == _openFileDialog.ShowDialog())
 				{
-					CommsTransferData dataObj = new CommsTransferData();
-
+					CommsTransferData dataObj = new CommsTransferData(CommsAction.RESTORE_FLASH);
 					dataObj.dataBuff = File.ReadAllBytes(_openFileDialog.FileName);
+					
 					if (dataObj.dataBuff.Length == (1024 * 1024))
 					{
 						byte[] signature = { 0x54, 0x59, 0x54, 0x3A, 0x4D, 0x44, 0x2D, 0x37, 0x36, 0x30 };
 						if (arrayCompare(dataObj.dataBuff, signature))
 						{
 							MessageBox.Show("Please set your radio into FM mode\nDo not press any buttons on the radio while the Flash memory is being restored");
-
-
-							dataObj.mode = commsDataMode.DataModeWriteFlash;
-
-							dataObj.data_pos = 0;
-							dataObj.bufferDataPos = 0;
-							dataObj.data_start = 0;
-							dataObj.data_length = 1024 * 1024;
-							dataObj.bufferDataTotal = 1024 * 1024;
-							onTaskComplete = taskCompleteAction.SHOW_RESTORE_COMPLETE_MESSAGE;
-							dataObj.data_sector = -1;// Seems to be needed to force the first (4k ) page to be erased before it can be written
 							enableDisableAllButtons(false);
 							perFormCommsTask(dataObj);
-
 						}
 						else
 						{
@@ -590,77 +646,67 @@ namespace DMR
 			}
 		}
 
-		private void btnSelectCommPort_Click(object sender, EventArgs e)
-		{
-			if (_port == null)
-			{
-				try
-				{
-					_port = new SerialPort(comboBoxCOMPorts.Text, 115200, Parity.None, 8, StopBits.One);
-					_port.ReadTimeout = 1000;
-					_port.Open();
-					(sender as Button).Text = "Close";
-					comboBoxCOMPorts.Enabled = false;
-				}
-				catch (Exception)
-				{
-					_port = null;
-					MessageBox.Show("Failed to open comm port", "Error");
-				}
-			}
-			else
-			{
-				_port.Close();
-				comboBoxCOMPorts.Enabled = true;
-				(sender as Button).Text = "Select";
-			}
-		}
-
-		void loadCOMPortlist()
-		{
-			string old_item = comboBoxCOMPorts.Text;
-			comboBoxCOMPorts.Items.Clear();
-			string[] ports = SerialPort.GetPortNames();
-			foreach (string port in ports)
-			{
-				comboBoxCOMPorts.Items.Add(port);
-			}
-			if (comboBoxCOMPorts.Items.Contains(old_item))
-			{
-				comboBoxCOMPorts.Text = old_item;
-			}
-		}
-
-		private void buttonRefreshCOMPortlist_Click(object sender, EventArgs e)
-		{
-			loadCOMPortlist();
-		}
 
 		private void OpenGD77Form_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			_port.Close();
+			if (_port != null)
+			{
+				try
+				{
+					_port.Close();
+					_port = null;
+				}
+				catch (Exception)
+				{
+					// don't care if we get an error while closing the port, we can handle the error if they can't open it the next time they want to upload or download
+				}
+			}
 		}
 
 		private void btnReadCodeplug_Click(object sender, EventArgs e)
 		{
+			if (_port == null)
+			{
+				MessageBox.Show("Please select a comm port");
+				return;
+			}
 
+			CommsTransferData dataObj = new CommsTransferData(CommsAction.READ_CODEPLUG);
+			dataObj.dataBuff = new byte[128 * 1024];
+			enableDisableAllButtons(false);
+			perFormCommsTask(dataObj);
 		}
 
 		private void btnWriteCodeplug_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show("btnWriteCodeplug_Click");
+			if (_port == null)
+			{
+				MessageBox.Show("Please select a comm port");
+				return;
+			}
+
+			CommsTransferData dataObj = new CommsTransferData(CommsAction.WRITE_CODEPLUG);
+			enableDisableAllButtons(false);
+			perFormCommsTask(dataObj);
+
 		}
 
 		public class CommsTransferData
 		{
-			public commsDataMode mode;
-			public int data_pos;
-			public int data_start = 0;
-			public int data_length = 0;
-			public int bufferDataPos = 0;
-			public int bufferDataTotal = 0;
+			public CommsDataMode mode;
+			public CommsAction action;
+			public int startDataAddressInTheRadio = 0;
+			public int transferLength = 0;
+
+			public int localDataBufferStartPosition = 0;
+
 			public int data_sector = 0;
 			public byte[] dataBuff;
+
+			public CommsTransferData(CommsAction theAction)
+			{
+				action = theAction;
+			}
 		}
 	}
 
