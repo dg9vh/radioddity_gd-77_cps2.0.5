@@ -392,6 +392,8 @@ namespace DMR
 		void worker_DoWork(object sender, DoWorkEventArgs e)
 		{
 			CommsTransferData dataObj = e.Argument as CommsTransferData;
+			const int CODEPLUG_FLASH_PART_END	= 0x1EE60;
+			const int CODEPLUG_FLASH_PART_START = 0xB000;
 			try
 			{
 				switch (dataObj.action)
@@ -402,8 +404,9 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0;
 						dataObj.startDataAddressInTheRadio = 0;
 						dataObj.transferLength = 1024 * 1024;
-
+						displayMessage("Reading Flash");
 						ReadFlashOrEEPROM(dataObj);
+						displayMessage("");
 						break;
 					case CommsAction.BACKUP_EEPROM:
 						dataObj.mode = CommsDataMode.DataModeReadEEPROM;
@@ -412,8 +415,9 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0;
 						dataObj.startDataAddressInTheRadio = 0;
 						dataObj.transferLength = 64*1024;
-						
+						displayMessage("Reading EEPROM");
 						ReadFlashOrEEPROM(dataObj);
+						displayMessage("");
 						break;
 
 					case CommsAction.RESTORE_FLASH:
@@ -421,63 +425,67 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0;
 						dataObj.startDataAddressInTheRadio = 0;
 						dataObj.transferLength = 1024 * 1024;
-
+						displayMessage("Restoring Flash");
 						WriteFlash(dataObj);
+						displayMessage("Restore complete");
 						break;
 					case CommsAction.RESTORE_EEPROM:
 						dataObj.mode = CommsDataMode.DataModeWriteEEPROM;
 						dataObj.localDataBufferStartPosition = 0;
 						dataObj.startDataAddressInTheRadio = 0;
 						dataObj.transferLength = 64 * 1024;
-
+						displayMessage("Restoring EEPROM");
 						WriteEEPROM(dataObj);
+						displayMessage("Restore complete");
 						break;
 					case CommsAction.READ_CODEPLUG:
 						dataObj.mode = CommsDataMode.DataModeReadEEPROM;
 						dataObj.localDataBufferStartPosition = 0x00E0;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength =  0x6000 - dataObj.localDataBufferStartPosition;
-						displayMessage("Reading EEPROM 0x80 - 0x5FFF");
+						displayMessage(String.Format("Reading EEPROM 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
 						ReadFlashOrEEPROM(dataObj);
 
 						dataObj.mode = CommsDataMode.DataModeReadEEPROM;
-						dataObj.localDataBufferStartPosition = 0x8000;
+						dataObj.localDataBufferStartPosition = 0x7500;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
-						dataObj.transferLength = 0x10000 - dataObj.localDataBufferStartPosition;
-						displayMessage("Reading EEPROM 0x8000 - 0xFFFF");
+						dataObj.transferLength = 0xB000 - dataObj.localDataBufferStartPosition;
+						displayMessage(String.Format("Reading EEPROM 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
 						ReadFlashOrEEPROM(dataObj);
 
 
 						dataObj.mode = CommsDataMode.DataModeReadFlash;
-						dataObj.localDataBufferStartPosition = 0x10000;
-						dataObj.startDataAddressInTheRadio = 0x80000;
-						dataObj.transferLength = 0x10000;
-						displayMessage("Reading Flash 0x80000 - 0x90000");
+						dataObj.localDataBufferStartPosition = CODEPLUG_FLASH_PART_START;
+						dataObj.startDataAddressInTheRadio = 0x7b000;
+						dataObj.transferLength = CODEPLUG_FLASH_PART_END - dataObj.localDataBufferStartPosition;
+						displayMessage(String.Format("Reading Flash 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 						ReadFlashOrEEPROM(dataObj);
+						displayMessage("Codeplug read complete");
 						break;
 					case CommsAction.WRITE_CODEPLUG:
 						dataObj.dataBuff = MainForm.DataToByte();
 						dataObj.mode = CommsDataMode.DataModeWriteEEPROM;
-						dataObj.localDataBufferStartPosition = 0x0080;
-						dataObj.startDataAddressInTheRadio = 0x0080;
-						dataObj.transferLength =  0x6000 - 0x0080;
-						displayMessage("Writing EEPROM 0x80 - 0x5FFF");
+						dataObj.localDataBufferStartPosition = 0x00E0;
+						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
+						dataObj.transferLength =  0x6000 - dataObj.localDataBufferStartPosition;
+						displayMessage(String.Format("Writing EEPROM 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 						WriteEEPROM(dataObj);
 
 						dataObj.mode = CommsDataMode.DataModeWriteEEPROM;
-						dataObj.localDataBufferStartPosition = 0x6200;
-						dataObj.startDataAddressInTheRadio = 0x6200;
-						dataObj.transferLength = 0x10000 - dataObj.localDataBufferStartPosition;
-						displayMessage("Writing EEPROM 0x6200 - 0xFFFF");
+						dataObj.localDataBufferStartPosition = 0x7500;
+						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
+						dataObj.transferLength = 0xB000 - dataObj.localDataBufferStartPosition;
+						displayMessage(String.Format("Writing EEPROM 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 						WriteEEPROM(dataObj);
 
 
 						dataObj.mode = CommsDataMode.DataModeWriteFlash;
-						dataObj.localDataBufferStartPosition = 0x10000;
-						dataObj.startDataAddressInTheRadio = 0x80000;
-						dataObj.transferLength = 0x10000;
-						displayMessage("Writing Flash 0x80000 - 0x90000");
+						dataObj.localDataBufferStartPosition = CODEPLUG_FLASH_PART_START;
+						dataObj.startDataAddressInTheRadio = 0x7b000;
+						dataObj.transferLength = CODEPLUG_FLASH_PART_END - dataObj.localDataBufferStartPosition;
+						displayMessage(String.Format("Writing Flash 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 						WriteFlash(dataObj);
+						displayMessage("Codeplug write complete");
 						break;
 
 				}
@@ -620,6 +628,8 @@ namespace DMR
 			btnBackupFlash.Enabled = show;
 			btnRestoreEEPROM.Enabled = show;
 			btnRestoreFlash.Enabled = show;
+			btnReadCodeplug.Enabled = show;
+			btnWriteCodeplug.Enabled = show;
 		}
 
 		private void OpenGD77Form_Load(object sender, EventArgs e)
