@@ -370,6 +370,8 @@ namespace DMR
 						break;
 					case CommsAction.READ_CODEPLUG:
 						MessageBox.Show("Read Codeplug complete");
+						MainForm.ByteToData(dataObj.dataBuff);
+						/*
 						enableDisableAllButtons(true);
 						dataObj.action = CommsAction.NONE;
 
@@ -379,6 +381,7 @@ namespace DMR
 						{
 							File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
 						}
+						 */
 						break;
 					case CommsAction.WRITE_CODEPLUG:
 						break;					
@@ -682,7 +685,7 @@ namespace DMR
 			}
 
 			CommsTransferData dataObj = new CommsTransferData(CommsAction.READ_CODEPLUG);
-			dataObj.dataBuff = new byte[128 * 1024];
+			dataObj.dataBuff = MainForm.DataToByte();// overwrite the existing data, so that we can use the header etc, which the CPS checks for when we later call Byte2Data
 			enableDisableAllButtons(false);
 			perFormCommsTask(dataObj);
 		}

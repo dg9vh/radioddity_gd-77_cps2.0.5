@@ -3059,12 +3059,11 @@ namespace DMR
 
 		private void tsmiOpenGD77_Click(object sender, EventArgs e)
 		{
-
 			this.closeAllForms();
-
 			OpenGD77Form cf = new OpenGD77Form();
 			cf.StartPosition = FormStartPosition.CenterParent;
 			cf.ShowDialog();
+			InitTree();
 		}
 
 		private void tsbtnRead_Click(object sender, EventArgs e)
