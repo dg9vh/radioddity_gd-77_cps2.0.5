@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using System.Net;
 using System.Web.Script.Serialization;
 using System.IO;
+using System.IO.Ports;
+using System.Threading;
 
 namespace DMR
 {
@@ -23,6 +25,17 @@ namespace DMR
 		//private int MAX_RECORDS = 10920;
 		private int _stringLength = 8;
 		const int HEADER_LENGTH = 12;
+
+		private SerialPort _port = null;
+
+		private BackgroundWorker worker;
+
+		public enum CommsDataMode { DataModeNone = 0, DataModeReadFlash = 1, DataModeReadEEPROM = 2, DataModeWriteFlash = 3, DataModeWriteEEPROM = 4 };
+		public enum CommsAction { NONE, BACKUP_EEPROM, BACKUP_FLASH, RESTORE_EEPROM, RESTORE_FLASH, READ_CODEPLUG, WRITE_CODEPLUG }
+
+		private SaveFileDialog _saveFileDialog = new SaveFileDialog();
+		private OpenFileDialog _openFileDialog = new OpenFileDialog();
+
 
 		public static void ClearStaticData()
 		{
@@ -418,6 +431,277 @@ namespace DMR
 			_stringLength = cmbStringLen.SelectedIndex + 6;
 			updateTotalNumberMessage();
 		}
+
+		#region OpenGD77
+		bool flashWritePrepareSector(int address, ref byte[] sendbuffer, ref byte[] readbuffer, OpenGD77CommsTransferData dataObj)
+		{
+			dataObj.data_sector = address / 4096;
+
+			sendbuffer[0] = (byte)'W';
+			sendbuffer[1] = 1;
+			sendbuffer[2] = (byte)((dataObj.data_sector >> 16) & 0xFF);
+			sendbuffer[3] = (byte)((dataObj.data_sector >> 8) & 0xFF);
+			sendbuffer[4] = (byte)((dataObj.data_sector >> 0) & 0xFF);
+			_port.Write(sendbuffer, 0, 5);
+			while (_port.BytesToRead == 0)
+			{
+				Thread.Sleep(0);
+			}
+			_port.Read(readbuffer, 0, 64);
+
+			return ((readbuffer[0] == sendbuffer[0]) && (readbuffer[1] == sendbuffer[1]));
+		}
+
+		bool flashSendData(int address, int len, ref byte[] sendbuffer, ref byte[] readbuffer)
+		{
+			sendbuffer[0] = (byte)'W';
+			sendbuffer[1] = 2;
+			sendbuffer[2] = (byte)((address >> 24) & 0xFF);
+			sendbuffer[3] = (byte)((address >> 16) & 0xFF);
+			sendbuffer[4] = (byte)((address >> 8) & 0xFF);
+			sendbuffer[5] = (byte)((address >> 0) & 0xFF);
+			sendbuffer[6] = (byte)((len >> 8) & 0xFF);
+			sendbuffer[7] = (byte)((len >> 0) & 0xFF);
+			_port.Write(sendbuffer, 0, len + 8);
+			while (_port.BytesToRead == 0)
+			{
+				Thread.Sleep(0);
+			}
+			_port.Read(readbuffer, 0, 64);
+
+			return ((readbuffer[0] == sendbuffer[0]) && (readbuffer[1] == sendbuffer[1]));
+		}
+
+		bool flashWriteSector(ref byte[] sendbuffer, ref byte[] readbuffer, OpenGD77CommsTransferData dataObj)
+		{
+			dataObj.data_sector = -1;
+
+			sendbuffer[0] = (byte)'W';
+			sendbuffer[1] = 3;
+			_port.Write(sendbuffer, 0, 2);
+			while (_port.BytesToRead == 0)
+			{
+				Thread.Sleep(0);
+			}
+			_port.Read(readbuffer, 0, 64);
+
+			return ((readbuffer[0] == sendbuffer[0]) && (readbuffer[1] == sendbuffer[1]));
+		}
+
+		private void close_data_mode()
+		{
+			//data_mode = OpenGD77CommsTransferData.CommsDataMode.DataModeNone;
+		}
+
+		private void ReadFlashOrEEPROM(OpenGD77CommsTransferData dataObj)
+		{
+			int old_progress = 0;
+			byte[] sendbuffer = new byte[512];
+			byte[] readbuffer = new byte[512];
+			byte[] com_Buf = new byte[256];
+
+			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
+			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
+
+			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
+
+			while (size > 0)
+			{
+				if (size > 32)
+				{
+					size = 32;
+				}
+
+				sendbuffer[0] = (byte)'R';
+				sendbuffer[1] = (byte)dataObj.mode;
+				sendbuffer[2] = (byte)((currentDataAddressInTheRadio >> 24) & 0xFF);
+				sendbuffer[3] = (byte)((currentDataAddressInTheRadio >> 16) & 0xFF);
+				sendbuffer[4] = (byte)((currentDataAddressInTheRadio >> 8) & 0xFF);
+				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
+				sendbuffer[6] = (byte)((size >> 8) & 0xFF);
+				sendbuffer[7] = (byte)((size >> 0) & 0xFF);
+				_port.Write(sendbuffer, 0, 8);
+				while (_port.BytesToRead == 0)
+				{
+					Thread.Sleep(0);
+				}
+				_port.Read(readbuffer, 0, 64);
+
+				if (readbuffer[0] == 'R')
+				{
+					int len = (readbuffer[1] << 8) + (readbuffer[2] << 0);
+					for (int i = 0; i < len; i++)
+					{
+						dataObj.dataBuff[currentDataAddressInLocalBuffer++] = readbuffer[i + 3];
+					}
+
+					int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
+					if (old_progress != progress)
+					{
+						updateProgess(progress);
+						old_progress = progress;
+					}
+
+					currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
+				}
+				else
+				{
+					Console.WriteLine(String.Format("read stopped (error at {0:X8})", currentDataAddressInTheRadio));
+					close_data_mode();
+
+				}
+				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
+			}
+			close_data_mode();
+		}
+
+		private void WriteFlash(OpenGD77CommsTransferData dataObj)
+		{
+			int old_progress = 0;
+			byte[] sendbuffer = new byte[512];
+			byte[] readbuffer = new byte[512];
+			byte[] com_Buf = new byte[256];
+			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
+
+			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
+			dataObj.data_sector = -1;// Always needs to be initialised to -1 so the first flashWritePrepareSector is called
+
+			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
+			while (size > 0)
+			{
+				if (size > 32)
+				{
+					size = 32;
+				}
+
+				if (dataObj.data_sector == -1)
+				{
+					if (!flashWritePrepareSector(currentDataAddressInTheRadio, ref sendbuffer, ref readbuffer, dataObj))
+					{
+						close_data_mode();
+						break;
+					};
+				}
+
+				if (dataObj.mode != 0)
+				{
+					int len = 0;
+					for (int i = 0; i < size; i++)
+					{
+						sendbuffer[i + 8] = dataObj.dataBuff[currentDataAddressInLocalBuffer++];
+						len++;
+
+						if (dataObj.data_sector != ((currentDataAddressInTheRadio + len) / 4096))
+						{
+							break;
+						}
+					}
+					if (flashSendData(currentDataAddressInTheRadio, len, ref sendbuffer, ref readbuffer))
+					{
+						int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
+						if (old_progress != progress)
+						{
+							updateProgess(progress);
+							old_progress = progress;
+						}
+
+						currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
+
+						if (dataObj.data_sector != (currentDataAddressInTheRadio / 4096))
+						{
+							if (!flashWriteSector(ref sendbuffer, ref readbuffer, dataObj))
+							{
+								close_data_mode();
+								break;
+							};
+						}
+					}
+					else
+					{
+						close_data_mode();
+						break;
+					}
+				}
+				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
+			}
+
+			if (dataObj.data_sector != -1)
+			{
+				if (!flashWriteSector(ref sendbuffer, ref readbuffer, dataObj))
+				{
+					Console.WriteLine(String.Format("Error. Write stopped (write sector error at {0:X8})", currentDataAddressInTheRadio));
+				};
+			}
+
+			close_data_mode();
+		}
+
+		void updateProgess(int progressPercentage)
+		{
+			if (progressBar1.InvokeRequired)
+				progressBar1.Invoke(new MethodInvoker(delegate()
+				{
+					progressBar1.Value = progressPercentage;
+				}));
+			else
+			{
+				progressBar1.Value = progressPercentage;
+			}
+		}
+		#endregion
+
+		private void btnWriteToOpenGD77_Click(object sender, EventArgs e)
+		{
+			String gd77CommPort;
+
+			gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
+			if (gd77CommPort == null)
+			{
+				MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
+				this.Close();
+			}
+			else
+			{
+				try
+				{
+					_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
+					_port.ReadTimeout = 1000;
+					_port.Open();
+				}
+				catch (Exception)
+				{
+					_port = null;
+					MessageBox.Show("Failed to open comm port", "Error");
+				}
+			}
+
+
+			OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.NONE);
+			dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteFlash;
+
+			SIG_PATTERN_BYTES[3] = (byte)(0x4a + _stringLength + 4);
+
+			dataObj.dataBuff = GenerateUploadData();
+			dataObj.localDataBufferStartPosition = 0;
+			dataObj.startDataAddressInTheRadio = 0x30000;
+			dataObj.transferLength = (dataObj.dataBuff.Length / 32) * 32;
+			WriteFlash(dataObj);
+			progressBar1.Value = 0;
+			if (_port != null)
+			{
+				try
+				{
+					_port.Close();
+				}
+				catch (Exception)
+				{
+					MessageBox.Show("Failed to close OpenGD77 comm port", "Warning");
+				}
+			}
+
+		}
+
+
 	}
 }
 

@@ -132,6 +132,8 @@
       <DependentUpon>MultiNUDControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Extras\Calibration\PowerSettingData.cs" />
+    <Compile Include="Extras\OpenGD77\OpenGD77Comms.cs" />
+    <Compile Include="Extras\OpenGD77\OpenGD77CommsTransferData.cs" />
     <Compile Include="Extras\OpenGD77\OpenGD77Form.cs">
       <SubType>Form</SubType>
     </Compile>
