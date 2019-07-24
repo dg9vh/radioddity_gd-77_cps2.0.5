@@ -21,6 +21,8 @@ namespace DMR
 			public int data_sector = 0;
 			public byte[] dataBuff;
 
+			public int responseCode=0;
+
 			public OpenGD77CommsTransferData(CommsAction theAction)
 			{
 				action = theAction;
