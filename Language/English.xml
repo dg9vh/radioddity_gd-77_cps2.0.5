@@ -53,7 +53,7 @@
 		<Controls>
 			<Control Id="btnCopy" Text=">>" />
 			<Control Id="lblSquelch" Text="Squelch" />
-			<Control Id="lblSql" Text="Squelch Level" />
+			<Control Id="lblSql" Text="OpenGD77 Squelch Level" />
 			<Control Id="grpDigit" Text="Digital" />
 			<Control Id="lblTimingPreference" Text="Timing Leader Prefernce" />
 			<Control Id="lblRepeaterSlot" Text="Repeater Slot" />
@@ -617,7 +617,7 @@
 		<Controls>
 			<Control Id="btnCopy" Text=">>" />
 			<Control Id="lblSquelch" Text="Squelch" />
-			<Control Id="lblSql" Text="Squelch Level" />
+			<Control Id="lblSql" Text="OpenGD77 Squelch Level" />
 			<Control Id="grpDigit" Text="Digital" />
 			<Control Id="lblTimingPreference" Text="Timing Leader Prefernce" />
 			<Control Id="lblRepeaterSlot" Text="Repeater Slot" />

@@ -24,6 +24,8 @@ namespace DMR
 		private SaveFileDialog _saveFileDialog = new SaveFileDialog();
 		private OpenFileDialog _openFileDialog = new OpenFileDialog();
 
+		private const int MAX_TRANSFER_SIZE = 32;
+
 
 		public OpenGD77Form()
 		{
@@ -104,9 +106,9 @@ namespace DMR
 
 			while (size > 0)
 			{
-				if (size > 32)
+				if (size > MAX_TRANSFER_SIZE)
 				{
-					size = 32;
+					size = MAX_TRANSFER_SIZE;
 				}
 
 				sendbuffer[0] = (byte)'R';
@@ -168,9 +170,9 @@ namespace DMR
 			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
 			while (size > 0)
 			{
-				if (size > 32)
+				if (size > MAX_TRANSFER_SIZE)
 				{
-					size = 32;
+					size = MAX_TRANSFER_SIZE;
 				}
 
 				if (dataObj.data_sector == -1)
@@ -252,9 +254,9 @@ namespace DMR
 			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
 			while (size > 0)
 			{
-				if (size > 32)
+				if (size > MAX_TRANSFER_SIZE)
 				{
-					size = 32;
+					size = MAX_TRANSFER_SIZE;
 				}
 
 				if (dataObj.data_sector == -1)
@@ -379,9 +381,10 @@ namespace DMR
 						case OpenGD77CommsTransferData.CommsAction.READ_CODEPLUG:
 							MessageBox.Show("Read Codeplug complete");
 							MainForm.ByteToData(dataObj.dataBuff);
-
+							enableDisableAllButtons(true);
 							break;
 						case OpenGD77CommsTransferData.CommsAction.WRITE_CODEPLUG:
+							enableDisableAllButtons(true);
 							break;
 					}
 				}

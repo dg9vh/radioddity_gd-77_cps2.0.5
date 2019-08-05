@@ -1565,15 +1565,15 @@ namespace DMR
 			{
 				get
 				{
-					if (this.sql >= 0 && this.sql <= 9)
+					if (this.sql >= 0 && this.sql <= 21)
 					{
 						return this.sql;
 					}
-					return 5;
+					return 0;
 				}
 				set
 				{
-					if (value >= 0 && this.sql <= 9)
+					if (value >= 0 && this.sql <= 21)
 					{
 						this.sql = (byte)value;
 					}
@@ -2275,7 +2275,7 @@ namespace DMR
 		private const int MAX_SQL = 9;
 
 		public const string SZ_SQUELCH_NAME = "Squelch";
-
+		public const string SZ_SQUELCH_LEVEL_NAME = "SquelchLevel";
 		public const string SZ_VOICE_EMPHASIS_NAME = "VoiceEmphasis";
 
 		public const string SZ_STE_NAME = "Ste";
@@ -2335,6 +2335,8 @@ namespace DMR
 		private static readonly string[] SZ_BANDWIDTH;
 
 		private static readonly string[] SZ_SQUELCH;
+
+		private static readonly string[] SZ_SQUELCH_LEVEL;
 
 		private static readonly string[] SZ_VOICE_EMPHASIS;
 
@@ -2789,6 +2791,7 @@ namespace DMR
 			Settings.smethod_78("AdmitCriterica", ChannelForm.SZ_ADMIT_CRITERICA, name);
 			Settings.smethod_78("AdmitCritericaD", ChannelForm.SZ_ADMIT_CRITERICA_D, name);
 			Settings.smethod_78("Squelch", ChannelForm.SZ_SQUELCH, name);
+			Settings.smethod_78("SquelchLevel", ChannelForm.SZ_SQUELCH_LEVEL, name);
 			Settings.smethod_78("VoiceEmphasis", ChannelForm.SZ_VOICE_EMPHASIS, name);
 			Settings.smethod_78("Ste", ChannelForm.SZ_STE, name);
 			Settings.smethod_78("NonSte", ChannelForm.SZ_NON_STE, name);
@@ -2843,7 +2846,7 @@ namespace DMR
 			Settings.smethod_36(this.nudRssiThreshold, new Class13(80, 124, 1, -1m, 4));
 			Settings.smethod_37(this.cmbChBandwidth, ChannelForm.SZ_BANDWIDTH);
 			Settings.smethod_37(this.cmbSquelch, ChannelForm.SZ_SQUELCH);
-			Settings.smethod_41(this.cmbSql, 0, 9);
+			Settings.smethod_37(this.cmbSql, ChannelForm.SZ_SQUELCH_LEVEL);
 			Settings.smethod_37(this.cmbVoiceEmphasis, ChannelForm.SZ_VOICE_EMPHASIS);
 			Settings.smethod_37(this.cmbSte, ChannelForm.SZ_STE);
 			Settings.smethod_37(this.cmbNonSte, ChannelForm.SZ_NON_STE);
@@ -3939,7 +3942,7 @@ namespace DMR
 			this.cmbSql.Name = "cmbSql";
 			this.cmbSql.Size = new Size(119, 24);
 			this.cmbSql.TabIndex = 3;
-			this.cmbSql.Visible = false;
+			this.cmbSql.Visible = true;
 			this.cmbAdmitCriteria.DropDownStyle = ComboBoxStyle.DropDownList;
 			this.cmbAdmitCriteria.FormattingEnabled = true;
 			this.cmbAdmitCriteria.Location = new Point(909, 26);
@@ -3962,13 +3965,13 @@ namespace DMR
 			this.nudRssiThreshold.Size = new Size(120, 23);
 			this.nudRssiThreshold.TabIndex = 22;
 			this.nudRssiThreshold.Visible = false;
-			this.lblSql.Location = new Point(220, 113);
+			this.lblSql.Location = new Point(180, 113);
 			this.lblSql.Name = "lblSql";
-			this.lblSql.Size = new Size(134, 24);
+			this.lblSql.Size = new Size(174, 24);
 			this.lblSql.TabIndex = 2;
-			this.lblSql.Text = "Squelch Level";
+			this.lblSql.Text = "OpenGD77 Squelch Level";
 			this.lblSql.TextAlign = ContentAlignment.MiddleRight;
-			this.lblSql.Visible = false;
+			this.lblSql.Visible = true;
 			this.grpDigit.method_3(true);
 			this.grpDigit.Controls.Add(this.nudTxColor);
 			this.grpDigit.Controls.Add(this.nudRxColor);
@@ -4664,6 +4667,35 @@ namespace DMR
 				"Tight",
 				"Normal"
 			};
+
+			ChannelForm.SZ_SQUELCH_LEVEL = new string[]
+			{
+				"Disabled",
+				"Open",
+				"5%",
+				"10%",
+				"15%",
+				"20%",
+				"25%",
+				"30%",
+				"35%",
+				"40%",
+				"45%",
+				"50%",
+				"55%",
+				"60%",
+				"65%",
+				"70%",
+				"75%",
+				"80%",
+				"85%",
+				"90%",
+				"95%",
+				"Closed"
+			};
+
+
+
 			ChannelForm.SZ_VOICE_EMPHASIS = new string[4]
 			{
 				"None",

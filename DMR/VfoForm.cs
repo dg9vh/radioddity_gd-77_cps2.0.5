@@ -1351,15 +1351,15 @@ namespace DMR
 			{
 				get
 				{
-					if (this.sql >= 0 && this.sql <= 9)
+					if (this.sql >= 0 && this.sql <= 21)
 					{
 						return this.sql;
 					}
-					return 5;
+					return 0;
 				}
 				set
 				{
-					if (value >= 0 && this.sql <= 9)
+					if (value >= 0 && this.sql <= 21)
 					{
 						this.sql = (byte)value;
 					}
@@ -1702,143 +1702,73 @@ namespace DMR
 		}
 
 		public const int CNT_VFO_CH = 2;
-
 		public const int LEN_CH_NAME = 16;
-
 		public const string SZ_CH_MODE_NAME = "ChMode";
-
 		private const int LEN_FREQ = 9;
-
 		private const int SCL_FREQ = 100000;
-
 		public const string SZ_REF_FREQ_NAME = "RefFreq";
-
 		public const string SZ_POWER_NAME = "Power";
-
 		private const string SZ_INFINITE = "无穷";
-
 		private const int MIN_TOT = 0;
-
 		private const int MAX_TOT = 33;
-
 		private const int INC_TOT = 1;
-
 		private const int SCL_TOT = 15;
-
 		private const int LEN_TOT = 3;
-
 		private const int MIN_TOT_REKEY = 0;
-
 		private const int MAX_TOT_REKEY = 255;
-
 		private const int INC_TOT_REKEY = 1;
-
 		private const int SCL_TOT_REKEY = 1;
-
 		private const int LEN_TOT_REKEY = 3;
-
 		public const string SZ_ADMIT_CRITERICA_NAME = "AdmitCriterica";
-
 		public const string SZ_ADMIT_CRITERICA_D_NAME = "AdmitCritericaD";
-
 		private const int MIN_RSSI_THRESHOLD = 80;
-
 		private const int MAX_RSSI_THRESHOLD = 124;
-
 		private const int INC_RSSI_THRESHOLD = 1;
-
 		private const int SCL_RSSI_THRESHOLD = -1;
-
 		private const int LEN_RSSI_THRESHOLD = 4;
-
-		private const int MIN_SQL = 0;
-
-		private const int MAX_SQL = 9;
-
 		public const string SZ_SQUELCH_NAME = "Squelch";
-
+		public const string SZ_SQUELCH_LEVEL_NAME = "SquelchLevel";
 		public const string SZ_VOICE_EMPHASIS_NAME = "VoiceEmphasis";
-
 		public const string SZ_STE_NAME = "Ste";
-
 		public const string SZ_NON_STE_NAME = "NonSte";
-
 		public const string SZ_SIGNALING_SYSTEM_NAME = "SignalingSystem";
-
 		public const string SZ_UNMUTE_RULE_NAME = "UnmuteRule";
-
 		public const string SZ_PTTID_TYPE_NAME = "PttidType";
-
 		public const string SZ_ARTS_NAME = "Arts";
-
 		private const int MIN_COLOR_CODE = 0;
-
 		private const int MAX_COLOR_CODE_DUAL_CAPACITY = 14;
-
 		private const int MAX_COLOR_CODE = 15;
-
 		private const int INC_COLOR_CODE = 1;
-
 		private const int SCL_COLOR_CODE = 1;
-
 		private const int LEN_COLOR_CODE = 2;
-
 		private const int MIN_ARTS_INTERVAL = 22;
-
 		private const int MAX_ARTS_INTERVAL = 55;
-
 		private const int INC_ARTS_INTERVAL = 1;
-
 		private const int SCL_ARTS_INTERVAL = 1;
-
 		private const int LEN_ARTS_INTERVAL = 2;
-
 		public const string SZ_TIMING_PREFERENCE_NAME = "TimingPreference";
-
 		public const string SZ_ARS_NAME = "Ars";
-
 		public const string SZ_KEY_SWITCH_NAME = "KeySwitch";
-
 		public const string SZ_OFFSET_DIRECTION_NAME = "OffsetDirection";
-
 		private const int INC_OFFSET_FREQ = 1;
-
 		public  static decimal SCL_OFFSET_FREQ = 0.01m;
-
 		private const int LEN_OFFSET_FREQ = 6;
-
 		private const int MIN_OFFSET_FREQ = 1;
-
 		private const int MAX_OFFSET_FREQ = 38400;
-
 		private const int DEF_OFFSET_FREQ = 1000;
-
 		private const int SCL_OFFSET_FREQ_MHZ = 1000;
-
 		//private IContainer components;
-
 		private CheckBox chkEnhancedChAccess;
-
 		private CheckBox chkEmgConfirmed;
-
 		private CheckBox chkDataCall;
-
 		private CheckBox chkPrivateCall;
-
 		private CheckBox chkTxInteruptFreq;
-
 		private CheckBox chkAllowTxInterupt;
-
 		private Label lblContact;
-
 		private CustomCombo cmbContact;
-
 		private Label lblEmgSystem;
-
 		private CustomCombo cmbEmgSystem;
-
 		private Label lblTxColor;
-
 		private Label lblRxGroup;
 
 		private CustomCombo cmbRxGroup;
@@ -2046,6 +1976,7 @@ namespace DMR
 		private static readonly string[] SZ_BANDWIDTH;
 
 		private static readonly string[] SZ_SQUELCH;
+		private static readonly string[] SZ_SQUELCH_LEVEL;
 
 		private static readonly string[] SZ_VOICE_EMPHASIS;
 
@@ -2392,7 +2323,7 @@ namespace DMR
 			this.cmbSql.Name = "cmbSql";
 			this.cmbSql.Size = new Size(120, 20);
 			this.cmbSql.TabIndex = 3;
-			this.cmbSql.Visible = false;
+			this.cmbSql.Visible = true;
 			this.cmbAdmitCriteria.DropDownStyle = ComboBoxStyle.DropDownList;
 			this.cmbAdmitCriteria.FormattingEnabled = true;
 			this.cmbAdmitCriteria.Location = new Point(900, 26);
@@ -2415,13 +2346,13 @@ namespace DMR
 			this.nudRssiThreshold.Size = new Size(120, 21);
 			this.nudRssiThreshold.TabIndex = 22;
 			this.nudRssiThreshold.Visible = false;
-			this.lblSql.Location = new Point(245, 117);
+			this.lblSql.Location = new Point(180, 117);
 			this.lblSql.Name = "lblSql";
-			this.lblSql.Size = new Size(113, 20);
+			this.lblSql.Size = new Size(180, 20);
 			this.lblSql.TabIndex = 2;
 			this.lblSql.Text = "Squelch Level";
 			this.lblSql.TextAlign = ContentAlignment.MiddleRight;
-			this.lblSql.Visible = false;
+			this.lblSql.Visible = true;
 			this.grpDigit.method_3(true);
 			this.grpDigit.Controls.Add(this.nudTxColor);
 			this.grpDigit.Controls.Add(this.nudRxColor);
@@ -3266,7 +3197,7 @@ namespace DMR
 			Settings.smethod_36(this.nudRssiThreshold, new Class13(80, 124, 1, -1m, 4));
 			Settings.smethod_37(this.cmbChBandwidth, VfoForm.SZ_BANDWIDTH);
 			Settings.smethod_37(this.cmbSquelch, VfoForm.SZ_SQUELCH);
-			Settings.smethod_41(this.cmbSql, 0, 9);
+			Settings.smethod_37(this.cmbSql, VfoForm.SZ_SQUELCH_LEVEL);
 			Settings.smethod_37(this.cmbVoiceEmphasis, VfoForm.SZ_VOICE_EMPHASIS);
 			Settings.smethod_37(this.cmbSte, VfoForm.SZ_STE);
 			Settings.smethod_37(this.cmbNonSte, VfoForm.SZ_NON_STE);
@@ -3314,6 +3245,7 @@ namespace DMR
 			Settings.smethod_78("AdmitCriterica", VfoForm.SZ_ADMIT_CRITERICA, name);
 			Settings.smethod_78("AdmitCritericaD", VfoForm.SZ_ADMIT_CRITERICA_D, name);
 			Settings.smethod_78("Squelch", VfoForm.SZ_SQUELCH, name);
+			Settings.smethod_78("SquelchLevel", VfoForm.SZ_SQUELCH_LEVEL, name);
 			Settings.smethod_78("VoiceEmphasis", VfoForm.SZ_VOICE_EMPHASIS, name);
 			Settings.smethod_78("Ste", VfoForm.SZ_STE, name);
 			Settings.smethod_78("NonSte", VfoForm.SZ_NON_STE, name);
@@ -3949,6 +3881,31 @@ namespace DMR
 			{
 				"Tight",
 				"Normal"
+			};
+			VfoForm.SZ_SQUELCH_LEVEL = new string[]
+			{
+				"Disabled",
+				"Open",
+				"5%",
+				"10%",
+				"15%",
+				"20%",
+				"25%",
+				"30%",
+				"35%",
+				"40%",
+				"45%",
+				"50%",
+				"55%",
+				"60%",
+				"65%",
+				"70%",
+				"75%",
+				"80%",
+				"85%",
+				"90%",
+				"95%",
+				"Closed"
 			};
 			VfoForm.SZ_VOICE_EMPHASIS = new string[4]
 			{
