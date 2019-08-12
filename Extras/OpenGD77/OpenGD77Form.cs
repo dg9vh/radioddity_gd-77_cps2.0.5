@@ -32,6 +32,41 @@ namespace DMR
 			InitializeComponent();
 		}
 
+		bool sendCommand(int commandNumber, int x_or_command_option_number = 0, int y = 0, int iSize = 0, int alignment = 0, int isInverted = 0, string message = "")
+		{
+			byte[] buffer=new byte[64]; 
+			buffer[0] = (byte)'C';
+			buffer[1] = (byte)commandNumber;
+
+			switch(commandNumber)
+			{
+				case 2:
+					buffer[3] = (byte)y;
+					buffer[4] = (byte)iSize;
+					buffer[5] = (byte) alignment;
+					buffer[6] = (byte) isInverted;
+					Buffer.BlockCopy(Encoding.ASCII.GetBytes(message), 0, buffer, 7, Math.Min(message.Length,16));// copy the string into bytes 7 onwards
+					break;
+				case 6:
+					// Special command
+					buffer[2] = (byte)x_or_command_option_number;
+					break;
+				default:
+
+					break;
+
+			}
+			_port.Write(buffer, 0, 32);
+			while (_port.BytesToRead == 0)
+			{
+				Thread.Sleep(0);
+			}
+			_port.Read(buffer, 0, 64);
+
+			return ((buffer[1] == commandNumber));
+		}
+
+
 		bool flashWritePrepareSector(int address, ref byte[] sendbuffer, ref byte[] readbuffer,OpenGD77CommsTransferData dataObj)
 		{
 			dataObj.data_sector = address / 4096;
@@ -401,11 +436,24 @@ namespace DMR
 			OpenGD77CommsTransferData dataObj = e.Argument as OpenGD77CommsTransferData;
 			const int CODEPLUG_FLASH_PART_END	= 0x1EE60;
 			const int CODEPLUG_FLASH_PART_START = 0xB000;
+			if (_port == null)
+			{
+				return;
+			}
 			try
 			{
 				switch (dataObj.action)
 				{
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_FLASH:
+						_port.Open();
+						sendCommand(0);
+						sendCommand(1);
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
+						sendCommand(2, 0, 16, 3, 1, 0, "Backup");
+						sendCommand(2, 0, 32, 3, 1, 0, "Flash");
+						sendCommand(3);
+						sendCommand(6,3);// flash green LED
+
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadFlash;
 						dataObj.dataBuff = new Byte[1024 * 1024];
 						dataObj.localDataBufferStartPosition = 0;
@@ -421,8 +469,19 @@ namespace DMR
 						{
 							displayMessage("");
 						}
+						sendCommand(5);
+						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_EEPROM:
+						_port.Open();
+						sendCommand(0);
+						sendCommand(1);
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
+						sendCommand(2, 0, 16, 3, 1, 0, "Backup");
+						sendCommand(2, 0, 32, 3, 1, 0, "EEPROM");
+						sendCommand(3);
+						sendCommand(6,3);// flash green LED
+
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadEEPROM;
 						dataObj.dataBuff = new Byte[64 * 1024];
 
@@ -439,9 +498,20 @@ namespace DMR
 						{
 							displayMessage("");
 						}
+						sendCommand(5);
+						_port.Close();
 						break;
 
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_FLASH:
+						_port.Open();
+						sendCommand(0);
+						sendCommand(1);
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
+						sendCommand(2, 0, 16, 3, 1, 0, "Restoring");
+						sendCommand(2, 0, 32, 3, 1, 0, "Flash");
+						sendCommand(3);
+						sendCommand(6,4);// flash red LED
+
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteFlash;
 						dataObj.localDataBufferStartPosition = 0;
 						dataObj.startDataAddressInTheRadio = 0;
@@ -457,8 +527,19 @@ namespace DMR
 							displayMessage("Error while restoring");
 							dataObj.responseCode = 1;
 						}
+						sendCommand(5);
+						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_EEPROM:
+						_port.Open();
+						sendCommand(0);
+						sendCommand(1);
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
+						sendCommand(2, 0, 16, 3, 1, 0, "Restoring");
+						sendCommand(2, 0, 32, 3, 1, 0, "EEPROM");
+						sendCommand(3);
+						sendCommand(6,4);// flash red LED
+
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteEEPROM;
 						dataObj.localDataBufferStartPosition = 0;
 						dataObj.startDataAddressInTheRadio = 0;
@@ -474,14 +555,24 @@ namespace DMR
 							displayMessage("Error while restoring");
 							dataObj.responseCode = 1;
 						}
-
+						sendCommand(5);
+						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.READ_CODEPLUG:
+						_port.Open();
+						sendCommand(0);
+						sendCommand(1);
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
+						sendCommand(2, 0, 16, 3, 1, 0, "Reading");
+						sendCommand(2, 0, 32, 3, 1, 0, "Codeplug");
+						sendCommand(3);
+						sendCommand(6,3);// flash green LED
+
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadEEPROM;
 						dataObj.localDataBufferStartPosition = 0x00E0;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength =  0x6000 - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Reading EEPROM 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
+						displayMessage(String.Format("Reading EEPROM 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
 
 						if (!ReadFlashOrEEPROM(dataObj))
 						{
@@ -494,7 +585,7 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0x7500;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength = 0xB000 - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Reading EEPROM 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
+						displayMessage(String.Format("Reading EEPROM 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
 						if (!ReadFlashOrEEPROM(dataObj))
 						{
 							displayMessage("Error while reading");
@@ -506,7 +597,8 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = CODEPLUG_FLASH_PART_START;
 						dataObj.startDataAddressInTheRadio = 0x7b000;
 						dataObj.transferLength = CODEPLUG_FLASH_PART_END - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Reading Flash 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+						displayMessage(String.Format("Reading Flash 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+
 						if (!ReadFlashOrEEPROM(dataObj))
 						{
 							displayMessage("Error while reading");
@@ -517,14 +609,25 @@ namespace DMR
 						{
 							displayMessage("Codeplug read complete");
 						}
+						sendCommand(5);
+						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.WRITE_CODEPLUG:
+						_port.Open();
+						sendCommand(0);
+						sendCommand(1);
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
+						sendCommand(2, 0, 16, 3, 1, 0, "Writing");
+						sendCommand(2, 0, 32, 3, 1, 0, "Codeplug");
+						sendCommand(3);
+						sendCommand(6,4);// flash red LED
+
 						dataObj.dataBuff = MainForm.DataToByte();
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteEEPROM;
 						dataObj.localDataBufferStartPosition = 0x00E0;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength =  0x6000 - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Writing EEPROM 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+						displayMessage(String.Format("Writing EEPROM 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 
 						if (!WriteEEPROM(dataObj))
 						{
@@ -537,7 +640,7 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0x7500;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength = 0xB000 - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Writing EEPROM 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+						displayMessage(String.Format("Writing EEPROM 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 						if (!WriteEEPROM(dataObj))
 						{
 							displayMessage("Error while writing");
@@ -549,7 +652,8 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = CODEPLUG_FLASH_PART_START;
 						dataObj.startDataAddressInTheRadio = 0x7b000;
 						dataObj.transferLength = CODEPLUG_FLASH_PART_END - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Writing Flash 0x{0:X6} to  0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+						displayMessage(String.Format("Writing Flash 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+
 
 						if (!WriteFlash(dataObj))
 						{
@@ -561,6 +665,8 @@ namespace DMR
 						{
 							displayMessage("Codeplug write complete");
 						}
+						sendCommand(6, 1);// Reload VFO from settings and reboot
+						_port.Close();
 						break;
 
 				}
@@ -723,7 +829,7 @@ namespace DMR
 				{
 					_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
 					_port.ReadTimeout = 1000;
-					_port.Open();
+					//_port.Open();// port will get opened for each transfer
 				}
 				catch (Exception)
 				{
@@ -740,7 +846,6 @@ namespace DMR
 			{
 				try
 				{
-					_port.Close();
 					_port = null;
 				}
 				catch (Exception)

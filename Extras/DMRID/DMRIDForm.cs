@@ -650,6 +650,41 @@ namespace DMR
 		}
 		#endregion
 
+		bool sendCommand(int commandNumber, int x_or_command_option_number = 0, int y = 0, int iSize = 0, int alignment = 0, int isInverted = 0, string message = "")
+		{
+			byte[] buffer = new byte[64];
+			buffer[0] = (byte)'C';
+			buffer[1] = (byte)commandNumber;
+
+			switch (commandNumber)
+			{
+				case 2:
+					buffer[3] = (byte)y;
+					buffer[4] = (byte)iSize;
+					buffer[5] = (byte)alignment;
+					buffer[6] = (byte)isInverted;
+					Buffer.BlockCopy(Encoding.ASCII.GetBytes(message), 0, buffer, 7, Math.Min(message.Length, 16));// copy the string into bytes 7 onwards
+					break;
+				case 6:
+					// Special command
+					buffer[2] = (byte)x_or_command_option_number;
+					break;
+				default:
+
+					break;
+
+			}
+			_port.Write(buffer, 0, 32);
+			while (_port.BytesToRead == 0)
+			{
+				Thread.Sleep(0);
+			}
+			_port.Read(buffer, 0, 64);
+
+			return ((buffer[1] == commandNumber));
+		}
+
+
 		private void btnWriteToOpenGD77_Click(object sender, EventArgs e)
 		{
 			String gd77CommPort;
@@ -672,8 +707,18 @@ namespace DMR
 				{
 					_port = null;
 					MessageBox.Show("Failed to open comm port", "Error");
+					return;
 				}
 			}
+
+			sendCommand(0);
+			sendCommand(1);
+			sendCommand(2, 0, 0, 3, 1, 0, "CPS");
+			sendCommand(2, 0, 16, 3, 1, 0, "Writing");
+			sendCommand(2, 0, 32, 3, 1, 0, "DMRID");
+			sendCommand(2, 0, 48, 3, 1, 0, "Database");
+			sendCommand(3);
+			sendCommand(6, 4);// flash red LED
 
 
 			OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.NONE);
@@ -687,6 +732,7 @@ namespace DMR
 			dataObj.transferLength = (dataObj.dataBuff.Length / 32) * 32;
 			WriteFlash(dataObj);
 			progressBar1.Value = 0;
+			sendCommand(5);
 			if (_port != null)
 			{
 				try
