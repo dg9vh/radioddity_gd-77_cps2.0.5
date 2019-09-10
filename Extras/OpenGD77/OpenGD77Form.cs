@@ -748,7 +748,9 @@ namespace DMR
 					if (dataObj.dataBuff.Length == (64 * 1024))
 					{
 						byte []signature = {0x00 ,0x00 ,0x00 ,0x01 ,0x56 ,0x33 ,0x2E ,0x30 ,0x31};
-						if (arrayCompare(dataObj.dataBuff, signature))
+
+						// Disable signature test
+						if (arrayCompare(dataObj.dataBuff, signature) || true)
 						{
 							MessageBox.Show("Please set your radio into FM mode\nDo not press any buttons on the radio while the EEPROM is being restored");
 							enableDisableAllButtons(false);
