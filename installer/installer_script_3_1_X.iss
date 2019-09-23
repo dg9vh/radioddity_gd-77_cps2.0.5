@@ -22,8 +22,8 @@ CreateAppDir=yes
 DisableProgramGroupPage=yes
 OutputDir=..\installer
 OutputBaseFilename=RadioddityGD77CPS31XCommunityEditionInstaller
-Compression=zip
-SolidCompression=yes  
+Compression=lzma
+SolidCompression=no  
 UsePreviousAppDir=no
 UsePreviousSetupType=no
 
@@ -67,7 +67,7 @@ Source: "..\Language\Spanish.chm"; DestDir: "{app}\Language"; Flags: ignoreversi
 Source: "..\Language\Ukrainian.xml"; DestDir: "{app}\Language"; Flags: ignoreversion
 Source: "..\Language\Ukrainian.chm"; DestDir: "{app}\Language"; Flags: ignoreversion
 
-;Source: "..\OpenGD77CommDriver\OpenGD77_comm_driver.zip"; DestDir: "{commondesktop}\OpenGD77CommDriver"; Flags: ignoreversion
+Source: "..\OpenGD77CommDriver\wdi-simple.exe"; DestDir: "{%TEMP}\OpenGD77CommDriver"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -76,5 +76,5 @@ Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-;Filename: "{%TEMP}\OpenGD77CommDriver\wdi-simple.exe"; Parameters: --vid 0x01FC9 --pid 0x0094 --type 3 --name OpenGD77; Description: "Install OpenGD77 Comm port driver"; Flags: runascurrentuser  nowait postinstall skipifsilent
+Filename: "{%TEMP}\OpenGD77CommDriver\wdi-simple.exe"; Parameters: --vid 0x01FC9 --pid 0x0094 --type 3 --name OpenGD77; Description: "Install OpenGD77 Comm port driver"; Flags: runascurrentuser  nowait postinstall skipifsilent
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
