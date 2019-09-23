@@ -67,7 +67,7 @@ Source: "..\Language\Spanish.chm"; DestDir: "{app}\Language"; Flags: ignoreversi
 Source: "..\Language\Ukrainian.xml"; DestDir: "{app}\Language"; Flags: ignoreversion
 Source: "..\Language\Ukrainian.chm"; DestDir: "{app}\Language"; Flags: ignoreversion
 
-Source: "..\OpenGD77CommDriver\OpenGD77_comm_driver.zip"; DestDir: "{commondesktop}\OpenGD77CommDriver"; Flags: ignoreversion
+;Source: "..\OpenGD77CommDriver\OpenGD77_comm_driver.zip"; DestDir: "{commondesktop}\OpenGD77CommDriver"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
