@@ -22,8 +22,8 @@ CreateAppDir=yes
 DisableProgramGroupPage=yes
 OutputDir=..\installer
 OutputBaseFilename=RadioddityGD77CPS31XCommunityEditionInstaller
-Compression=none
-SolidCompression=no  
+Compression=lzma/ultra 
+SolidCompression=yes  
 UsePreviousAppDir=no
 UsePreviousSetupType=no
 
