@@ -69,7 +69,6 @@ Source: "..\Language\Ukrainian.chm"; DestDir: "{app}\Language"; Flags: ignorever
 
 Source: "..\OpenGD77CommDriver\wdi-simple.exe"; DestDir: "{%TEMP}\OpenGD77CommDriver"; Flags: ignoreversion
 
-
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
