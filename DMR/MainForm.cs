@@ -3054,54 +3054,78 @@ namespace DMR
 			}
 		}
 
-
-
-
+		private void openGD77Form()
+		{
+			String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
+			if (gd77CommPort == null)
+			{
+				MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
+			}
+			else
+			{
+				this.closeAllForms();
+				OpenGD77Form cf = new OpenGD77Form();
+				cf.StartPosition = FormStartPosition.CenterParent;
+				cf.ShowDialog();
+				InitTree();
+			}
+		}
 		private void tsmiOpenGD77_Click(object sender, EventArgs e)
 		{
-			this.closeAllForms();
-			OpenGD77Form cf = new OpenGD77Form();
-			cf.StartPosition = FormStartPosition.CenterParent;
-			cf.ShowDialog();
-			InitTree();
+			openGD77Form();
 		}
 
 		private void tsbtnRead_Click(object sender, EventArgs e)
 		{
-            DialogResult result = MessageBox.Show(Settings.dicCommon["codePlugReadConfirm"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo);
-            if (result == DialogResult.Yes)
-            {
-                this.closeAllForms();
-                CommPrgForm commPrgForm = new CommPrgForm(false);
-                commPrgForm.StartPosition = FormStartPosition.CenterParent;
-                //commPrgForm.IsRead = true;
-				CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.codeplugRead;
-                commPrgForm.ShowDialog();
-                if (commPrgForm.IsSucess)
-                {
-                    this.InitTree();
-                }
-            }
+
+			if (SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77") != null)
+			{
+				openGD77Form();
+			}
+			else
+			{
+				DialogResult result = MessageBox.Show(Settings.dicCommon["codePlugReadConfirm"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo);
+				if (result == DialogResult.Yes)
+				{
+					this.closeAllForms();
+					CommPrgForm commPrgForm = new CommPrgForm(false);
+					commPrgForm.StartPosition = FormStartPosition.CenterParent;
+					//commPrgForm.IsRead = true;
+					CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.codeplugRead;
+					commPrgForm.ShowDialog();
+					if (commPrgForm.IsSucess)
+					{
+						this.InitTree();
+					}
+				}
+			}
 		}
 
 		private void tsbtnWrite_Click(object sender, EventArgs e)
 		{
-            DialogResult result = MessageBox.Show(Settings.dicCommon["codePlugWriteConfirm"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo);
-            if (result == DialogResult.Yes)
-            {
-                if (base.ActiveMdiChild != null)
-                {
-                    base.ActiveMdiChild.ValidateChildren();
-                }
-                GeneralSetForm.data.KillState = 0;
-                this.method_3();
-				CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.codeplugWrite;
-                CommPrgForm commPrgForm = new CommPrgForm(false);
-                commPrgForm.StartPosition = FormStartPosition.CenterParent;
-                //commPrgForm.IsRead = false;
+			if (SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77") != null)
+			{
+				openGD77Form();
+			}
+			else
+			{
+				DialogResult result = MessageBox.Show(Settings.dicCommon["codePlugWriteConfirm"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo);
+				if (result == DialogResult.Yes)
+				{
+					if (base.ActiveMdiChild != null)
+					{
+						base.ActiveMdiChild.ValidateChildren();
+					}
+					GeneralSetForm.data.KillState = 0;
+					this.method_3();
+					CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.codeplugWrite;
+					CommPrgForm commPrgForm = new CommPrgForm(false);
+					commPrgForm.StartPosition = FormStartPosition.CenterParent;
+					//commPrgForm.IsRead = false;
 
-                commPrgForm.ShowDialog();
-            }
+					commPrgForm.ShowDialog();
+				}
+			}
 		}
 
 		/* Roger Clark. 

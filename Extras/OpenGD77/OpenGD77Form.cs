@@ -817,16 +817,17 @@ namespace DMR
 
 		private void OpenGD77Form_Load(object sender, EventArgs e)
 		{
-			String gd77CommPort;
+			/* Checking is now down before the form is opened
 
-			gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
 			if (gd77CommPort == null)
 			{
 				MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
 				this.Close();
 			}
 			else
+			 */
 			{
+				String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
 				try
 				{
 					_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
