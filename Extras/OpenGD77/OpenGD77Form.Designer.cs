@@ -150,6 +150,7 @@
 			this.Controls.Add(this.btnWriteCodeplug);
 			this.Controls.Add(this.btnReadCodeplug);
 			this.Controls.Add(this.btnBackupEEPROM);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "OpenGD77Form";
 			this.Text = "OpenGD77 Support";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OpenGD77Form_FormClosed);
