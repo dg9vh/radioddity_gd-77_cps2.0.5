@@ -128,13 +128,13 @@ namespace DMR
 			}
 			else
 			{
-				if (comparePart.DMRId < DMRId)
+				if (comparePart.AgeAsInt < AgeAsInt)
 				{
 					return 1;
 				}
 				else
 				{
-					if (comparePart.DMRId > DMRId)
+					if (comparePart.AgeAsInt > AgeAsInt)
 					{
 						return -1;
 					}
@@ -162,6 +162,11 @@ namespace DMR
 		{
 			//Get hash code for the Name field if it is not null. 
 			return DMRId;
+		}
+
+		public object GetValue()
+		{
+			return AgeAsInt;
 		}
 	}
 }
