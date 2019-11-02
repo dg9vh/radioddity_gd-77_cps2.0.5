@@ -271,9 +271,8 @@ namespace DMR
 
 		public ScanBasicForm()
 		{
-			
-			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

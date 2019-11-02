@@ -359,6 +359,7 @@ namespace DMR
 		{
 			this.Load += new EventHandler(this.ContactsForm_Load);
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

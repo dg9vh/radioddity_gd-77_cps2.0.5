@@ -23,6 +23,7 @@ namespace DMR
 		public DownloadContactsForm()
 		{
 			InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			if (int.Parse(GeneralSetForm.data.RadioId) / 10000 > 0)
 			{
 				this.txtIDStart.Text = (int.Parse(GeneralSetForm.data.RadioId) / 10000).ToString();

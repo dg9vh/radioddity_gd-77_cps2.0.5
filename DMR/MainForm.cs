@@ -397,7 +397,7 @@ namespace DMR
 			this.imgMain.Images.SetKeyName(0, "46.png");
 			this.imgMain.Images.SetKeyName(1, "47.png");
 			this.imgMain.Images.SetKeyName(2, "21.png");
-            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
+
 
             this.mnsMain.Items.AddRange(new ToolStripItem[8]
 			{
@@ -1019,7 +1019,7 @@ namespace DMR
 			this.tsbtnAbout.Text = "About";
 			this.tsbtnAbout.Click += this.tsbtnAbout_Click;
 			base.AutoScaleDimensions = new SizeF(7f, 16f);
-			base.AutoScaleMode = AutoScaleMode.Font;
+
 			base.ClientSize = new Size(1099, 709);
 			base.Controls.Add(this.dockPanel);
 			base.Controls.Add(this.tsrMain);
@@ -1082,6 +1082,7 @@ namespace DMR
 			this.lstTreeNodeItem = new List<TreeNodeItem>();
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			this._TextBox = new TextBox();
 			this._TextBox.Visible = false;
 			this._TextBox.LostFocus += this._TextBox_LostFocus;

@@ -1077,9 +1077,8 @@ namespace DMR
 
 		public EmergencyForm()
 		{
-			
-			//base._002Ector();
 			this.method_0();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

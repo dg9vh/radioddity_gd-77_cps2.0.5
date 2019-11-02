@@ -21,6 +21,7 @@ namespace DMR
 			
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 
@@ -103,6 +104,7 @@ namespace DMR
 			this.Controls.Add(this.lblTranslationCredit);
 			this.Controls.Add(this.lblVersion);
 			this.Font = new System.Drawing.Font("Arial", 10F);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.Name = "AboutForm";
 			this.Text = "About";

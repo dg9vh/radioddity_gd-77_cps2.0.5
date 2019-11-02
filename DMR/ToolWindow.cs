@@ -7,14 +7,9 @@ namespace DMR
 {
 	public class ToolWindow : DockContent
 	{
-		//private IContainer components;
-
 		public ToolWindow()
 		{
-			
-			//base._002Ector();
 			this.InitializeComponent();
-			//			base.AutoScaleMode = AutoScaleMode.Font;
 			base.ClientSize = new Size(292, 246);
 			base.DockAreas = (DockAreas.Float | DockAreas.DockLeft | DockAreas.DockRight | DockAreas.DockTop | DockAreas.DockBottom);
 			base.Scale(Settings.smethod_6());
@@ -22,11 +17,6 @@ namespace DMR
 
 		protected override void Dispose(bool disposing)
 		{
-            /*
-			if (disposing && this.components != null)
-			{
-				this.components.Dispose();
-			}*/
 			base.Dispose(disposing);
 		}
 

@@ -22,6 +22,7 @@ namespace DMR
 		public CalibrationForm()
 		{
 			InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			// Need to setup the VHF and UHF data storage class first, as its used when initialising the components
 			int calibrationDataSize = Marshal.SizeOf(typeof(CalibrationData));
 			byte[] array = new byte[calibrationDataSize];

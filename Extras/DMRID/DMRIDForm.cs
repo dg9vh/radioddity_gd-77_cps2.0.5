@@ -46,6 +46,7 @@ namespace DMR
 		{
 			SIG_PATTERN_BYTES = new byte[] { 0x49, 0x44, 0x2D, 0x56, 0x30, 0x30, 0x31, 0x00 };
 			InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			groupBox1.Visible = false; // This is redundant. So hide it until I have time to remove it.
 			cmbStringLen.Visible = false;
 			lblEnhancedLength.Visible = false;
