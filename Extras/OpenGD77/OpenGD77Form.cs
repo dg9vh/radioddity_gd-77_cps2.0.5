@@ -25,10 +25,12 @@ namespace DMR
 		private OpenFileDialog _openFileDialog = new OpenFileDialog();
 
 		private const int MAX_TRANSFER_SIZE = 32;
+		private OpenGD77Form.CommsAction _initialAction;
 
 
-		public OpenGD77Form()
+		public OpenGD77Form(OpenGD77Form.CommsAction initAction)
 		{
+			_initialAction = initAction;
 			InitializeComponent();
 		}
 
@@ -417,9 +419,17 @@ namespace DMR
 							MessageBox.Show("Read Codeplug complete");
 							MainForm.ByteToData(dataObj.dataBuff);
 							enableDisableAllButtons(true);
+							if (_initialAction == CommsAction.READ_CODEPLUG)
+							{
+								this.Close();
+							}
 							break;
 						case OpenGD77CommsTransferData.CommsAction.WRITE_CODEPLUG:
 							enableDisableAllButtons(true);
+							if (_initialAction == CommsAction.WRITE_CODEPLUG)
+							{
+								this.Close();
+							}
 							break;
 					}
 				}
@@ -572,7 +582,7 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0x00E0;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength =  0x6000 - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Reading EEPROM 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
+						displayMessage(String.Format("Reading EEPROM 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
 
 						if (!ReadFlashOrEEPROM(dataObj))
 						{
@@ -585,7 +595,7 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0x7500;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength = 0xB000 - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Reading EEPROM 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
+						displayMessage(String.Format("Reading EEPROM 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
 						if (!ReadFlashOrEEPROM(dataObj))
 						{
 							displayMessage("Error while reading");
@@ -597,7 +607,7 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = CODEPLUG_FLASH_PART_START;
 						dataObj.startDataAddressInTheRadio = 0x7b000;
 						dataObj.transferLength = CODEPLUG_FLASH_PART_END - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Reading Flash 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+						displayMessage(String.Format("Reading Flash 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 
 						if (!ReadFlashOrEEPROM(dataObj))
 						{
@@ -627,7 +637,7 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0x00E0;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength =  0x6000 - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Writing EEPROM 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+						displayMessage(String.Format("Writing EEPROM 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 
 						if (!WriteEEPROM(dataObj))
 						{
@@ -640,7 +650,7 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0x7500;
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength = 0xB000 - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Writing EEPROM 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+						displayMessage(String.Format("Writing EEPROM 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 						if (!WriteEEPROM(dataObj))
 						{
 							displayMessage("Error while writing");
@@ -652,7 +662,7 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = CODEPLUG_FLASH_PART_START;
 						dataObj.startDataAddressInTheRadio = 0x7b000;
 						dataObj.transferLength = CODEPLUG_FLASH_PART_END - dataObj.localDataBufferStartPosition;
-						displayMessage(String.Format("Writing Flash 0x{0:X6} to 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+						displayMessage(String.Format("Writing Flash 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 
 
 						if (!WriteFlash(dataObj))
@@ -817,31 +827,31 @@ namespace DMR
 
 		private void OpenGD77Form_Load(object sender, EventArgs e)
 		{
-			/* Checking is now down before the form is opened
-
-			if (gd77CommPort == null)
-			{
-				MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
-				this.Close();
-			}
-			else
-			 */
+			try
 			{
 				String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
-				try
+				_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
+				_port.ReadTimeout = 1000;
+
+				switch (_initialAction)
 				{
-					_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
-					_port.ReadTimeout = 1000;
-					//_port.Open();// port will get opened for each transfer
+					case CommsAction.READ_CODEPLUG:
+						readCodeplug();
+						break;
+					case CommsAction.WRITE_CODEPLUG:
+						writeCodeplug();
+						break;
+					default:
+						break;
 				}
-				catch (Exception)
-				{
-					_port = null;
-					MessageBox.Show("Failed to open comm port", "Error");
-				}
+
+			}
+			catch (Exception)
+			{
+				_port = null;
+				MessageBox.Show("Failed to open comm port", "Error");
 			}
 		}
-
 
 		private void OpenGD77Form_FormClosed(object sender, FormClosedEventArgs e)
 		{
@@ -858,8 +868,8 @@ namespace DMR
 			}
 		}
 
-		private void btnReadCodeplug_Click(object sender, EventArgs e)
-		{
+		private void readCodeplug()
+		{			
 			if (_port == null)
 			{
 				MessageBox.Show("Please select a comm port");
@@ -872,7 +882,12 @@ namespace DMR
 			perFormCommsTask(dataObj);
 		}
 
-		private void btnWriteCodeplug_Click(object sender, EventArgs e)
+		private void btnReadCodeplug_Click(object sender, EventArgs e)
+		{
+			readCodeplug();
+		}
+
+		private void writeCodeplug()
 		{
 			if (_port == null)
 			{
@@ -883,11 +898,11 @@ namespace DMR
 			OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.WRITE_CODEPLUG);
 			enableDisableAllButtons(false);
 			perFormCommsTask(dataObj);
-
 		}
 
-
+		private void btnWriteCodeplug_Click(object sender, EventArgs e)
+		{
+			writeCodeplug();
+		}
 	}
-
-
 }

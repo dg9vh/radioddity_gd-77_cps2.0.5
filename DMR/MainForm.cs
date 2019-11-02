@@ -3054,7 +3054,7 @@ namespace DMR
 			}
 		}
 
-		private void openGD77Form()
+		private void openGD77Form(OpenGD77Form.CommsAction buttonAction)
 		{
 			String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
 			if (gd77CommPort == null)
@@ -3064,7 +3064,7 @@ namespace DMR
 			else
 			{
 				this.closeAllForms();
-				OpenGD77Form cf = new OpenGD77Form();
+				OpenGD77Form cf = new OpenGD77Form(buttonAction);
 				cf.StartPosition = FormStartPosition.CenterParent;
 				cf.ShowDialog();
 				InitTree();
@@ -3072,7 +3072,7 @@ namespace DMR
 		}
 		private void tsmiOpenGD77_Click(object sender, EventArgs e)
 		{
-			openGD77Form();
+			openGD77Form(OpenGD77Form.CommsAction.NONE);
 		}
 
 		private void tsbtnRead_Click(object sender, EventArgs e)
@@ -3080,7 +3080,7 @@ namespace DMR
 
 			if (SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77") != null)
 			{
-				openGD77Form();
+				openGD77Form(OpenGD77Form.CommsAction.READ_CODEPLUG);
 			}
 			else
 			{
@@ -3105,7 +3105,7 @@ namespace DMR
 		{
 			if (SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77") != null)
 			{
-				openGD77Form();
+				openGD77Form(OpenGD77Form.CommsAction.WRITE_CODEPLUG);
 			}
 			else
 			{
