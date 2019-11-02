@@ -36,6 +36,8 @@
 			this.btnReadCodeplug = new System.Windows.Forms.Button();
 			this.btnWriteCodeplug = new System.Windows.Forms.Button();
 			this.txtMessage = new System.Windows.Forms.Label();
+			this.btnBackupCalibration = new System.Windows.Forms.Button();
+			this.btnRestoreCalibration = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnBackupEEPROM
@@ -50,14 +52,14 @@
 			// 
 			// progressBar1
 			// 
-			this.progressBar1.Location = new System.Drawing.Point(16, 251);
+			this.progressBar1.Location = new System.Drawing.Point(16, 261);
 			this.progressBar1.Name = "progressBar1";
 			this.progressBar1.Size = new System.Drawing.Size(477, 23);
 			this.progressBar1.TabIndex = 4;
 			// 
 			// btnBackupFlash
 			// 
-			this.btnBackupFlash.Location = new System.Drawing.Point(16, 41);
+			this.btnBackupFlash.Location = new System.Drawing.Point(16, 81);
 			this.btnBackupFlash.Name = "btnBackupFlash";
 			this.btnBackupFlash.Size = new System.Drawing.Size(131, 23);
 			this.btnBackupFlash.TabIndex = 5;
@@ -67,7 +69,7 @@
 			// 
 			// btnRestoreEEPROM
 			// 
-			this.btnRestoreEEPROM.Location = new System.Drawing.Point(16, 70);
+			this.btnRestoreEEPROM.Location = new System.Drawing.Point(16, 41);
 			this.btnRestoreEEPROM.Name = "btnRestoreEEPROM";
 			this.btnRestoreEEPROM.Size = new System.Drawing.Size(131, 23);
 			this.btnRestoreEEPROM.TabIndex = 3;
@@ -77,7 +79,7 @@
 			// 
 			// btnRestoreFlash
 			// 
-			this.btnRestoreFlash.Location = new System.Drawing.Point(16, 99);
+			this.btnRestoreFlash.Location = new System.Drawing.Point(16, 110);
 			this.btnRestoreFlash.Name = "btnRestoreFlash";
 			this.btnRestoreFlash.Size = new System.Drawing.Size(131, 23);
 			this.btnRestoreFlash.TabIndex = 5;
@@ -107,11 +109,31 @@
 			// 
 			// txtMessage
 			// 
-			this.txtMessage.Location = new System.Drawing.Point(16, 223);
+			this.txtMessage.Location = new System.Drawing.Point(16, 233);
 			this.txtMessage.Name = "txtMessage";
 			this.txtMessage.Size = new System.Drawing.Size(477, 25);
 			this.txtMessage.TabIndex = 6;
 			this.txtMessage.Text = " OpenGD77 has been detected";
+			// 
+			// btnBackupCalibration
+			// 
+			this.btnBackupCalibration.Location = new System.Drawing.Point(16, 156);
+			this.btnBackupCalibration.Name = "btnBackupCalibration";
+			this.btnBackupCalibration.Size = new System.Drawing.Size(131, 23);
+			this.btnBackupCalibration.TabIndex = 5;
+			this.btnBackupCalibration.Text = "Backup Calibration";
+			this.btnBackupCalibration.UseVisualStyleBackColor = true;
+			this.btnBackupCalibration.Click += new System.EventHandler(this.btnBackupCalibration_Click);
+			// 
+			// btnRestoreCalibration
+			// 
+			this.btnRestoreCalibration.Location = new System.Drawing.Point(16, 185);
+			this.btnRestoreCalibration.Name = "btnRestoreCalibration";
+			this.btnRestoreCalibration.Size = new System.Drawing.Size(131, 23);
+			this.btnRestoreCalibration.TabIndex = 5;
+			this.btnRestoreCalibration.Text = "Restore Calibration";
+			this.btnRestoreCalibration.UseVisualStyleBackColor = true;
+			this.btnRestoreCalibration.Click += new System.EventHandler(this.btnRestoreCalibration_Click);
 			// 
 			// OpenGD77Form
 			// 
@@ -119,6 +141,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(505, 290);
 			this.Controls.Add(this.txtMessage);
+			this.Controls.Add(this.btnRestoreCalibration);
+			this.Controls.Add(this.btnBackupCalibration);
 			this.Controls.Add(this.btnRestoreFlash);
 			this.Controls.Add(this.btnBackupFlash);
 			this.Controls.Add(this.progressBar1);
@@ -144,5 +168,7 @@
 		private System.Windows.Forms.Button btnReadCodeplug;
 		private System.Windows.Forms.Button btnWriteCodeplug;
 		private System.Windows.Forms.Label txtMessage;
+		private System.Windows.Forms.Button btnBackupCalibration;
+		private System.Windows.Forms.Button btnRestoreCalibration;
 	}
 }

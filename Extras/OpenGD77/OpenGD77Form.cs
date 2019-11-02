@@ -14,6 +14,7 @@ namespace DMR
 {
 	public partial class OpenGD77Form : Form
 	{
+
 		private SerialPort _port = null;
 
 		private BackgroundWorker worker;
@@ -25,6 +26,7 @@ namespace DMR
 		private OpenFileDialog _openFileDialog = new OpenFileDialog();
 
 		private const int MAX_TRANSFER_SIZE = 32;
+		private const int CALIBRATION_DATA_SIZE = 224;
 		private OpenGD77Form.CommsAction _initialAction;
 
 
@@ -409,8 +411,19 @@ namespace DMR
 							enableDisableAllButtons(true);
 							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
 							break;
+						case OpenGD77CommsTransferData.CommsAction.BACKUP_CALIBRATION:
+							_saveFileDialog.Filter = "Flash files (*.bin)|*.bin";
+							_saveFileDialog.FilterIndex = 1;
+							if (_saveFileDialog.ShowDialog() == DialogResult.OK)
+							{
+								File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
+							}
+							enableDisableAllButtons(true);
+							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
+							break;
 						case OpenGD77CommsTransferData.CommsAction.RESTORE_EEPROM:
 						case OpenGD77CommsTransferData.CommsAction.RESTORE_FLASH:
+						case OpenGD77CommsTransferData.CommsAction.RESTORE_CALIBRATION:
 							MessageBox.Show("Restore complete");
 							enableDisableAllButtons(true);
 							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
@@ -443,6 +456,7 @@ namespace DMR
 
 		void worker_DoWork(object sender, DoWorkEventArgs e)
 		{
+
 			OpenGD77CommsTransferData dataObj = e.Argument as OpenGD77CommsTransferData;
 			const int CODEPLUG_FLASH_PART_END	= 0x1EE60;
 			const int CODEPLUG_FLASH_PART_START = 0xB000;
@@ -456,12 +470,12 @@ namespace DMR
 				{
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_FLASH:
 						_port.Open();
-						sendCommand(0);
-						sendCommand(1);
-						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
-						sendCommand(2, 0, 16, 3, 1, 0, "Backup");
-						sendCommand(2, 0, 32, 3, 1, 0, "Flash");
-						sendCommand(3);
+						sendCommand(0);// Show CPS screen
+						sendCommand(1);// Clear screen
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");// Write a line of text to CPS screen at position x=0,y=3 with font size 3, alignment centre
+						sendCommand(2, 0, 16, 3, 1, 0, "Backup");// Write a line of text to CPS screen
+						sendCommand(2, 0, 32, 3, 1, 0, "Flash");// Write a line of text to CPS screen
+						sendCommand(3);// render CPS
 						sendCommand(6,3);// flash green LED
 
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadFlash;
@@ -479,7 +493,35 @@ namespace DMR
 						{
 							displayMessage("");
 						}
-						sendCommand(5);
+						sendCommand(5);// close CPS screen
+						_port.Close();
+						break;
+					case OpenGD77CommsTransferData.CommsAction.BACKUP_CALIBRATION:
+						_port.Open();
+						sendCommand(0);
+						sendCommand(1);
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");// Write a line of text to CPS screen at position x=0,y=3 with font size 3, alignment centre
+						sendCommand(2, 0, 16, 3, 1, 0, "Backup");
+						sendCommand(2, 0, 32, 3, 1, 0, "Calibration");
+						sendCommand(3);
+						sendCommand(6, 3);// flash green LED
+
+						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadFlash;
+						dataObj.dataBuff = new Byte[CALIBRATION_DATA_SIZE];
+						dataObj.localDataBufferStartPosition = 0;
+						dataObj.startDataAddressInTheRadio = 0x8f000;
+						dataObj.transferLength = CALIBRATION_DATA_SIZE;
+						displayMessage("Reading Calibration");
+						if (!ReadFlashOrEEPROM(dataObj))
+						{
+							displayMessage("Error while reading calibration");
+							dataObj.responseCode = 1;
+						}
+						else
+						{
+							displayMessage("");
+						}
+						sendCommand(5);// close CPS screen
 						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_EEPROM:
@@ -537,7 +579,35 @@ namespace DMR
 							displayMessage("Error while restoring");
 							dataObj.responseCode = 1;
 						}
-						sendCommand(5);
+						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
+						_port.Close();
+						break;
+					case OpenGD77CommsTransferData.CommsAction.RESTORE_CALIBRATION:
+						_port.Open();
+						sendCommand(0);
+						sendCommand(1);
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
+						sendCommand(2, 0, 16, 3, 1, 0, "Restoring");
+						sendCommand(2, 0, 32, 3, 1, 0, "Calibration");
+						sendCommand(3);
+						sendCommand(6, 4);// flash red LED
+
+						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteFlash;
+						dataObj.localDataBufferStartPosition = 0;
+						dataObj.startDataAddressInTheRadio = 0x8f000;
+						dataObj.transferLength = CALIBRATION_DATA_SIZE;
+						displayMessage("Restoring Flash");
+						if (WriteFlash(dataObj))
+						{
+							displayMessage("Restore complete");
+						}
+						else
+						{
+							MessageBox.Show("Error while restoring");
+							displayMessage("Error while restoring");
+							dataObj.responseCode = 1;
+						}
+						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
 						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_EEPROM:
@@ -565,7 +635,7 @@ namespace DMR
 							displayMessage("Error while restoring");
 							dataObj.responseCode = 1;
 						}
-						sendCommand(5);
+						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
 						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.READ_CODEPLUG:
@@ -619,7 +689,7 @@ namespace DMR
 						{
 							displayMessage("Codeplug read complete");
 						}
-						sendCommand(5);
+						sendCommand(5);// close CPS screen on radio
 						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.WRITE_CODEPLUG:
@@ -675,7 +745,7 @@ namespace DMR
 						{
 							displayMessage("Codeplug write complete");
 						}
-						sendCommand(6, 1);// Reload VFO from settings and reboot
+						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
 						_port.Close();
 						break;
 
@@ -728,6 +798,19 @@ namespace DMR
 			perFormCommsTask(dataObj);
 		}
 
+		private void btnBackupCalibration_Click(object sender, EventArgs e)
+		{
+			if (_port == null)
+			{
+				MessageBox.Show("Please select a comm port");
+				return;
+			}
+
+			OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.BACKUP_CALIBRATION);
+			enableDisableAllButtons(false);
+			perFormCommsTask(dataObj);
+		}
+
 		bool arrayCompare(byte[] buf1, byte[] buf2)
 		{
 			int len = Math.Min(buf1.Length, buf2.Length);
@@ -757,19 +840,35 @@ namespace DMR
 					dataObj.dataBuff = File.ReadAllBytes(_openFileDialog.FileName);
 					if (dataObj.dataBuff.Length == (64 * 1024))
 					{
-						byte []signature = {0x00 ,0x00 ,0x00 ,0x01 ,0x56 ,0x33 ,0x2E ,0x30 ,0x31};
+						enableDisableAllButtons(false);
+						perFormCommsTask(dataObj);
+					}
+					else
+					{
+						MessageBox.Show("The file is not the correct size.", "Error");
+					}
+				}
+			}
+		}
 
-						// Disable signature test
-						if (arrayCompare(dataObj.dataBuff, signature) || true)
-						{
-							MessageBox.Show("Please set your radio into FM mode\nDo not press any buttons on the radio while the EEPROM is being restored");
-							enableDisableAllButtons(false);
-							perFormCommsTask(dataObj);
-						}
-						else
-						{
-							MessageBox.Show("The file does not start with the correct signature bytes", "Error");
-						}
+		private void btnRestoreCalibration_Click(object sender, EventArgs e)
+		{
+			if (_port == null)
+			{
+				MessageBox.Show("Please select a comm port");
+				return;
+			}
+			if (DialogResult.Yes == MessageBox.Show("Are you sure you want to restore the Calibartion from a previously saved file?", "Warning", MessageBoxButtons.YesNo))
+			{
+				if (DialogResult.OK == _openFileDialog.ShowDialog())
+				{
+					OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.RESTORE_CALIBRATION);
+					dataObj.dataBuff = File.ReadAllBytes(_openFileDialog.FileName);
+
+					if (dataObj.dataBuff.Length == CALIBRATION_DATA_SIZE)
+					{
+						enableDisableAllButtons(false);
+						perFormCommsTask(dataObj);
 					}
 					else
 					{
@@ -796,16 +895,8 @@ namespace DMR
 					if (dataObj.dataBuff.Length == (1024 * 1024))
 					{
 						byte[] signature = { 0x54, 0x59, 0x54, 0x3A, 0x4D, 0x44, 0x2D, 0x37, 0x36, 0x30 };
-						if (arrayCompare(dataObj.dataBuff, signature))
-						{
-							MessageBox.Show("Please set your radio into FM mode\nDo not press any buttons on the radio while the Flash memory is being restored");
-							enableDisableAllButtons(false);
-							perFormCommsTask(dataObj);
-						}
-						else
-						{
-							MessageBox.Show("The file does not start with the correct signature bytes", "Error");
-						}
+						enableDisableAllButtons(false);
+						perFormCommsTask(dataObj);
 					}
 					else
 					{
