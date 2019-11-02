@@ -78,7 +78,7 @@ namespace DMR
 		}
 
 		// Convert to format to send to the radio (GD-77)
-		public byte[] getRadioData(bool useName, int stringLength)
+		public byte[] getRadioData(int stringLength)
 		{
 			byte[] radioData = new byte[stringLength+4];
 			if (DMRId != 0)
@@ -90,14 +90,7 @@ namespace DMR
 				}
 				else
 				{
-					if (useName)
-					{
-						displayBuf = Encoding.UTF8.GetBytes(Name);
-					}
-					else
-					{
-						displayBuf = Encoding.UTF8.GetBytes(Callsign);
-					}
+					displayBuf = Encoding.UTF8.GetBytes(Callsign);
 				}
 
 

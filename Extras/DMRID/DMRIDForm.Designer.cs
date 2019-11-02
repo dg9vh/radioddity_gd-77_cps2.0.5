@@ -30,7 +30,6 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DMRIDForm));
 			this.btnDownload = new System.Windows.Forms.Button();
-			this.btnReadFromGD77 = new System.Windows.Forms.Button();
 			this.btnWriteToGD77 = new System.Windows.Forms.Button();
 			this.txtRegionId = new System.Windows.Forms.TextBox();
 			this.btnClear = new System.Windows.Forms.Button();
@@ -39,16 +38,11 @@
 			this.txtAgeMaxDays = new System.Windows.Forms.TextBox();
 			this.lblRegionId = new System.Windows.Forms.Label();
 			this.lblInactivityFilter = new System.Windows.Forms.Label();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.rbtnName = new System.Windows.Forms.RadioButton();
-			this.rbtnCallsign = new System.Windows.Forms.RadioButton();
 			this.chkEnhancedFirmware = new System.Windows.Forms.CheckBox();
 			this.cmbStringLen = new System.Windows.Forms.ComboBox();
 			this.lblEnhancedLength = new System.Windows.Forms.Label();
 			this.progressBar1 = new System.Windows.Forms.ProgressBar();
-			this.btnWriteToOpenGD77 = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnDownload
@@ -61,19 +55,9 @@
 			this.btnDownload.UseVisualStyleBackColor = true;
 			this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
 			// 
-			// btnReadFromGD77
-			// 
-			this.btnReadFromGD77.Location = new System.Drawing.Point(12, 565);
-			this.btnReadFromGD77.Name = "btnReadFromGD77";
-			this.btnReadFromGD77.Size = new System.Drawing.Size(123, 23);
-			this.btnReadFromGD77.TabIndex = 1;
-			this.btnReadFromGD77.Text = "Read from GD-77";
-			this.btnReadFromGD77.UseVisualStyleBackColor = true;
-			this.btnReadFromGD77.Click += new System.EventHandler(this.btnReadFromGD77_Click);
-			// 
 			// btnWriteToGD77
 			// 
-			this.btnWriteToGD77.Location = new System.Drawing.Point(377, 545);
+			this.btnWriteToGD77.Location = new System.Drawing.Point(391, 562);
 			this.btnWriteToGD77.Name = "btnWriteToGD77";
 			this.btnWriteToGD77.Size = new System.Drawing.Size(123, 28);
 			this.btnWriteToGD77.TabIndex = 2;
@@ -109,12 +93,13 @@
 			// 
 			// dataGridView1
 			// 
-			this.dataGridView1.AllowUserToOrderColumns = true;
+			this.dataGridView1.AllowUserToResizeColumns = false;
 			this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.dataGridView1.Location = new System.Drawing.Point(13, 115);
 			this.dataGridView1.Name = "dataGridView1";
 			this.dataGridView1.Size = new System.Drawing.Size(501, 424);
 			this.dataGridView1.TabIndex = 6;
+			this.dataGridView1.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridView1_SortCompare);
 			// 
 			// txtAgeMaxDays
 			// 
@@ -142,39 +127,6 @@
 			this.lblInactivityFilter.TabIndex = 7;
 			this.lblInactivityFilter.Text = "Inactivity filter (days)";
 			this.lblInactivityFilter.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// groupBox1
-			// 
-			this.groupBox1.Controls.Add(this.rbtnName);
-			this.groupBox1.Controls.Add(this.rbtnCallsign);
-			this.groupBox1.Location = new System.Drawing.Point(157, 545);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(183, 48);
-			this.groupBox1.TabIndex = 8;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Use call or name when writing";
-			// 
-			// rbtnName
-			// 
-			this.rbtnName.AutoSize = true;
-			this.rbtnName.Location = new System.Drawing.Point(111, 20);
-			this.rbtnName.Name = "rbtnName";
-			this.rbtnName.Size = new System.Drawing.Size(53, 17);
-			this.rbtnName.TabIndex = 1;
-			this.rbtnName.Text = "Name";
-			this.rbtnName.UseVisualStyleBackColor = true;
-			// 
-			// rbtnCallsign
-			// 
-			this.rbtnCallsign.AutoSize = true;
-			this.rbtnCallsign.Checked = true;
-			this.rbtnCallsign.Location = new System.Drawing.Point(7, 20);
-			this.rbtnCallsign.Name = "rbtnCallsign";
-			this.rbtnCallsign.Size = new System.Drawing.Size(61, 17);
-			this.rbtnCallsign.TabIndex = 0;
-			this.rbtnCallsign.TabStop = true;
-			this.rbtnCallsign.Text = "Callsign";
-			this.rbtnCallsign.UseVisualStyleBackColor = true;
 			// 
 			// chkEnhancedFirmware
 			// 
@@ -223,16 +175,6 @@
 			this.progressBar1.Size = new System.Drawing.Size(499, 17);
 			this.progressBar1.TabIndex = 12;
 			// 
-			// btnWriteToOpenGD77
-			// 
-			this.btnWriteToOpenGD77.Location = new System.Drawing.Point(377, 579);
-			this.btnWriteToOpenGD77.Name = "btnWriteToOpenGD77";
-			this.btnWriteToOpenGD77.Size = new System.Drawing.Size(123, 28);
-			this.btnWriteToOpenGD77.TabIndex = 2;
-			this.btnWriteToOpenGD77.Text = "Write to OpenGD77";
-			this.btnWriteToOpenGD77.UseVisualStyleBackColor = true;
-			this.btnWriteToOpenGD77.Click += new System.EventHandler(this.btnWriteToOpenGD77_Click);
-			// 
 			// DMRIDForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -242,7 +184,6 @@
 			this.Controls.Add(this.lblEnhancedLength);
 			this.Controls.Add(this.cmbStringLen);
 			this.Controls.Add(this.chkEnhancedFirmware);
-			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.lblInactivityFilter);
 			this.Controls.Add(this.lblRegionId);
 			this.Controls.Add(this.dataGridView1);
@@ -250,9 +191,7 @@
 			this.Controls.Add(this.btnClear);
 			this.Controls.Add(this.txtAgeMaxDays);
 			this.Controls.Add(this.txtRegionId);
-			this.Controls.Add(this.btnWriteToOpenGD77);
 			this.Controls.Add(this.btnWriteToGD77);
-			this.Controls.Add(this.btnReadFromGD77);
 			this.Controls.Add(this.btnDownload);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "DMRIDForm";
@@ -260,8 +199,6 @@
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DMRIDFormNew_FormClosing);
 			this.Load += new System.EventHandler(this.DMRIDForm_Load);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-			this.groupBox1.ResumeLayout(false);
-			this.groupBox1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -270,7 +207,6 @@
 		#endregion
 
 		private System.Windows.Forms.Button btnDownload;
-		private System.Windows.Forms.Button btnReadFromGD77;
 		private System.Windows.Forms.Button btnWriteToGD77;
 		private System.Windows.Forms.TextBox txtRegionId;
 		private System.Windows.Forms.Button btnClear;
@@ -279,13 +215,9 @@
 		private System.Windows.Forms.TextBox txtAgeMaxDays;
 		private System.Windows.Forms.Label lblRegionId;
 		private System.Windows.Forms.Label lblInactivityFilter;
-		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.RadioButton rbtnName;
-		private System.Windows.Forms.RadioButton rbtnCallsign;
 		private System.Windows.Forms.CheckBox chkEnhancedFirmware;
 		private System.Windows.Forms.ComboBox cmbStringLen;
 		private System.Windows.Forms.Label lblEnhancedLength;
 		private System.Windows.Forms.ProgressBar progressBar1;
-		private System.Windows.Forms.Button btnWriteToOpenGD77;
 	}
 }

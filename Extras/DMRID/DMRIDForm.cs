@@ -47,7 +47,6 @@ namespace DMR
 			SIG_PATTERN_BYTES = new byte[] { 0x49, 0x44, 0x2D, 0x56, 0x30, 0x30, 0x31, 0x00 };
 			InitializeComponent();
 			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
-			groupBox1.Visible = false; // This is redundant. So hide it until I have time to remove it.
 			cmbStringLen.Visible = false;
 			lblEnhancedLength.Visible = false;
 
@@ -98,7 +97,8 @@ namespace DMR
 				HeaderText = "Last heard (days ago)",// Column header text
 				DataPropertyName = "AgeInDays",  // object property
 				Width = 140,
-				ValueType = typeof(int)
+				ValueType = typeof(int),
+				SortMode = DataGridViewColumnSortMode.Automatic
 			};
 			dataGridView1.Columns.Add(colFileName);
 			dataGridView1.UserDeletedRow += new DataGridViewRowEventHandler(dataGridRowDeleted);
@@ -133,7 +133,7 @@ namespace DMR
 				Cursor.Current = Cursors.WaitCursor;
 				this.Refresh();
 				Application.DoEvents();
-				_wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(DMRMARCDownloadCompleteHandler);
+				_wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(downloadCompleteHandler);
 				_wc.DownloadStringAsync(new Uri("http://ham-digital.org/user_by_lh.php?id=" + txtRegionId.Text));
 	
 			}
@@ -148,7 +148,7 @@ namespace DMR
 		}
 
 
-		private void DMRMARCDownloadCompleteHandler(object sender, DownloadStringCompletedEventArgs e )
+		private void downloadCompleteHandler(object sender, DownloadStringCompletedEventArgs e )
 		{
 			string ownRadioId = GeneralSetForm.data.RadioId;
 			string csv;// = e.Result;
@@ -193,7 +193,6 @@ namespace DMR
 				DataList = DataList.Distinct().ToList();
 
 				rebindData();
-				//DataToCodeplug();
 				Cursor.Current = Cursors.Default;
 	
 			}
@@ -323,7 +322,7 @@ namespace DMR
 			uploadList.Sort();
 			for (int i = 0; i < numRecords; i++)
 			{
-				Array.Copy(uploadList[i].getRadioData(rbtnName.Checked,_stringLength), 0, buffer, HEADER_LENGTH + i * (4 + _stringLength), (4 + _stringLength));
+				Array.Copy(uploadList[i].getRadioData(_stringLength), 0, buffer, HEADER_LENGTH + i * (4 + _stringLength), (4 + _stringLength));
 			}
 			return buffer;
 		}
@@ -361,7 +360,8 @@ namespace DMR
 
 		}
 
-		private void btnWriteToGD77_Click(object sender, EventArgs e)
+	
+		private void writeToOfficalFirmware()
 		{
 			MainForm.CommsBuffer = new byte[0x100000];// 128k buffer
 			CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.dataRead;
@@ -373,27 +373,37 @@ namespace DMR
 			Array.Copy(MainForm.CommsBuffer, 0x50100, DMRIDForm.DMRIDBuffer, 0, 0x20);
 			if (!isInMemoryAccessMode(DMRIDForm.DMRIDBuffer))
 			{
-				MessageBox.Show(Settings.dicCommon["EnableMemoryAccessMode"]); 
+				MessageBox.Show(Settings.dicCommon["EnableMemoryAccessMode"]);
 				return;
 			}
 
 
-
 			SIG_PATTERN_BYTES[3] = (byte)(0x4a + _stringLength + 4);
 
-			byte []uploadData = GenerateUploadData();
-			Array.Copy(uploadData, 0, MainForm.CommsBuffer, 0x30000, (uploadData.Length/32)*32);
+			byte[] uploadData = GenerateUploadData();
+			Array.Copy(uploadData, 0, MainForm.CommsBuffer, 0x30000, (uploadData.Length / 32) * 32);
 			CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.dataWrite;
 
 			CodeplugComms.startAddress = 0x30000;
-			CodeplugComms.transferLength = (uploadData.Length/32)*32;
+			CodeplugComms.transferLength = (uploadData.Length / 32) * 32;
 			commPrgForm.StartPosition = FormStartPosition.CenterParent;
 			result = commPrgForm.ShowDialog();
 		}
 
+		private void btnWriteToGD77_Click(object sender, EventArgs e)
+		{
+			if (SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77") != null)
+			{
+				writeToOpenGD77();
+			}
+			else
+			{
+				writeToOfficalFirmware();
+			}
+		}
+
 		private void DMRIDFormNew_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			//DataToCodeplug();
 		}
 
 		private void DMRIDForm_Load(object sender, EventArgs e)
@@ -413,7 +423,7 @@ namespace DMR
 			else
 			{
 
-				if (DialogResult.Yes == MessageBox.Show("This mode ONLY works with the community firmware installed in the GD-77.\n\nDo not use this mode if you are using the official firmware\nYou use it at your own risk.\n\nUploading the DMR ID's to the Radioddity GD-77, using this feature, could potentially damage your radio.\n\nBy clicking 'Yes' you acknowledge that you use this feature entirely at your own risk", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button2))
+				if (DialogResult.OK == MessageBox.Show("This mode ONLY works with the OpenGD77 or other modified firmware installed in the GD-77.", "WARNING", MessageBoxButtons.OKCancel, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button2))
 				{
 					cmbStringLen.Visible = true;
 					lblEnhancedLength.Visible = true;
@@ -686,32 +696,24 @@ namespace DMR
 		}
 
 
-		private void btnWriteToOpenGD77_Click(object sender, EventArgs e)
+		private void writeToOpenGD77()
 		{
-			String gd77CommPort;
+			String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
 
-			gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
-			if (gd77CommPort == null)
+			try
 			{
-				MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
-				this.Close();
+				_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
+				_port.ReadTimeout = 1000;
+				_port.Open();
 			}
-			else
+			catch (Exception)
 			{
-				try
-				{
-					_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
-					_port.ReadTimeout = 1000;
-					_port.Open();
-				}
-				catch (Exception)
-				{
-					_port = null;
-					MessageBox.Show("Failed to open comm port", "Error");
-					return;
-				}
+				_port = null;
+				MessageBox.Show("Failed to open comm port", "Error");
+				return;
 			}
 
+			// Commands to control the screen etc in the firmware
 			sendCommand(0);
 			sendCommand(1);
 			sendCommand(2, 0, 0, 3, 1, 0, "CPS");
@@ -745,10 +747,31 @@ namespace DMR
 					MessageBox.Show("Failed to close OpenGD77 comm port", "Warning");
 				}
 			}
-
 		}
 
+		private void dataGridView1_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+		{
+			if (e.Column.Index != 3)
+			{
+				return;
+			}
+			try
+			{
+				if (Int32.Parse(e.CellValue1.ToString()) < Int32.Parse(e.CellValue2.ToString()))
+				{
+					e.SortResult = -1;
+				}
+				else
+				{
+					e.SortResult = 1;
+				}
+				e.Handled = true;
+			}
+			catch (Exception)
+			{
+			}
 
+		}
 	}
 }
 
