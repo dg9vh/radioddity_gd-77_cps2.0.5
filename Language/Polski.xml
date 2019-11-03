@@ -434,7 +434,7 @@
       <MenuItem Id="tsmiExtras" Text="Extras" />
       <MenuItem Id="tsmiContactsDownload" Text="Pobierz kontakty" />
       <MenuItem Id="tsmiDMRID" Text="DMR ID" />
-      <MenuItem Id="tsmiCalibration" Text="Przeglądarka kalibracji" />
+      <MenuItem Id="tsmiCalibration" Text="Kalibracji" />
     </MenuStrip>
 		<ContextMenuStrip>
 			<MenuItem Id="tsmiAdd" Text="Dodaj" />

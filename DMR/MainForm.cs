@@ -708,7 +708,7 @@ namespace DMR
 			this.tsmiCalibration.Name = "tsmiCalibration";
 			//this.tsmiCalibration.ShortcutKeys = (Keys)131154;
 			this.tsmiCalibration.Size = new Size(156, 22);
-			this.tsmiCalibration.Text = "Calibration viewer";
+			this.tsmiCalibration.Text = "Calibration editor";
 			this.tsmiCalibration.Enabled = true;
 			this.tsmiCalibration.Click += new EventHandler(this.tsbtnCalibration_Click);
 
@@ -3018,41 +3018,11 @@ namespace DMR
 
 		private void tsbtnCalibration_Click(object sender, EventArgs e)
 		{
-			CommPrgForm commPrgForm;
 			this.closeAllForms();
-			/*
-			if (DialogResult.OK != MessageBox.Show("Please make sure the GD-77 is in Memory Access mode. Hold keys SK2 (Blue side key), Green Menu and * when turning on the transceiver", "Enable Memory Access mode", MessageBoxButtons.OKCancel))
-			{
-				return;
-			}
-			*/
-			MainForm.CommsBuffer = new byte[1024*1024];
 
-			// Pre-read to see if the calibration area appears to be readable.
-			CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.dataRead;
-			commPrgForm = new CommPrgForm(true);// true =  close download form as soon as download is complete
-			commPrgForm.StartPosition = FormStartPosition.CenterParent;
-			CodeplugComms.startAddress = CalibrationForm.CALIBRATION_MEMORY_LOCATION;
-			CodeplugComms.transferLength = 0x20;
-			DialogResult result = commPrgForm.ShowDialog();
-			if (MainForm.CommsBuffer[CalibrationForm.CALIBRATION_MEMORY_LOCATION] == 0x00 && MainForm.CommsBuffer[CalibrationForm.CALIBRATION_MEMORY_LOCATION + CalibrationForm.CALIBRATION_MEMORY_LOCATION] == 0x00)
-			{
-				MessageBox.Show(Settings.dicCommon["EnableMemoryAccessMode"]);
-				return;
-			}
-
-
-			CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.calibrationRead;
-			commPrgForm = new CommPrgForm(true);// true =  close download form as soon as download is complete
-			commPrgForm.StartPosition = FormStartPosition.CenterParent;
-			result= commPrgForm.ShowDialog();
-
-			if (DialogResult.OK == result)
-			{
-				CalibrationForm cf = new CalibrationForm();
-				cf.StartPosition = FormStartPosition.CenterParent;
-				cf.ShowDialog();
-			}
+			CalibrationForm cf = new CalibrationForm();
+			cf.StartPosition = FormStartPosition.CenterParent;
+			cf.ShowDialog();
 		}
 
 		private void openGD77Form(OpenGD77Form.CommsAction buttonAction)

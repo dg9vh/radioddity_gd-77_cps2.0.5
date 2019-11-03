@@ -434,7 +434,7 @@
       <MenuItem Id="tsmiExtras" Text="Posebno" />
       <MenuItem Id="tsmiContactsDownload" Text="Naloži stike" />
       <MenuItem Id="tsmiDMRID" Text="DMR ID" />
-      <MenuItem Id="tsmiCalibration" Text="Pregledovalnik kalibracije" />
+      <MenuItem Id="tsmiCalibration" Text="Kalibracije" />
     </MenuStrip>
 		<ContextMenuStrip>
 			<MenuItem Id="tsmiAdd" Text="Dodaj" />

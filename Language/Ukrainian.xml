@@ -442,7 +442,7 @@
 			<MenuItem Id="tsmiExtras" Text="Додаткові можливості"/>
       <MenuItem Id="tsmiContactsDownload" Text="Завантажте контакти" />
       <MenuItem Id="tsmiDMRID" Text="DMR ID" />
-      <MenuItem Id="tsmiCalibration" Text="Калібрувальний глядач" />
+      <MenuItem Id="tsmiCalibration" Text="глядач" />
     </MenuStrip>
 		<ContextMenuStrip>
 			<MenuItem Id="tsmiAdd" Text="Додати"/>

@@ -597,15 +597,15 @@ namespace DMR
 						dataObj.localDataBufferStartPosition = 0;
 						dataObj.startDataAddressInTheRadio = 0x8f000;
 						dataObj.transferLength = CALIBRATION_DATA_SIZE;
-						displayMessage("Restoring Flash");
+						displayMessage("Restoring Calibration");
 						if (WriteFlash(dataObj))
 						{
 							displayMessage("Restore complete");
 						}
 						else
 						{
-							MessageBox.Show("Error while restoring");
-							displayMessage("Error while restoring");
+							MessageBox.Show("Error while restoring Calibration");
+							displayMessage("Error while restoring Calibration");
 							dataObj.responseCode = 1;
 						}
 						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
