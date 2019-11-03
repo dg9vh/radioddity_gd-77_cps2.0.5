@@ -128,13 +128,13 @@ namespace DMR
 			}
 			else
 			{
-				if (comparePart.AgeAsInt < AgeAsInt)
+				if (comparePart.DMRId < DMRId)
 				{
 					return 1;
 				}
 				else
 				{
-					if (comparePart.AgeAsInt > AgeAsInt)
+					if (comparePart.DMRId > DMRId)
 					{
 						return -1;
 					}
