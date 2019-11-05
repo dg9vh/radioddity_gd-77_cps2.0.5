@@ -732,7 +732,8 @@ namespace DMR
 				else if (text == ContactForm.SZ_CALL_TYPE[0])
 				{
 					string callId = ContactForm.data[index2].CallId;
-					if (ContactForm.data.IsAllCall(index2) || ContactForm.data.CallIdExist(index2, 0, callId))
+					int repeaterSlot = ContactForm.data[index2].RepeaterSlot;
+					if (ContactForm.data.IsAllCall(index2) || ContactForm.data.CallIdExist(index2, 0, callId, repeaterSlot))
 					{
 						callId = ContactForm.data.GetMinCallID(0);
 						this.dgvContacts.CurrentRow.Cells[1].Value = callId;
@@ -742,7 +743,8 @@ namespace DMR
 				else if (text == ContactForm.SZ_CALL_TYPE[1])
 				{
 					string callId2 = ContactForm.data[index2].CallId;
-					if (ContactForm.data.IsAllCall(index2) || ContactForm.data.CallIdExist(index2, 1, callId2))
+					int repeaterSlot = ContactForm.data[index2].RepeaterSlot;
+					if (ContactForm.data.IsAllCall(index2) || ContactForm.data.CallIdExist(index2, 1, callId2, repeaterSlot))
 					{
 						callId2 = ContactForm.data.GetMinCallID(1);
 						this.dgvContacts.CurrentRow.Cells[1].Value = callId2;

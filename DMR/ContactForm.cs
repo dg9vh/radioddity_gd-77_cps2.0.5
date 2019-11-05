@@ -165,6 +165,35 @@ namespace DMR
 				}
 			}
 
+			public int RepeaterSlot
+			{
+				get
+				{
+					if ((this.reserve1 & 0x01) == 0x01)
+					{
+						return 0;
+					}
+					else
+					{
+						int tmp = ((this.reserve1 & 0x02) >> 1) + 1;
+						return tmp;
+					}
+
+				}
+				set
+				{
+					if (value == 0)
+					{
+						this.reserve1=0x01;
+					}
+					else
+					{
+						this.reserve1 = (byte)((value - 1)<<1);
+					}
+
+				}
+			}
+
 			public int RingStyle
 			{
 				get
@@ -440,6 +469,15 @@ namespace DMR
 				return num;
 			}
 
+			public int GetRepeaterSlot(int index)
+			{
+				if (this.DataIsValid(index))
+				{
+					return this.contactList[index].RepeaterSlot;
+				}
+				return 0;
+			}
+
 			public string GetCallID(int index)
 			{
 				if (this.DataIsValid(index))
@@ -493,7 +531,7 @@ namespace DMR
 			}
 
 
-			public bool CallIdExist(int index, int callType, string callId)
+			public bool CallIdExist(int index, int callType, string callId, int repeaterSlot)
 			{
 				int num = 0;
 				num = 0;
@@ -501,7 +539,9 @@ namespace DMR
 				{
 					if (num < this.Count)
 					{
-						if (ContactForm.data.GetCallType(num) == callType && num != index && ContactForm.data.GetCallID(num) == callId)
+						if (ContactForm.data.GetCallType(num) == callType && num != index && 
+							ContactForm.data.GetCallID(num) == callId &&
+							ContactForm.data.GetRepeaterSlot(num) == repeaterSlot)
 						{
 							break;
 						}
@@ -796,6 +836,9 @@ namespace DMR
 		public static readonly string[] SZ_CALL_TYPE;
 		public static readonly string[] SZ_CALL_RX_TONE;
 		public static ContactOne DefaultContact;
+		private CustomCombo cmbRepeaterSlot;
+		private Label lblRepeaterSlot;
+		private GroupBox openGD77groupbox;
 		public static Contact data;
 
 		public TreeNode Node
@@ -815,61 +858,28 @@ namespace DMR
 
 		private void InitializeComponent()
 		{
-			this.chkCallRxTone = new System.Windows.Forms.CheckBox();
-			this.lblName = new System.Windows.Forms.Label();
-			this.lblCallId = new System.Windows.Forms.Label();
-			this.lblCallType = new System.Windows.Forms.Label();
 			this.pnlContact = new CustomPanel();
+			this.openGD77groupbox = new System.Windows.Forms.GroupBox();
+			this.cmbRepeaterSlot = new CustomCombo();
+			this.lblRepeaterSlot = new System.Windows.Forms.Label();
 			this.txtCallId = new DMR.SGTextBox();
+			this.chkCallRxTone = new System.Windows.Forms.CheckBox();
 			this.cmbRingStyle = new CustomCombo();
 			this.cmbCallType = new CustomCombo();
 			this.lblRingStyle = new System.Windows.Forms.Label();
 			this.txtName = new DMR.SGTextBox();
+			this.lblCallType = new System.Windows.Forms.Label();
+			this.lblName = new System.Windows.Forms.Label();
+			this.lblCallId = new System.Windows.Forms.Label();
 			this.pnlContact.SuspendLayout();
+			this.openGD77groupbox.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// chkCallRxTone
-			// 
-			this.chkCallRxTone.AutoSize = true;
-			this.chkCallRxTone.Location = new System.Drawing.Point(158, 173);
-			this.chkCallRxTone.Name = "chkCallRxTone";
-			this.chkCallRxTone.Size = new System.Drawing.Size(141, 20);
-			this.chkCallRxTone.TabIndex = 6;
-			this.chkCallRxTone.Text = "Call Receive Tone";
-			this.chkCallRxTone.UseVisualStyleBackColor = true;
-			// 
-			// lblName
-			// 
-			this.lblName.Location = new System.Drawing.Point(60, 50);
-			this.lblName.Name = "lblName";
-			this.lblName.Size = new System.Drawing.Size(87, 24);
-			this.lblName.TabIndex = 0;
-			this.lblName.Text = "Name";
-			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// lblCallId
-			// 
-			this.lblCallId.Location = new System.Drawing.Point(60, 80);
-			this.lblCallId.Name = "lblCallId";
-			this.lblCallId.Size = new System.Drawing.Size(87, 24);
-			this.lblCallId.TabIndex = 2;
-			this.lblCallId.Text = "Call ID";
-			this.lblCallId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// lblCallType
-			// 
-			this.lblCallType.Enabled = false;
-			this.lblCallType.Location = new System.Drawing.Point(60, 110);
-			this.lblCallType.Name = "lblCallType";
-			this.lblCallType.Size = new System.Drawing.Size(87, 24);
-			this.lblCallType.TabIndex = 4;
-			this.lblCallType.Text = "Call Type";
-			this.lblCallType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// pnlContact
 			// 
 			this.pnlContact.AutoScroll = true;
 			this.pnlContact.AutoSize = true;
+			this.pnlContact.Controls.Add(this.openGD77groupbox);
 			this.pnlContact.Controls.Add(this.txtCallId);
 			this.pnlContact.Controls.Add(this.chkCallRxTone);
 			this.pnlContact.Controls.Add(this.cmbRingStyle);
@@ -882,13 +892,48 @@ namespace DMR
 			this.pnlContact.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlContact.Location = new System.Drawing.Point(0, 0);
 			this.pnlContact.Name = "pnlContact";
-			this.pnlContact.Size = new System.Drawing.Size(355, 228);
+			this.pnlContact.Size = new System.Drawing.Size(314, 267);
 			this.pnlContact.TabIndex = 7;
+			// 
+			// openGD77groupbox
+			// 
+			this.openGD77groupbox.Controls.Add(this.cmbRepeaterSlot);
+			this.openGD77groupbox.Controls.Add(this.lblRepeaterSlot);
+			this.openGD77groupbox.Location = new System.Drawing.Point(7, 173);
+			this.openGD77groupbox.Name = "openGD77groupbox";
+			this.openGD77groupbox.Size = new System.Drawing.Size(283, 62);
+			this.openGD77groupbox.TabIndex = 7;
+			this.openGD77groupbox.TabStop = false;
+			this.openGD77groupbox.Text = "OpenGD77 - Channel TS override";
+			// 
+			// cmbRepeaterSlot
+			// 
+			this.cmbRepeaterSlot.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbRepeaterSlot.FormattingEnabled = true;
+			this.cmbRepeaterSlot.Items.AddRange(new object[] {
+            "Disabled",
+            "TS 1",
+            "TS 2"});
+			this.cmbRepeaterSlot.Location = new System.Drawing.Point(129, 32);
+			this.cmbRepeaterSlot.Name = "cmbRepeaterSlot";
+			this.cmbRepeaterSlot.Size = new System.Drawing.Size(120, 24);
+			this.cmbRepeaterSlot.TabIndex = 5;
+			this.cmbRepeaterSlot.SelectedIndexChanged += new System.EventHandler(this.cmbRepeaterSlot_SelectedIndexChanged);
+			// 
+			// lblRepeaterSlot
+			// 
+			this.lblRepeaterSlot.Location = new System.Drawing.Point(12, 32);
+			this.lblRepeaterSlot.Name = "lblRepeaterSlot";
+			this.lblRepeaterSlot.Size = new System.Drawing.Size(111, 24);
+			this.lblRepeaterSlot.TabIndex = 4;
+			this.lblRepeaterSlot.Text = "Repeater Slot";
+			this.lblRepeaterSlot.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+
 			// 
 			// txtCallId
 			// 
 			this.txtCallId.InputString = null;
-			this.txtCallId.Location = new System.Drawing.Point(158, 80);
+			this.txtCallId.Location = new System.Drawing.Point(137, 44);
 			this.txtCallId.MaxByteLength = 0;
 			this.txtCallId.Name = "txtCallId";
 			this.txtCallId.Size = new System.Drawing.Size(120, 23);
@@ -897,11 +942,21 @@ namespace DMR
 			this.txtCallId.Leave += new System.EventHandler(this.txtCallId_Leave);
 			this.txtCallId.Validating += new System.ComponentModel.CancelEventHandler(this.txtCallId_Validating);
 			// 
+			// chkCallRxTone
+			// 
+			this.chkCallRxTone.AutoSize = true;
+			this.chkCallRxTone.Location = new System.Drawing.Point(137, 137);
+			this.chkCallRxTone.Name = "chkCallRxTone";
+			this.chkCallRxTone.Size = new System.Drawing.Size(141, 20);
+			this.chkCallRxTone.TabIndex = 6;
+			this.chkCallRxTone.Text = "Call Receive Tone";
+			this.chkCallRxTone.UseVisualStyleBackColor = true;
+			// 
 			// cmbRingStyle
 			// 
 			this.cmbRingStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cmbRingStyle.FormattingEnabled = true;
-			this.cmbRingStyle.Location = new System.Drawing.Point(158, 140);
+			this.cmbRingStyle.Location = new System.Drawing.Point(137, 104);
 			this.cmbRingStyle.Name = "cmbRingStyle";
 			this.cmbRingStyle.Size = new System.Drawing.Size(120, 24);
 			this.cmbRingStyle.TabIndex = 5;
@@ -911,7 +966,7 @@ namespace DMR
 			// 
 			this.cmbCallType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cmbCallType.FormattingEnabled = true;
-			this.cmbCallType.Location = new System.Drawing.Point(158, 110);
+			this.cmbCallType.Location = new System.Drawing.Point(137, 74);
 			this.cmbCallType.Name = "cmbCallType";
 			this.cmbCallType.Size = new System.Drawing.Size(120, 24);
 			this.cmbCallType.TabIndex = 5;
@@ -919,9 +974,9 @@ namespace DMR
 			// 
 			// lblRingStyle
 			// 
-			this.lblRingStyle.Location = new System.Drawing.Point(60, 140);
+			this.lblRingStyle.Location = new System.Drawing.Point(20, 104);
 			this.lblRingStyle.Name = "lblRingStyle";
-			this.lblRingStyle.Size = new System.Drawing.Size(87, 24);
+			this.lblRingStyle.Size = new System.Drawing.Size(111, 24);
 			this.lblRingStyle.TabIndex = 4;
 			this.lblRingStyle.Text = "Ring Style";
 			this.lblRingStyle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -929,16 +984,44 @@ namespace DMR
 			// txtName
 			// 
 			this.txtName.InputString = null;
-			this.txtName.Location = new System.Drawing.Point(158, 50);
+			this.txtName.Location = new System.Drawing.Point(137, 14);
 			this.txtName.MaxByteLength = 0;
 			this.txtName.Name = "txtName";
 			this.txtName.Size = new System.Drawing.Size(120, 23);
 			this.txtName.TabIndex = 1;
 			this.txtName.Leave += new System.EventHandler(this.txtName_Leave);
 			// 
+			// lblCallType
+			// 
+			this.lblCallType.Enabled = false;
+			this.lblCallType.Location = new System.Drawing.Point(23, 74);
+			this.lblCallType.Name = "lblCallType";
+			this.lblCallType.Size = new System.Drawing.Size(108, 24);
+			this.lblCallType.TabIndex = 4;
+			this.lblCallType.Text = "Call Type";
+			this.lblCallType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// lblName
+			// 
+			this.lblName.Location = new System.Drawing.Point(26, 14);
+			this.lblName.Name = "lblName";
+			this.lblName.Size = new System.Drawing.Size(105, 24);
+			this.lblName.TabIndex = 0;
+			this.lblName.Text = "Name";
+			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// lblCallId
+			// 
+			this.lblCallId.Location = new System.Drawing.Point(26, 44);
+			this.lblCallId.Name = "lblCallId";
+			this.lblCallId.Size = new System.Drawing.Size(105, 24);
+			this.lblCallId.TabIndex = 2;
+			this.lblCallId.Text = "Call ID";
+			this.lblCallId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
 			// ContactForm
 			// 
-			this.ClientSize = new System.Drawing.Size(355, 228);
+			this.ClientSize = new System.Drawing.Size(314, 267);
 			this.Controls.Add(this.pnlContact);
 			this.Font = new System.Drawing.Font("Arial", 10F);
 			this.Name = "ContactForm";
@@ -947,6 +1030,7 @@ namespace DMR
 			this.Load += new System.EventHandler(this.ContactForm_Load);
 			this.pnlContact.ResumeLayout(false);
 			this.pnlContact.PerformLayout();
+			this.openGD77groupbox.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -988,6 +1072,8 @@ namespace DMR
 					value.CallType = this.cmbCallType.method_3();
 					value.CallRxTone = this.chkCallRxTone.Checked;
 					value.RingStyle = this.cmbRingStyle.SelectedIndex;
+					value.RepeaterSlot = this.cmbRepeaterSlot.SelectedIndex;
+					
 					ContactForm.data[index] = value;
 					((MainForm)base.MdiParent).RefreshRelatedForm(base.GetType());
 				}
@@ -1021,6 +1107,8 @@ namespace DMR
 				this.cmbCallType.method_2(ContactForm.data[num].CallType);
 				this.chkCallRxTone.Checked = ContactForm.data[num].CallRxTone;
 				this.cmbRingStyle.SelectedIndex = ContactForm.data[num].RingStyle;
+				this.cmbRepeaterSlot.SelectedIndex = ContactForm.data[num].RepeaterSlot;
+
 				this.chkCallRxTone.CheckedChanged += this.chkCallRxTone_CheckedChanged;
 				this.cmbRingStyle.SelectedIndexChanged += this.cmbRingStyle_SelectedIndexChanged;
 				this.method_3();
@@ -1141,6 +1229,11 @@ namespace DMR
 			this.method_3();
 		}
 
+		private void cmbRepeaterSlot_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			//this.method_3();
+		}
+
 		private void txtName_Leave(object sender, EventArgs e)
 		{
 			this.txtName.Text = this.txtName.Text.Trim();
@@ -1180,7 +1273,9 @@ namespace DMR
 				base.Activate();
 			}
 			string text2 = this.txtCallId.Text.PadLeft(8, '0');
-			if (ContactForm.data.CallIdExist(index, selectedIndex, text2))
+			int repeaterSlot = ContactForm.data[index].RepeaterSlot;
+
+			if (ContactForm.data.CallIdExist(index, selectedIndex, text2, repeaterSlot))
 			{
 				e.Cancel = true;
 				MessageBox.Show(Settings.dicCommon["IdAlreadyExists"]);
@@ -1190,7 +1285,7 @@ namespace DMR
 			}
 			if (e.Cancel)
 			{
-				if (num >= 1 && num <= 16776415 && !ContactForm.data.CallIdExist(index, selectedIndex, text))
+				if (num >= 1 && num <= 16776415 && !ContactForm.data.CallIdExist(index, selectedIndex, text, repeaterSlot))
 				{
 					this.txtCallId.Text = text;
 				}
