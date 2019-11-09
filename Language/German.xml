@@ -743,7 +743,8 @@
       <Control Id="lblMessage" Text="Geben Sie den ID-Präfix-Code für Ihre Region ein und drücken Sie Download, um sie an die Liste anzuhängen" />
       <Control Id="lblRegionId" Text="Region" />
       <Control Id="lblInactivityFilter" Text="Inaktivitätsfilter (Tage)" />
-      <Control Id="btnDownload" Text="Herunterladen" />
+      <Control Id="btnDownload" Text="Herunterladen von Hamdigital" />
+      <Control Id="btnImportCSV" Text="Import CSV - filter von region" />
       <Control Id="btnRead" Text="Lesen von GD-77" />
       <Control Id="btnWrite" Text="Schreiben an GD-77" />
       <Control Id="btnClear" Text="Löschen liste" />

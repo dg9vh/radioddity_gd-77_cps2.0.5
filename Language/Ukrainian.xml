@@ -760,7 +760,8 @@
       <Control Id="lblMessage" Text="Введіть код префікса для свого регіону та натисніть Завантажити, щоб додати його до списку" />
       <Control Id="lblRegionId" Text="Регіон" />
       <Control Id="lblInactivityFilter" Text="Фільтр бездіяльності (днів)" />
-      <Control Id="btnDownload" Text="Завантажити" />
+      <Control Id="btnDownload" Text="Завантажити HamDigital" />
+      <Control Id="btnImportCSV" Text="Імпортувати CSV - Фільтр pегіон" />     
       <Control Id="btnRead" Text="Читайте від GD-77" />
       <Control Id="btnWrite" Text="Напишіть GD-77" />
       <Control Id="btnClear" Text="Очистити список" />

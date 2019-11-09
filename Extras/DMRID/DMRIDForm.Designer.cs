@@ -42,22 +42,25 @@
 			this.cmbStringLen = new System.Windows.Forms.ComboBox();
 			this.lblEnhancedLength = new System.Windows.Forms.Label();
 			this.progressBar1 = new System.Windows.Forms.ProgressBar();
+			this.btnImportCSV = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnDownload
 			// 
-			this.btnDownload.Location = new System.Drawing.Point(12, 58);
+			this.btnDownload.Location = new System.Drawing.Point(12, 68);
 			this.btnDownload.Name = "btnDownload";
-			this.btnDownload.Size = new System.Drawing.Size(114, 23);
+			this.btnDownload.Size = new System.Drawing.Size(305, 23);
 			this.btnDownload.TabIndex = 0;
-			this.btnDownload.Text = "Download";
+			this.btnDownload.Text = "Download from HamDigital - filtered by region and inactivity";
 			this.btnDownload.UseVisualStyleBackColor = true;
 			this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
 			// 
 			// btnWriteToGD77
 			// 
-			this.btnWriteToGD77.Location = new System.Drawing.Point(391, 562);
+			this.btnWriteToGD77.Location = new System.Drawing.Point(395, 335);
 			this.btnWriteToGD77.Name = "btnWriteToGD77";
 			this.btnWriteToGD77.Size = new System.Drawing.Size(123, 28);
 			this.btnWriteToGD77.TabIndex = 2;
@@ -67,7 +70,7 @@
 			// 
 			// txtRegionId
 			// 
-			this.txtRegionId.Location = new System.Drawing.Point(472, 64);
+			this.txtRegionId.Location = new System.Drawing.Point(476, 100);
 			this.txtRegionId.Name = "txtRegionId";
 			this.txtRegionId.Size = new System.Drawing.Size(42, 20);
 			this.txtRegionId.TabIndex = 3;
@@ -75,9 +78,9 @@
 			// 
 			// btnClear
 			// 
-			this.btnClear.Location = new System.Drawing.Point(13, 88);
+			this.btnClear.Location = new System.Drawing.Point(447, 287);
 			this.btnClear.Name = "btnClear";
-			this.btnClear.Size = new System.Drawing.Size(114, 23);
+			this.btnClear.Size = new System.Drawing.Size(71, 23);
 			this.btnClear.TabIndex = 4;
 			this.btnClear.Text = "Clear list";
 			this.btnClear.UseVisualStyleBackColor = true;
@@ -95,15 +98,15 @@
 			// 
 			this.dataGridView1.AllowUserToResizeColumns = false;
 			this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dataGridView1.Location = new System.Drawing.Point(13, 115);
+			this.dataGridView1.Location = new System.Drawing.Point(13, 129);
 			this.dataGridView1.Name = "dataGridView1";
-			this.dataGridView1.Size = new System.Drawing.Size(501, 424);
+			this.dataGridView1.Size = new System.Drawing.Size(505, 141);
 			this.dataGridView1.TabIndex = 6;
 			this.dataGridView1.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridView1_SortCompare);
 			// 
 			// txtAgeMaxDays
 			// 
-			this.txtAgeMaxDays.Location = new System.Drawing.Point(472, 90);
+			this.txtAgeMaxDays.Location = new System.Drawing.Point(476, 74);
 			this.txtAgeMaxDays.Name = "txtAgeMaxDays";
 			this.txtAgeMaxDays.Size = new System.Drawing.Size(42, 20);
 			this.txtAgeMaxDays.TabIndex = 3;
@@ -112,7 +115,7 @@
 			// 
 			// lblRegionId
 			// 
-			this.lblRegionId.Location = new System.Drawing.Point(362, 67);
+			this.lblRegionId.Location = new System.Drawing.Point(368, 103);
 			this.lblRegionId.Name = "lblRegionId";
 			this.lblRegionId.Size = new System.Drawing.Size(102, 13);
 			this.lblRegionId.TabIndex = 7;
@@ -121,7 +124,7 @@
 			// 
 			// lblInactivityFilter
 			// 
-			this.lblInactivityFilter.Location = new System.Drawing.Point(332, 93);
+			this.lblInactivityFilter.Location = new System.Drawing.Point(340, 77);
 			this.lblInactivityFilter.Name = "lblInactivityFilter";
 			this.lblInactivityFilter.Size = new System.Drawing.Size(132, 13);
 			this.lblInactivityFilter.TabIndex = 7;
@@ -131,7 +134,7 @@
 			// chkEnhancedFirmware
 			// 
 			this.chkEnhancedFirmware.AutoSize = true;
-			this.chkEnhancedFirmware.Location = new System.Drawing.Point(148, 92);
+			this.chkEnhancedFirmware.Location = new System.Drawing.Point(15, 19);
 			this.chkEnhancedFirmware.Name = "chkEnhancedFirmware";
 			this.chkEnhancedFirmware.Size = new System.Drawing.Size(146, 17);
 			this.chkEnhancedFirmware.TabIndex = 9;
@@ -153,7 +156,7 @@
             "13",
             "14",
             "15"});
-			this.cmbStringLen.Location = new System.Drawing.Point(148, 63);
+			this.cmbStringLen.Location = new System.Drawing.Point(15, 42);
 			this.cmbStringLen.Name = "cmbStringLen";
 			this.cmbStringLen.Size = new System.Drawing.Size(56, 21);
 			this.cmbStringLen.TabIndex = 10;
@@ -162,7 +165,7 @@
 			// lblEnhancedLength
 			// 
 			this.lblEnhancedLength.AutoSize = true;
-			this.lblEnhancedLength.Location = new System.Drawing.Point(210, 68);
+			this.lblEnhancedLength.Location = new System.Drawing.Point(77, 50);
 			this.lblEnhancedLength.Name = "lblEnhancedLength";
 			this.lblEnhancedLength.Size = new System.Drawing.Size(109, 13);
 			this.lblEnhancedLength.TabIndex = 11;
@@ -175,30 +178,53 @@
 			this.progressBar1.Size = new System.Drawing.Size(499, 17);
 			this.progressBar1.TabIndex = 12;
 			// 
+			// btnImportCSV
+			// 
+			this.btnImportCSV.Location = new System.Drawing.Point(12, 100);
+			this.btnImportCSV.Name = "btnImportCSV";
+			this.btnImportCSV.Size = new System.Drawing.Size(179, 23);
+			this.btnImportCSV.TabIndex = 0;
+			this.btnImportCSV.Text = "Import CSV - filtered by region code";
+			this.btnImportCSV.UseVisualStyleBackColor = true;
+			this.btnImportCSV.Click += new System.EventHandler(this.btnImportCSV_Click);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.chkEnhancedFirmware);
+			this.groupBox1.Controls.Add(this.cmbStringLen);
+			this.groupBox1.Controls.Add(this.lblEnhancedLength);
+			this.groupBox1.Location = new System.Drawing.Point(15, 287);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(200, 78);
+			this.groupBox1.TabIndex = 13;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Data record length";
+			// 
 			// DMRIDForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(526, 612);
-			this.Controls.Add(this.progressBar1);
-			this.Controls.Add(this.lblEnhancedLength);
-			this.Controls.Add(this.cmbStringLen);
-			this.Controls.Add(this.chkEnhancedFirmware);
-			this.Controls.Add(this.lblInactivityFilter);
+			this.ClientSize = new System.Drawing.Size(526, 375);
 			this.Controls.Add(this.lblRegionId);
+			this.Controls.Add(this.txtAgeMaxDays);
+			this.Controls.Add(this.txtRegionId);
+			this.Controls.Add(this.lblInactivityFilter);
+			this.Controls.Add(this.btnDownload);
+			this.Controls.Add(this.groupBox1);
+			this.Controls.Add(this.progressBar1);
 			this.Controls.Add(this.dataGridView1);
 			this.Controls.Add(this.lblMessage);
 			this.Controls.Add(this.btnClear);
-			this.Controls.Add(this.txtAgeMaxDays);
-			this.Controls.Add(this.txtRegionId);
 			this.Controls.Add(this.btnWriteToGD77);
-			this.Controls.Add(this.btnDownload);
+			this.Controls.Add(this.btnImportCSV);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "DMRIDForm";
 			this.Text = "DMR ID";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DMRIDFormNew_FormClosing);
 			this.Load += new System.EventHandler(this.DMRIDForm_Load);
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -219,5 +245,7 @@
 		private System.Windows.Forms.ComboBox cmbStringLen;
 		private System.Windows.Forms.Label lblEnhancedLength;
 		private System.Windows.Forms.ProgressBar progressBar1;
+		private System.Windows.Forms.Button btnImportCSV;
+		private System.Windows.Forms.GroupBox groupBox1;
 	}
 }

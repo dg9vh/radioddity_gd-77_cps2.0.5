@@ -8,6 +8,7 @@ namespace DMR
 	public class DMRDataItem : IEquatable<DMRDataItem>, IComparable<DMRDataItem>
 	{
 		public int DMRId { get; set; }
+		public string DMRIdString { get; set; }
 		public string Callsign { get; set; }
 		public string Name { get; set; }
 		public string AgeInDays { get; set; }
@@ -37,6 +38,19 @@ namespace DMR
 			{
 
 			}
+			return this;
+		}
+
+		// Create from a semicolon separated string from Hamdigital
+		public DMRDataItem FromRadioidDotNet(string CSVLine)
+		{
+			string[] arr = CSVLine.Split(',');
+			Callsign = arr[1];
+			Name = arr[2];// +" " + arr[3];
+			DMRIdString = arr[0];
+			DMRId = Int32.Parse(arr[0]);
+			AgeAsInt = 0;
+			AgeInDays = "0";
 			return this;
 		}
 

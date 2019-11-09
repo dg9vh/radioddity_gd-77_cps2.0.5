@@ -824,7 +824,8 @@
       <Control Id="lblMessage" Text="Enter ID prefix code for your region and press Download, to append to the list" />
       <Control Id="lblRegionId" Text="Region" />
       <Control Id="lblInactivityFilter" Text="Inactivity filter (days)" />      
-      <Control Id="btnDownload" Text="Download" />
+      <Control Id="btnDownload" Text="Download from HamDigital - filtered by region and inactivity" />
+      <Control Id="btnImportCSV" Text="Import CSV - filtered by region code" />
       <Control Id="btnRead" Text="Read from GD-77" />
       <Control Id="btnWrite" Text="Write to GD-77" />
       <Control Id="btnClear" Text="Clear" />      

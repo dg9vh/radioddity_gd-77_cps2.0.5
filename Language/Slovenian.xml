@@ -742,6 +742,7 @@
       <Control Id="lblRegionId" Text="Regija" />
       <Control Id="lblInactivityFilter" Text="Filter neaktivnosti (dni))" />
       <Control Id="btnDownload" Text="Prenesi" />
+      <Control Id="btnImportCSV" Text="Uvoz CSV - filter Regija" />
       <Control Id="btnRead" Text="Preberite od GD-77" />
       <Control Id="btnWrite" Text="Napišite GD-77" />
       <Control Id="btnClear" Text="Počisti" />

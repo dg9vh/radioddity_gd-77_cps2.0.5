@@ -774,6 +774,51 @@ namespace DMR
 			}
 
 		}
+
+		private void btnImportCSV_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			openFileDialog.Filter = "firmware files|*.csv";
+
+			if (openFileDialog.ShowDialog() == DialogResult.OK && openFileDialog.FileName != null)
+			{
+				try
+				{
+
+					bool first = true;
+					String region = txtRegionId.Text;
+					using (var reader = new StreamReader(openFileDialog.FileName))
+					{
+						while (!reader.EndOfStream)
+						{
+							string csvLine = reader.ReadLine();
+							if (first)
+							{
+								first = false;
+								continue;
+							}
+							if (csvLine.Length > 0)
+							{
+								DMRDataItem item = (new DMRDataItem()).FromRadioidDotNet(csvLine);
+								if (item.DMRIdString.IndexOf(txtRegionId.Text) == 0)
+								{
+									DataList.Add(item);
+								}
+							}
+						}
+						DataList = DataList.Distinct().ToList();
+
+						rebindData();
+						Cursor.Current = Cursors.Default;
+
+					}
+				}
+				catch (Exception)
+				{
+					MessageBox.Show("The CSV file could not be opened");
+				}
+			}
+		}
 	}
 }
 
