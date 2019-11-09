@@ -132,6 +132,14 @@
       <DependentUpon>MultiNUDControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Extras\Calibration\PowerSettingData.cs" />
+    <Compile Include="Extras\FirmwareLoader\FirmwareDataTable.cs" />
+    <Compile Include="Extras\FirmwareLoader\FirmwareLoader.cs" />
+    <Compile Include="Extras\FirmwareLoader\FirmwareLoaderUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extras\FirmwareLoader\FirmwareLoaderUI.Designer.cs">
+      <DependentUpon>FirmwareLoaderUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extras\OpenGD77\OpenGD77Comms.cs" />
     <Compile Include="Extras\OpenGD77\OpenGD77CommsTransferData.cs" />
     <Compile Include="Extras\OpenGD77\OpenGD77Form.cs">
@@ -402,6 +410,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Extras\Calibration\MultiNUDControl.resx">
       <DependentUpon>MultiNUDControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extras\FirmwareLoader\FirmwareLoaderUI.resx">
+      <DependentUpon>FirmwareLoaderUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Extras\OpenGD77\OpenGD77Form.resx">
       <DependentUpon>OpenGD77Form.cs</DependentUpon>

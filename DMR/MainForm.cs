@@ -208,6 +208,7 @@ namespace DMR
 		private ToolStripMenuItem tsmiDMRID;
 		private ToolStripMenuItem tsmiCalibration;
 		private ToolStripMenuItem tsmiOpenGD77;
+		private ToolStripMenuItem tsmiFirmwareLoader;
 
 
 		private DeserializeDockContent m_deserializeDockContent;
@@ -337,6 +338,8 @@ namespace DMR
 			this.tsmiDMRID = new ToolStripMenuItem();
 			this.tsmiCalibration = new ToolStripMenuItem();
 			this.tsmiOpenGD77 = new ToolStripMenuItem();
+			this.tsmiFirmwareLoader = new ToolStripMenuItem();
+			
 			
 			
 			this.tsmiWindow = new ToolStripMenuItem();
@@ -689,7 +692,8 @@ namespace DMR
 				this.tsmiContactsDownload,
 				this.tsmiCalibration,
 				this.tsmiDMRID,
-				tsmiOpenGD77
+				tsmiOpenGD77,
+				tsmiFirmwareLoader
 			});
 
 			this.tsmiContactsDownload.Name = "tsmiContactsDownload";
@@ -718,6 +722,14 @@ namespace DMR
 			this.tsmiOpenGD77.Text = "OpenGD77 support";
 			this.tsmiOpenGD77.Enabled = true;
 			this.tsmiOpenGD77.Click += new EventHandler(this.tsmiOpenGD77_Click);
+
+
+			this.tsmiFirmwareLoader.Name = "tsmiFirmwareLoader";
+			//this.tsmiCalibration.ShortcutKeys = (Keys)131154;
+			this.tsmiFirmwareLoader.Size = new Size(156, 22);
+			this.tsmiFirmwareLoader.Text = "Firmware loader";
+			this.tsmiFirmwareLoader.Enabled = true;
+			this.tsmiFirmwareLoader.Click += new EventHandler(this.tsmiFirmwareLoader_Click);
 
 			this.tsmiWindow.DropDownItems.AddRange(new ToolStripItem[4]
 			{
@@ -3046,6 +3058,17 @@ namespace DMR
 			openGD77Form(OpenGD77Form.CommsAction.NONE);
 		}
 
+		private void tsmiFirmwareLoader_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			openFileDialog.Filter = "firmware files|*.sgl";
+			if (openFileDialog.ShowDialog() == DialogResult.OK && openFileDialog.FileName != null)
+			{
+				FirmwareLoaderUI firmwareLoaderUI = new FirmwareLoaderUI(openFileDialog.FileName);
+				firmwareLoaderUI.ShowDialog();
+			}
+		}
+		
 		private void tsbtnRead_Click(object sender, EventArgs e)
 		{
 
