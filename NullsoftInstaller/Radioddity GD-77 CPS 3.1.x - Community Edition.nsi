@@ -98,6 +98,8 @@ File "..\bin\Release_3.1.x\Language\Slovenian.chm"
 File "..\bin\Release_3.1.x\Language\Slovenian.xml"
 File "..\bin\Release_3.1.x\Language\Spanish.chm"
 File "..\bin\Release_3.1.x\Language\Spanish.xml"
+File "..\bin\Release_3.1.x\Language\SpanishCatalan.chm"
+File "..\bin\Release_3.1.x\Language\SpanishCatalan.xml"
 File "..\bin\Release_3.1.x\Language\Ukrainian.chm"
 File "..\bin\Release_3.1.x\Language\Ukrainian.xml"
 SectionEnd

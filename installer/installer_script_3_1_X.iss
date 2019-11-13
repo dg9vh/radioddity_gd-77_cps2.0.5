@@ -63,7 +63,9 @@ Source: "..\Language\Portuguese.chm"; DestDir: "{app}\Language"; Flags: ignoreve
 Source: "..\Language\Slovenian.xml"; DestDir: "{app}\Language"; Flags: ignoreversion
 Source: "..\Language\Slovenian.chm"; DestDir: "{app}\Language"; Flags: ignoreversion
 Source: "..\Language\Spanish.xml"; DestDir: "{app}\Language"; Flags: ignoreversion
-Source: "..\Language\Spanish.chm"; DestDir: "{app}\Language"; Flags: ignoreversion
+Source: "..\Language\Spanish.chm"; DestDir: "{app}\Language"; Flags: ignoreversion 
+Source: "..\Language\SpanishCatalan.xml"; DestDir: "{app}\Language"; Flags: ignoreversion
+Source: "..\Language\SpanishCatalan.chm"; DestDir: "{app}\Language"; Flags: ignoreversion
 Source: "..\Language\Ukrainian.xml"; DestDir: "{app}\Language"; Flags: ignoreversion
 Source: "..\Language\Ukrainian.chm"; DestDir: "{app}\Language"; Flags: ignoreversion
 
