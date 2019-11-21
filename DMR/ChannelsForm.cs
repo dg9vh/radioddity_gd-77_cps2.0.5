@@ -166,7 +166,7 @@ namespace DMR
 			else
 			{
 				this.dgvChannels.Rows.Remove(this.dgvChannels.CurrentRow);
-				ChannelForm.data.ClearIndex(index2);
+				ChannelForm.data.ClearIndexAndReset(index2);
 				this.updateAddAndDeleteButtons();
 				MainForm mainForm = base.MdiParent as MainForm;
 				mainForm.DeleteTreeViewNode(this.Node, index);
@@ -184,7 +184,7 @@ namespace DMR
 				num = (int)this.dgvChannels.Rows[1].Tag;
 				this.dgvChannels.Rows.RemoveAt(1);
 				this.Node.Nodes.RemoveAt(index);
-				ChannelForm.data.ClearIndex(num);
+				ChannelForm.data.ClearIndexAndReset(num);
 			}
 			this.updateAddAndDeleteButtons();
 			mainForm.RefreshRelatedForm(base.GetType());
@@ -204,7 +204,7 @@ namespace DMR
 				//if (num != 0)
 				{
 					this.dgvChannels.Rows.Remove(this.dgvChannels.SelectedRows[0]);
-					ChannelForm.data.ClearIndex(num2);
+					ChannelForm.data.ClearIndexAndReset(num2);
 					//mainForm.DeleteTreeViewNode(this.Node, num);// Doesnt seem to work. so init the whole tree afterwards
 					num3++;
 					if (num3 == count)
@@ -396,10 +396,10 @@ namespace DMR
 								ZoneForm.data.Default(num);
 							}*/
 #endif
+							// clear all entries
 							for (int num = 0; num < ChannelForm.data.Count; num++)
 							{
-								ChannelForm.data.ClearIndex(num);
-								ChannelForm.data.Default(num);
+								ChannelForm.data.ClearIndexAndReset(num);
 							}
 						}
 
