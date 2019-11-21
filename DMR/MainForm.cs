@@ -3039,12 +3039,33 @@ namespace DMR
 
 		private void openGD77Form(OpenGD77Form.CommsAction buttonAction)
 		{
+			/*
 			String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
+
+			// If ths standrd port name can't be found so see if we have as saved one
 			if (gd77CommPort == null)
 			{
-				MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
+				string lastCommPort = IniFileUtils.getProfileStringWithDefault("Setup", "LastCommPort", "");
+				if (lastCommPort != "")
+				{
+					gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix(lastCommPort);
+				}
 			}
-			else
+
+			// if no port found so far, open the dialog to let the user select the port
+			if (gd77CommPort == null)
+			{
+				CommPortSelector cps = new CommPortSelector();
+				if (DialogResult.OK == cps.ShowDialog())
+				{
+					gd77CommPort = cps.SelectedPort;
+					IniFileUtils.WriteProfileString("Setup", "LastCommPort", gd77CommPort);// assume they selected something useful !
+				}
+
+				//MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
+			}
+			*/
+			//if (gd77CommPort != null)
 			{
 				this.closeAllForms();
 				OpenGD77Form cf = new OpenGD77Form(buttonAction);
@@ -3062,8 +3083,10 @@ namespace DMR
 		{
 			OpenFileDialog openFileDialog = new OpenFileDialog();
 			openFileDialog.Filter = "firmware files|*.sgl";
+			openFileDialog.InitialDirectory = IniFileUtils.getProfileStringWithDefault("Setup", "LastFirmwareLocation", null);
 			if (openFileDialog.ShowDialog() == DialogResult.OK && openFileDialog.FileName != null)
 			{
+				IniFileUtils.WriteProfileString("Setup", "LastFirmwareLocation", Path.GetDirectoryName(openFileDialog.FileName)); 
 				FirmwareLoaderUI firmwareLoaderUI = new FirmwareLoaderUI(openFileDialog.FileName);
 				firmwareLoaderUI.ShowDialog();
 			}
