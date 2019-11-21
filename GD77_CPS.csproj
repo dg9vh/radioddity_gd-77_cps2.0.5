@@ -140,6 +140,12 @@
     <Compile Include="Extras\FirmwareLoader\FirmwareLoaderUI.Designer.cs">
       <DependentUpon>FirmwareLoaderUI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extras\OpenGD77\CommPortSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extras\OpenGD77\CommPortSelector.Designer.cs">
+      <DependentUpon>CommPortSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extras\OpenGD77\OpenGD77Comms.cs" />
     <Compile Include="Extras\OpenGD77\OpenGD77CommsTransferData.cs" />
     <Compile Include="Extras\OpenGD77\OpenGD77Form.cs">
@@ -416,6 +422,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Extras\FirmwareLoader\FirmwareLoaderUI.resx">
       <DependentUpon>FirmwareLoaderUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extras\OpenGD77\CommPortSelector.resx">
+      <DependentUpon>CommPortSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Extras\OpenGD77\OpenGD77Form.resx">
       <DependentUpon>OpenGD77Form.cs</DependentUpon>

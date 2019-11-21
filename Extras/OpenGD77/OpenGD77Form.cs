@@ -29,7 +29,6 @@ namespace DMR
 		private const int CALIBRATION_DATA_SIZE = 224;
 		private OpenGD77Form.CommsAction _initialAction;
 
-
 		public OpenGD77Form(OpenGD77Form.CommsAction initAction)
 		{
 			_initialAction = initAction;
@@ -39,6 +38,7 @@ namespace DMR
 
 		bool sendCommand(int commandNumber, int x_or_command_option_number = 0, int y = 0, int iSize = 0, int alignment = 0, int isInverted = 0, string message = "")
 		{
+			int retries = 100;
 			byte[] buffer=new byte[64]; 
 			buffer[0] = (byte)'C';
 			buffer[1] = (byte)commandNumber;
@@ -62,13 +62,15 @@ namespace DMR
 
 			}
 			_port.Write(buffer, 0, 32);
-			while (_port.BytesToRead == 0)
+			while (_port.BytesToRead == 0 && retries-- > 0)
 			{
-				Thread.Sleep(0);
+				Thread.Sleep(1);
 			}
-			_port.Read(buffer, 0, 64);
-
-			return ((buffer[1] == commandNumber));
+			if (retries != -1)
+			{
+				_port.Read(buffer, 0, 64);
+			}
+			return ((buffer[1] == commandNumber) && (retries!=-1));
 		}
 
 
@@ -471,7 +473,13 @@ namespace DMR
 				{
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_FLASH:
 						_port.Open();
-						sendCommand(0);// Show CPS screen
+						// show CPS screen
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
 						sendCommand(1);// Clear screen
 						sendCommand(2, 0, 0, 3, 1, 0, "CPS");// Write a line of text to CPS screen at position x=0,y=3 with font size 3, alignment centre
 						sendCommand(2, 0, 16, 3, 1, 0, "Backup");// Write a line of text to CPS screen
@@ -499,7 +507,12 @@ namespace DMR
 						break;
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_CALIBRATION:
 						_port.Open();
-						sendCommand(0);
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
 						sendCommand(1);
 						sendCommand(2, 0, 0, 3, 1, 0, "CPS");// Write a line of text to CPS screen at position x=0,y=3 with font size 3, alignment centre
 						sendCommand(2, 0, 16, 3, 1, 0, "Backup");
@@ -527,7 +540,12 @@ namespace DMR
 						break;
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_EEPROM:
 						_port.Open();
-						sendCommand(0);
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
 						sendCommand(1);
 						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
 						sendCommand(2, 0, 16, 3, 1, 0, "Backup");
@@ -557,7 +575,12 @@ namespace DMR
 
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_FLASH:
 						_port.Open();
-						sendCommand(0);
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
 						sendCommand(1);
 						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
 						sendCommand(2, 0, 16, 3, 1, 0, "Restoring");
@@ -585,7 +608,12 @@ namespace DMR
 						break;
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_CALIBRATION:
 						_port.Open();
-						sendCommand(0);
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
 						sendCommand(1);
 						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
 						sendCommand(2, 0, 16, 3, 1, 0, "Restoring");
@@ -613,7 +641,12 @@ namespace DMR
 						break;
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_EEPROM:
 						_port.Open();
-						sendCommand(0);
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
 						sendCommand(1);
 						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
 						sendCommand(2, 0, 16, 3, 1, 0, "Restoring");
@@ -641,7 +674,13 @@ namespace DMR
 						break;
 					case OpenGD77CommsTransferData.CommsAction.READ_CODEPLUG:
 						_port.Open();
-						sendCommand(0);
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
+
 						sendCommand(1);
 						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
 						sendCommand(2, 0, 16, 3, 1, 0, "Reading");
@@ -695,7 +734,12 @@ namespace DMR
 						break;
 					case OpenGD77CommsTransferData.CommsAction.WRITE_CODEPLUG:
 						_port.Open();
-						sendCommand(0);
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
 						sendCommand(1);
 						sendCommand(2, 0, 0, 3, 1, 0, "CPS");
 						sendCommand(2, 0, 16, 3, 1, 0, "Writing");
@@ -778,7 +822,7 @@ namespace DMR
 		{
 			if (_port==null)
 			{
-				MessageBox.Show("Please select a comm port");
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
 			OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.BACKUP_EEPROM);
@@ -790,7 +834,7 @@ namespace DMR
 		{
 			if (_port==null)
 			{
-				MessageBox.Show("Please select a comm port");
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
 
@@ -803,7 +847,7 @@ namespace DMR
 		{
 			if (_port == null)
 			{
-				MessageBox.Show("Please select a comm port");
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
 
@@ -830,7 +874,7 @@ namespace DMR
 		{
 			if (_port == null)
 			{
-				MessageBox.Show("Please select a comm port");
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
 			if (DialogResult.Yes == MessageBox.Show("Are you sure you want to restore the EEPROM from a previously saved file?", "Warning", MessageBoxButtons.YesNo))
@@ -856,7 +900,7 @@ namespace DMR
 		{
 			if (_port == null)
 			{
-				MessageBox.Show("Please select a comm port");
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
 			if (DialogResult.Yes == MessageBox.Show("Are you sure you want to restore the Calibartion from a previously saved file?", "Warning", MessageBoxButtons.YesNo))
@@ -883,7 +927,7 @@ namespace DMR
 		{
 			if (_port == null)
 			{
-				MessageBox.Show("Please select a comm port");
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
 			if (DialogResult.Yes == MessageBox.Show("Are you sure you want to restore the Flash memory from a previously saved file?", "Warning", MessageBoxButtons.YesNo))
@@ -921,20 +965,45 @@ namespace DMR
 		{
 			try
 			{
-				String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
-				_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
-				_port.ReadTimeout = 1000;
+				String gd77CommPort=null;
+		
 
-				switch (_initialAction)
+				gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
+				if (gd77CommPort == null)
 				{
-					case CommsAction.READ_CODEPLUG:
-						readCodeplug();
-						break;
-					case CommsAction.WRITE_CODEPLUG:
-						writeCodeplug();
-						break;
-					default:
-						break;
+					CommPortSelector cps = new CommPortSelector();
+					if (DialogResult.OK == cps.ShowDialog())
+					{
+						gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix(cps.SelectedPort);
+						IniFileUtils.WriteProfileString("Setup", "LastCommPort", gd77CommPort);// assume they selected something useful !
+					}
+					else
+					{
+						this.Close();
+						return;
+					}
+				}
+
+				if (gd77CommPort==null)
+				{
+					MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
+				}
+				else
+				{
+					_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
+					_port.ReadTimeout = 1000;
+
+					switch (_initialAction)
+					{
+						case CommsAction.READ_CODEPLUG:
+							readCodeplug();
+							break;
+						case CommsAction.WRITE_CODEPLUG:
+							writeCodeplug();
+							break;
+						default:
+							break;
+					}
 				}
 
 			}
@@ -942,6 +1011,7 @@ namespace DMR
 			{
 				_port = null;
 				MessageBox.Show("Failed to open comm port", "Error");
+				IniFileUtils.WriteProfileString("Setup", "LastCommPort", "");// clear any port they may have saved
 			}
 		}
 
@@ -964,7 +1034,7 @@ namespace DMR
 		{			
 			if (_port == null)
 			{
-				MessageBox.Show("Please select a comm port");
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
 
@@ -983,7 +1053,7 @@ namespace DMR
 		{
 			if (_port == null)
 			{
-				MessageBox.Show("Please select a comm port");
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
 

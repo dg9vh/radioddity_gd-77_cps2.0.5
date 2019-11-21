@@ -59,6 +59,52 @@ namespace DMR
 			return null;
 		}
 
+		public static List<string> GetComPortNames()
+		{
+			const string className = "Ports";
+			Guid[] guids = GetClassGUIDs(className);
+			List<string> portNames = new List<string>();
+
+			System.Text.RegularExpressions.Regex friendlyNameToComPort =
+				new System.Text.RegularExpressions.Regex(@".? \((COM\d+)\)$");  // "..... (COMxxx)" -> COMxxxx
+
+			foreach (Guid guid in guids)
+			{
+				// We start at the "root" of the device tree and look for all
+				// devices that match the interface GUID of a disk
+				Guid guidClone = guid;
+				IntPtr h = SetupDiGetClassDevs(ref guidClone, IntPtr.Zero, IntPtr.Zero, DIGCF_PRESENT | DIGCF_PROFILE);
+				if (h.ToInt32() != INVALID_HANDLE_VALUE)
+				{
+					int nDevice = 0;
+					while (true)
+					{
+						SP_DEVINFO_DATA da = new SP_DEVINFO_DATA();
+						da.cbSize = (uint)Marshal.SizeOf(da);
+
+						if (0 == SetupDiEnumDeviceInfo(h, nDevice++, ref da))
+							break;
+
+						uint RegType;
+						byte[] ptrBuf = new byte[BUFFER_SIZE];
+						uint RequiredSize;
+						if (SetupDiGetDeviceRegistryProperty(h, ref da,
+							(uint)SPDRP.FRIENDLYNAME, out RegType, ptrBuf,
+							BUFFER_SIZE, out RequiredSize))
+						{
+							const int utf16terminatorSize_bytes = 2;
+							string friendlyName = System.Text.UnicodeEncoding.Unicode.GetString(ptrBuf, 0, (int)RequiredSize - utf16terminatorSize_bytes);
+
+							portNames.Add(friendlyName);
+						}
+					} // devices
+					SetupDiDestroyDeviceInfoList(h);
+				}
+			} // class guids
+
+			return portNames;
+		}
+
 		/// <summary>
 		/// The SP_DEVINFO_DATA structure defines a device instance that is a member of a device information set.
 		/// </summary>

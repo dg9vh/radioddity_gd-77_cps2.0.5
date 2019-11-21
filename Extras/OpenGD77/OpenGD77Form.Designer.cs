@@ -113,7 +113,7 @@
 			this.txtMessage.Name = "txtMessage";
 			this.txtMessage.Size = new System.Drawing.Size(477, 25);
 			this.txtMessage.TabIndex = 6;
-			this.txtMessage.Text = " OpenGD77 has been detected";
+			this.txtMessage.Text = ".";
 			// 
 			// btnBackupCalibration
 			// 
