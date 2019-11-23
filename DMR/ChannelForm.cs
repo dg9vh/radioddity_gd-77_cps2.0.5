@@ -1880,6 +1880,18 @@ namespace DMR
 				EmergencyForm.dataEx.ClearByData(index);
 				NormalScanForm.data.ClearByData(index);
 			}
+			
+			public void ClearIndexAndReset(int index)
+			{
+				/*
+				 * The slot index bit is cleared,
+				 * the Channel's name is set to blank,
+				 * and the channel is populated with the default state.
+				 */
+				this.ClearIndex(index);
+				this.SetName(index, "");
+				this.Default(index);
+			}
 
 			public void ClearByContact(int contactIndex)
 			{
