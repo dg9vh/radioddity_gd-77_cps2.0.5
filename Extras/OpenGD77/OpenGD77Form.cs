@@ -603,7 +603,8 @@ namespace DMR
 							displayMessage("Error while restoring");
 							dataObj.responseCode = 1;
 						}
-						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
+						sendCommand(6, 2);// Save settings and VFO
+						sendCommand(6, 1);// Reboot
 						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_CALIBRATION:
@@ -621,6 +622,7 @@ namespace DMR
 						sendCommand(3);
 						sendCommand(6, 4);// flash red LED
 
+
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteFlash;
 						dataObj.localDataBufferStartPosition = 0;
 						dataObj.startDataAddressInTheRadio = 0x8f000;
@@ -636,7 +638,8 @@ namespace DMR
 							displayMessage("Error while restoring Calibration");
 							dataObj.responseCode = 1;
 						}
-						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
+						sendCommand(6, 2);// Save settings and VFO's to codeplug
+						sendCommand(6, 1);// Reboot
 						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_EEPROM:
@@ -669,7 +672,7 @@ namespace DMR
 							displayMessage("Error while restoring");
 							dataObj.responseCode = 1;
 						}
-						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
+						sendCommand(6, 0);// save settings (Not VFOs ) and reboot
 						_port.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.READ_CODEPLUG:
@@ -687,6 +690,7 @@ namespace DMR
 						sendCommand(2, 0, 32, 3, 1, 0, "Codeplug");
 						sendCommand(3);
 						sendCommand(6,3);// flash green LED
+						sendCommand(6, 2);// Save settuings VFO's to codeplug
 
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadEEPROM;
 						dataObj.localDataBufferStartPosition = 0x00E0;
@@ -746,6 +750,7 @@ namespace DMR
 						sendCommand(2, 0, 32, 3, 1, 0, "Codeplug");
 						sendCommand(3);
 						sendCommand(6,4);// flash red LED
+						sendCommand(6, 2);// Save settings and VFOs
 
 						dataObj.dataBuff = MainForm.DataToByte();
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteEEPROM;
@@ -790,7 +795,8 @@ namespace DMR
 						{
 							displayMessage("Codeplug write complete");
 						}
-						sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
+
+						sendCommand(6, 0);// Save settings (NOT VFOs)
 						_port.Close();
 						break;
 

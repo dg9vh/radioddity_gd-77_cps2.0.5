@@ -298,7 +298,8 @@ namespace DMR
 					//displayMessage("Error while restoring");
 					dataObj.responseCode = 1;
 				}
-				sendCommand(6, 1);// Reload VFO from codeplug, save settings and reboot
+				sendCommand(6, 2);// Save settings and VFO's
+				sendCommand(6, 1);// Reboot
 				_port.Close();
 				MessageBox.Show("Calibration update completed");
 			}
