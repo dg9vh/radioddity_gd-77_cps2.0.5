@@ -135,10 +135,7 @@ namespace DMR
 		}
 
 
-
-
-
-		private bool ReadFlashOrEEPROM(OpenGD77CommsTransferData dataObj)
+		private bool ReadFlashOrEEPROMOrROMOrScreengrab(OpenGD77CommsTransferData dataObj)
 		{
 			int old_progress = 0;
 			byte[] sendbuffer = new byte[512];
@@ -201,135 +198,6 @@ namespace DMR
 //			close_data_mode();
 			return true;
 		}
-
-		private bool ReadMCUROM(OpenGD77CommsTransferData dataObj)
-		{
-			int old_progress = 0;
-			byte[] sendbuffer = new byte[512];
-			byte[] readbuffer = new byte[512];
-			byte[] com_Buf = new byte[256];
-
-			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
-			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
-
-			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
-
-			while (size > 0)
-			{
-				if (size > MAX_TRANSFER_SIZE)
-				{
-					size = MAX_TRANSFER_SIZE;
-				}
-
-				sendbuffer[0] = (byte)'R';
-				sendbuffer[1] = (byte)dataObj.mode;
-				sendbuffer[2] = (byte)((currentDataAddressInTheRadio >> 24) & 0xFF);
-				sendbuffer[3] = (byte)((currentDataAddressInTheRadio >> 16) & 0xFF);
-				sendbuffer[4] = (byte)((currentDataAddressInTheRadio >> 8) & 0xFF);
-				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
-				sendbuffer[6] = (byte)((size >> 8) & 0xFF);
-				sendbuffer[7] = (byte)((size >> 0) & 0xFF);
-				_port.Write(sendbuffer, 0, 8);
-				while (_port.BytesToRead == 0)
-				{
-					Thread.Sleep(0);
-				}
-				_port.Read(readbuffer, 0, 64);
-
-				if (readbuffer[0] == 'R')
-				{
-					int len = (readbuffer[1] << 8) + (readbuffer[2] << 0);
-					for (int i = 0; i < len; i++)
-					{
-						dataObj.dataBuff[currentDataAddressInLocalBuffer++] = readbuffer[i + 3];
-					}
-
-					int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
-					if (old_progress != progress)
-					{
-						updateProgess(progress);
-						old_progress = progress;
-					}
-
-					currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
-				}
-				else
-				{
-					Console.WriteLine(String.Format("read stopped (error at {0:X8})", currentDataAddressInTheRadio));
-//					close_data_mode();
-					return false;
-
-				}
-				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
-			}
-//			close_data_mode();
-			return true;
-		}
-
-		private bool ReadScreengrab(OpenGD77CommsTransferData dataObj)
-		{
-			int old_progress = 0;
-			byte[] sendbuffer = new byte[512];
-			byte[] readbuffer = new byte[512];
-			byte[] com_Buf = new byte[256];
-
-			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
-			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
-
-			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
-
-			while (size > 0)
-			{
-				if (size > MAX_TRANSFER_SIZE)
-				{
-					size = MAX_TRANSFER_SIZE;
-				}
-
-				sendbuffer[0] = (byte)'R';
-				sendbuffer[1] = (byte)dataObj.mode;
-				sendbuffer[2] = (byte)((currentDataAddressInTheRadio >> 24) & 0xFF);
-				sendbuffer[3] = (byte)((currentDataAddressInTheRadio >> 16) & 0xFF);
-				sendbuffer[4] = (byte)((currentDataAddressInTheRadio >> 8) & 0xFF);
-				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
-				sendbuffer[6] = (byte)((size >> 8) & 0xFF);
-				sendbuffer[7] = (byte)((size >> 0) & 0xFF);
-				_port.Write(sendbuffer, 0, 8);
-				while (_port.BytesToRead == 0)
-				{
-					Thread.Sleep(0);
-				}
-				_port.Read(readbuffer, 0, 64);
-
-				if (readbuffer[0] == 'R')
-				{
-					int len = (readbuffer[1] << 8) + (readbuffer[2] << 0);
-					for (int i = 0; i < len; i++)
-					{
-						dataObj.dataBuff[currentDataAddressInLocalBuffer++] = readbuffer[i + 3];
-					}
-
-					int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
-					if (old_progress != progress)
-					{
-						updateProgess(progress);
-						old_progress = progress;
-					}
-
-					currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
-				}
-				else
-				{
-					Console.WriteLine(String.Format("read stopped (error at {0:X8})", currentDataAddressInTheRadio));
-					//					close_data_mode();
-					return false;
-
-				}
-				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
-			}
-			//			close_data_mode();
-			return true;
-		}
-
 
 		private bool WriteFlash(OpenGD77CommsTransferData dataObj)
 		{
@@ -591,11 +459,31 @@ namespace DMR
 							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
 							break;
 						case OpenGD77CommsTransferData.CommsAction.DOWLOAD_SCREENGRAB:
-							_saveFileDialog.Filter = "Screengrab files (*.bin)|*.bin";
+
+							Bitmap bm = new Bitmap(128, 64);
+							Graphics g = Graphics.FromImage(bm);
+							g.Clear(Color.White);
+							
+							for (int stripe = 0; stripe < 8; stripe++)
+							{
+								for (int column = 0; column < 128; column++)
+								{
+									for (int line = 0; line < 8; line++)
+									{
+										if (((dataObj.dataBuff[(stripe * 128) + column] >> line) & 0x01) !=0 )
+										{
+											bm.SetPixel(column, stripe * 8 + line, Color.Black);
+										}
+									}
+								}
+							}
+
+							_saveFileDialog.Filter = "Screengrab files (*.png)|*.png";
 							_saveFileDialog.FilterIndex = 1;
 							if (_saveFileDialog.ShowDialog() == DialogResult.OK)
 							{
-								File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
+								bm.Save(_saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
+								//File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
 							}
 							enableDisableAllButtons(true);
 							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
@@ -646,7 +534,7 @@ namespace DMR
 						dataObj.startDataAddressInTheRadio = 0;
 						dataObj.transferLength = 1024 * 1024;
 						displayMessage("Reading Flash");
-						if (!ReadFlashOrEEPROM(dataObj))
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
 							displayMessage("Error while reading flash");
 							dataObj.responseCode = 1;
@@ -679,7 +567,7 @@ namespace DMR
 						dataObj.startDataAddressInTheRadio = 0x8f000;
 						dataObj.transferLength = CALIBRATION_DATA_SIZE;
 						displayMessage("Reading Calibration");
-						if (!ReadFlashOrEEPROM(dataObj))
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
 							displayMessage("Error while reading calibration");
 							dataObj.responseCode = 1;
@@ -713,7 +601,7 @@ namespace DMR
 						dataObj.startDataAddressInTheRadio = 0;
 						dataObj.transferLength = 64*1024;
 						displayMessage("Reading EEPROM");
-						if (!ReadFlashOrEEPROM(dataObj))
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
 							displayMessage("Error while reading EEPROM");
 							dataObj.responseCode = 1;
@@ -851,7 +739,7 @@ namespace DMR
 						dataObj.transferLength =  0x6000 - dataObj.localDataBufferStartPosition;
 						displayMessage(String.Format("Reading EEPROM 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
 
-						if (!ReadFlashOrEEPROM(dataObj))
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
 							displayMessage("Error while reading");
 							dataObj.responseCode = 1;
@@ -863,7 +751,7 @@ namespace DMR
 						dataObj.startDataAddressInTheRadio = dataObj.localDataBufferStartPosition;
 						dataObj.transferLength = 0xB000 - dataObj.localDataBufferStartPosition;
 						displayMessage(String.Format("Reading EEPROM 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, (dataObj.localDataBufferStartPosition + dataObj.transferLength)));
-						if (!ReadFlashOrEEPROM(dataObj))
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
 							displayMessage("Error while reading");
 							dataObj.responseCode = 1;
@@ -876,7 +764,7 @@ namespace DMR
 						dataObj.transferLength = CODEPLUG_FLASH_PART_END - dataObj.localDataBufferStartPosition;
 						displayMessage(String.Format("Reading Flash 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 
-						if (!ReadFlashOrEEPROM(dataObj))
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
 							displayMessage("Error while reading");
 							dataObj.responseCode = 1;
@@ -975,7 +863,7 @@ namespace DMR
 						dataObj.startDataAddressInTheRadio = 0;
 						dataObj.transferLength = 512 * 1024;
 						displayMessage("Reading MCU ROM");
-						if (!ReadMCUROM(dataObj))
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
 							displayMessage("Error while reading MCU ROM");
 							dataObj.responseCode = 1;
@@ -1004,7 +892,7 @@ namespace DMR
 						dataObj.startDataAddressInTheRadio = 0;
 						dataObj.transferLength = 1 * 1024;
 						displayMessage("Downloading Screengrab");
-						if (!ReadFlashOrEEPROM(dataObj))
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
 							displayMessage("Error while downloading Screengrab");
 							dataObj.responseCode = 1;
