@@ -134,6 +134,10 @@ namespace DMR
 			//data_mode = OpenGD77CommsTransferData.CommsDataMode.DataModeNone;
 		}
 
+
+
+
+
 		private bool ReadFlashOrEEPROM(OpenGD77CommsTransferData dataObj)
 		{
 			int old_progress = 0;
@@ -197,6 +201,135 @@ namespace DMR
 //			close_data_mode();
 			return true;
 		}
+
+		private bool ReadMCUROM(OpenGD77CommsTransferData dataObj)
+		{
+			int old_progress = 0;
+			byte[] sendbuffer = new byte[512];
+			byte[] readbuffer = new byte[512];
+			byte[] com_Buf = new byte[256];
+
+			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
+			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
+
+			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
+
+			while (size > 0)
+			{
+				if (size > MAX_TRANSFER_SIZE)
+				{
+					size = MAX_TRANSFER_SIZE;
+				}
+
+				sendbuffer[0] = (byte)'R';
+				sendbuffer[1] = (byte)dataObj.mode;
+				sendbuffer[2] = (byte)((currentDataAddressInTheRadio >> 24) & 0xFF);
+				sendbuffer[3] = (byte)((currentDataAddressInTheRadio >> 16) & 0xFF);
+				sendbuffer[4] = (byte)((currentDataAddressInTheRadio >> 8) & 0xFF);
+				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
+				sendbuffer[6] = (byte)((size >> 8) & 0xFF);
+				sendbuffer[7] = (byte)((size >> 0) & 0xFF);
+				_port.Write(sendbuffer, 0, 8);
+				while (_port.BytesToRead == 0)
+				{
+					Thread.Sleep(0);
+				}
+				_port.Read(readbuffer, 0, 64);
+
+				if (readbuffer[0] == 'R')
+				{
+					int len = (readbuffer[1] << 8) + (readbuffer[2] << 0);
+					for (int i = 0; i < len; i++)
+					{
+						dataObj.dataBuff[currentDataAddressInLocalBuffer++] = readbuffer[i + 3];
+					}
+
+					int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
+					if (old_progress != progress)
+					{
+						updateProgess(progress);
+						old_progress = progress;
+					}
+
+					currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
+				}
+				else
+				{
+					Console.WriteLine(String.Format("read stopped (error at {0:X8})", currentDataAddressInTheRadio));
+//					close_data_mode();
+					return false;
+
+				}
+				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
+			}
+//			close_data_mode();
+			return true;
+		}
+
+		private bool ReadScreengrab(OpenGD77CommsTransferData dataObj)
+		{
+			int old_progress = 0;
+			byte[] sendbuffer = new byte[512];
+			byte[] readbuffer = new byte[512];
+			byte[] com_Buf = new byte[256];
+
+			int currentDataAddressInTheRadio = dataObj.startDataAddressInTheRadio;
+			int currentDataAddressInLocalBuffer = dataObj.localDataBufferStartPosition;
+
+			int size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
+
+			while (size > 0)
+			{
+				if (size > MAX_TRANSFER_SIZE)
+				{
+					size = MAX_TRANSFER_SIZE;
+				}
+
+				sendbuffer[0] = (byte)'R';
+				sendbuffer[1] = (byte)dataObj.mode;
+				sendbuffer[2] = (byte)((currentDataAddressInTheRadio >> 24) & 0xFF);
+				sendbuffer[3] = (byte)((currentDataAddressInTheRadio >> 16) & 0xFF);
+				sendbuffer[4] = (byte)((currentDataAddressInTheRadio >> 8) & 0xFF);
+				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
+				sendbuffer[6] = (byte)((size >> 8) & 0xFF);
+				sendbuffer[7] = (byte)((size >> 0) & 0xFF);
+				_port.Write(sendbuffer, 0, 8);
+				while (_port.BytesToRead == 0)
+				{
+					Thread.Sleep(0);
+				}
+				_port.Read(readbuffer, 0, 64);
+
+				if (readbuffer[0] == 'R')
+				{
+					int len = (readbuffer[1] << 8) + (readbuffer[2] << 0);
+					for (int i = 0; i < len; i++)
+					{
+						dataObj.dataBuff[currentDataAddressInLocalBuffer++] = readbuffer[i + 3];
+					}
+
+					int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
+					if (old_progress != progress)
+					{
+						updateProgess(progress);
+						old_progress = progress;
+					}
+
+					currentDataAddressInTheRadio = currentDataAddressInTheRadio + len;
+				}
+				else
+				{
+					Console.WriteLine(String.Format("read stopped (error at {0:X8})", currentDataAddressInTheRadio));
+					//					close_data_mode();
+					return false;
+
+				}
+				size = (dataObj.startDataAddressInTheRadio + dataObj.transferLength) - currentDataAddressInTheRadio;
+			}
+			//			close_data_mode();
+			return true;
+		}
+
 
 		private bool WriteFlash(OpenGD77CommsTransferData dataObj)
 		{
@@ -446,6 +579,26 @@ namespace DMR
 							{
 								this.Close();
 							}
+							break;
+						case OpenGD77CommsTransferData.CommsAction.BACKUP_MCU_ROM:
+							_saveFileDialog.Filter = "MCU ROM (*.bin)|*.bin";
+							_saveFileDialog.FilterIndex = 1;
+							if (_saveFileDialog.ShowDialog() == DialogResult.OK)
+							{
+								File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
+							}
+							enableDisableAllButtons(true);
+							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
+							break;
+						case OpenGD77CommsTransferData.CommsAction.DOWLOAD_SCREENGRAB:
+							_saveFileDialog.Filter = "Screengrab files (*.bin)|*.bin";
+							_saveFileDialog.FilterIndex = 1;
+							if (_saveFileDialog.ShowDialog() == DialogResult.OK)
+							{
+								File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
+							}
+							enableDisableAllButtons(true);
+							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
 							break;
 					}
 				}
@@ -800,6 +953,70 @@ namespace DMR
 						_port.Close();
 						break;
 
+					case OpenGD77CommsTransferData.CommsAction.BACKUP_MCU_ROM:
+						_port.Open();
+						// show CPS screen
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
+						sendCommand(1);// Clear screen
+						sendCommand(2, 0, 0, 3, 1, 0, "CPS");// Write a line of text to CPS screen at position x=0,y=3 with font size 3, alignment centre
+						sendCommand(2, 0, 16, 3, 1, 0, "Backup");// Write a line of text to CPS screen
+						sendCommand(2, 0, 32, 3, 1, 0, "MCU ROM");// Write a line of text to CPS screen
+						sendCommand(3);// render CPS
+						sendCommand(6, 3);// flash green LED
+
+						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadMCUROM;
+						dataObj.dataBuff = new Byte[512 * 1024];
+						dataObj.localDataBufferStartPosition = 0;
+						dataObj.startDataAddressInTheRadio = 0;
+						dataObj.transferLength = 512 * 1024;
+						displayMessage("Reading MCU ROM");
+						if (!ReadMCUROM(dataObj))
+						{
+							displayMessage("Error while reading MCU ROM");
+							dataObj.responseCode = 1;
+						}
+						else
+						{
+							displayMessage("");
+						}
+						sendCommand(5);// close CPS screen
+						_port.Close();
+						break;
+
+					case OpenGD77CommsTransferData.CommsAction.DOWLOAD_SCREENGRAB:
+						_port.Open();
+						// show CPS screen
+						if (!sendCommand(0))
+						{
+							displayMessage("Error connecting to the OpenGD77");
+							dataObj.responseCode = 1;
+							break;
+						}
+
+						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadScreenGrab;
+						dataObj.dataBuff = new Byte[1 * 1024];
+						dataObj.localDataBufferStartPosition = 0;
+						dataObj.startDataAddressInTheRadio = 0;
+						dataObj.transferLength = 1 * 1024;
+						displayMessage("Downloading Screengrab");
+						if (!ReadFlashOrEEPROM(dataObj))
+						{
+							displayMessage("Error while downloading Screengrab");
+							dataObj.responseCode = 1;
+						}
+						else
+						{
+							displayMessage("");
+						}
+						sendCommand(5);// close CPS screen
+						_port.Close();
+						break;
+
 				}
 			}
 			catch (Exception ex)
@@ -1071,6 +1288,30 @@ namespace DMR
 		private void btnWriteCodeplug_Click(object sender, EventArgs e)
 		{
 			writeCodeplug();
+		}
+
+		private void btnBackupMCUROM_Click(object sender, EventArgs e)
+		{
+			if (_port == null)
+			{
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
+				return;
+			}
+			OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.BACKUP_MCU_ROM);
+			enableDisableAllButtons(false);
+			perFormCommsTask(dataObj);
+		}
+
+		private void btnDownloadScreenGrab_Click(object sender, EventArgs e)
+		{
+			if (_port == null)
+			{
+				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
+				return;
+			}
+			OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.DOWLOAD_SCREENGRAB);
+			enableDisableAllButtons(false);
+			perFormCommsTask(dataObj);
 		}
 	}
 }

@@ -38,6 +38,8 @@
 			this.txtMessage = new System.Windows.Forms.Label();
 			this.btnBackupCalibration = new System.Windows.Forms.Button();
 			this.btnRestoreCalibration = new System.Windows.Forms.Button();
+			this.btnBackupMCUROM = new System.Windows.Forms.Button();
+			this.btnDownloadScreenGrab = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnBackupEEPROM
@@ -135,6 +137,26 @@
 			this.btnRestoreCalibration.UseVisualStyleBackColor = true;
 			this.btnRestoreCalibration.Click += new System.EventHandler(this.btnRestoreCalibration_Click);
 			// 
+			// btnBackupMCUROM
+			// 
+			this.btnBackupMCUROM.Location = new System.Drawing.Point(172, 12);
+			this.btnBackupMCUROM.Name = "btnBackupMCUROM";
+			this.btnBackupMCUROM.Size = new System.Drawing.Size(131, 23);
+			this.btnBackupMCUROM.TabIndex = 5;
+			this.btnBackupMCUROM.Text = "Backup MCU ROM";
+			this.btnBackupMCUROM.UseVisualStyleBackColor = true;
+			this.btnBackupMCUROM.Click += new System.EventHandler(this.btnBackupMCUROM_Click);
+			// 
+			// btnDownloadScreenGrab
+			// 
+			this.btnDownloadScreenGrab.Location = new System.Drawing.Point(172, 41);
+			this.btnDownloadScreenGrab.Name = "btnDownloadScreenGrab";
+			this.btnDownloadScreenGrab.Size = new System.Drawing.Size(131, 23);
+			this.btnDownloadScreenGrab.TabIndex = 5;
+			this.btnDownloadScreenGrab.Text = "Download screengrab";
+			this.btnDownloadScreenGrab.UseVisualStyleBackColor = true;
+			this.btnDownloadScreenGrab.Click += new System.EventHandler(this.btnDownloadScreenGrab_Click);
+			// 
 			// OpenGD77Form
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -142,6 +164,8 @@
 			this.ClientSize = new System.Drawing.Size(505, 290);
 			this.Controls.Add(this.txtMessage);
 			this.Controls.Add(this.btnRestoreCalibration);
+			this.Controls.Add(this.btnDownloadScreenGrab);
+			this.Controls.Add(this.btnBackupMCUROM);
 			this.Controls.Add(this.btnBackupCalibration);
 			this.Controls.Add(this.btnRestoreFlash);
 			this.Controls.Add(this.btnBackupFlash);
@@ -171,5 +195,7 @@
 		private System.Windows.Forms.Label txtMessage;
 		private System.Windows.Forms.Button btnBackupCalibration;
 		private System.Windows.Forms.Button btnRestoreCalibration;
+		private System.Windows.Forms.Button btnBackupMCUROM;
+		private System.Windows.Forms.Button btnDownloadScreenGrab;
 	}
 }
