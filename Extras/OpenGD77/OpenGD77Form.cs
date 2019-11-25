@@ -879,13 +879,14 @@ namespace DMR
 					case OpenGD77CommsTransferData.CommsAction.DOWLOAD_SCREENGRAB:
 						_port.Open();
 						// show CPS screen
+						/*
 						if (!sendCommand(0))
 						{
 							displayMessage("Error connecting to the OpenGD77");
 							dataObj.responseCode = 1;
 							break;
 						}
-
+						*/
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadScreenGrab;
 						dataObj.dataBuff = new Byte[1 * 1024];
 						dataObj.localDataBufferStartPosition = 0;
@@ -901,7 +902,7 @@ namespace DMR
 						{
 							displayMessage("");
 						}
-						sendCommand(5);// close CPS screen
+						//sendCommand(5);// close CPS screen
 						_port.Close();
 						break;
 
