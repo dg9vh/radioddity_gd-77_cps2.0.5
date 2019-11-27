@@ -462,7 +462,7 @@ namespace DMR
 
 							Bitmap bm = new Bitmap(128, 64);
 							Graphics g = Graphics.FromImage(bm);
-							g.Clear(Color.White);
+							g.Clear(Color.LightGray);
 							
 							for (int stripe = 0; stripe < 8; stripe++)
 							{
@@ -477,6 +477,8 @@ namespace DMR
 									}
 								}
 							}
+
+							Clipboard.SetImage(bm);
 
 							_saveFileDialog.Filter = "Screengrab files (*.png)|*.png";
 							_saveFileDialog.FilterIndex = 1;
