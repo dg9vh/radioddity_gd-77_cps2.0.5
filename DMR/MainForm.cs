@@ -20,8 +20,8 @@ namespace DMR
 	public class MainForm : Form
 	{
 
-#if CP_VER_3_0_6
-		private const string DEFAULT_DATA_FILE_NAME = "Default306.dat";
+#if OpenGD77
+		private const string DEFAULT_DATA_FILE_NAME = "DefaultOpenGD77.dat";
 #elif CP_VER_3_1_X
 		private const string DEFAULT_DATA_FILE_NAME = "Default31X.dat";
 #endif
@@ -2750,12 +2750,14 @@ namespace DMR
 				MainForm.CurFileName = fileName;
 				IniFileUtils.WriteProfileString("Setup", "LastFilePath", fileName);
 				this.closeAllForms();
-#if CP_VER_3_1_X
+
+#if OpenGD77
 				if (!checkCodeplugVersion311(array))			//Check to see if this is not a 3.1.1 codeplug
 				{
 					convertCodeplug(array);					     //Convert layout from 3.0.6 to 3.1.x
 				}
-#endif        
+#endif    
+
 				MainForm.ByteToData(array,true);
 				this.InitTree();
 				this.Text = getMainTitleStub() + " " + fileName;
@@ -3381,7 +3383,8 @@ namespace DMR
 			return array;
 		}
 
-#if CP_VER_3_1_X
+#if OpenGD77
+
 		//CJD  Check Codeplug and try to determine if it is a V3.1.1 type by looking at the Rx Group Entries. 
 
 		public static bool checkCodeplugVersion311(byte[] cplg)

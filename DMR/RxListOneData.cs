@@ -13,9 +13,9 @@ namespace DMR
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct RxListOneData
 	{
-#if CP_VER_3_0_6
+#if OpenGD77
 		public const int LEN_RX_LIST_NAME = 16;
-		public const int CNT_CONTACT_PER_RX_LIST = 15;
+		public const int CNT_CONTACT_PER_RX_LIST = 32;
 
 #elif CP_VER_3_1_X
 		public const int LEN_RX_LIST_NAME = 16;

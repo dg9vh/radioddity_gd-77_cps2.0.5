@@ -17,13 +17,24 @@ namespace DMR
 {
 	public class ZoneForm : DockContent, IDisp
 	{
+		const int ZONE_NAME_LENGTH = 16;
+		const int ZONES_IN_USE_DATA_LENGTH = 32;
+#if OpenGD77
+		const int NUM_CHANNELS_PER_ZONE = 80;
+		const int NUM_ZONES = 68;
+#elif CP_VER_3_1_X
+		const int NUM_CHANNELS_PER_ZONE	= 16;
+		const int NUM_ZONES				= 250;
+#endif
+		const int UNKNOWN_VAR_OF_32 = NUM_CHANNELS_PER_ZONE + ZONE_NAME_LENGTH;
+
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct ZoneOne
 		{
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = ZONE_NAME_LENGTH)]
 			private byte[] name;
 
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = NUM_CHANNELS_PER_ZONE)]
 			private ushort[] chList;
 
 
@@ -58,8 +69,8 @@ namespace DMR
 			{
 				
 				this = default(ZoneOne);
-				this.name = new byte[16];
-				this.chList = new ushort[16];
+				this.name = new byte[ZONE_NAME_LENGTH];
+				this.chList = new ushort[NUM_CHANNELS_PER_ZONE];
 			}
 
 			// Roger Clark. Added copy constructor
@@ -67,22 +78,22 @@ namespace DMR
 			{
 
 				this = default(ZoneOne);
-				this.name = new byte[16];
-				this.chList = new ushort[16];
-				Array.Copy(zone.name, this.name, 16);
-				Array.Copy(zone.chList, this.chList, 16);
+				this.name = new byte[ZONE_NAME_LENGTH];
+				this.chList = new ushort[NUM_CHANNELS_PER_ZONE];
+				Array.Copy(zone.name, this.name, ZONE_NAME_LENGTH);
+				Array.Copy(zone.chList, this.chList, NUM_CHANNELS_PER_ZONE);
 			}
 
 			public byte[] ToEerom()
 			{
 				int num = 0;
-				byte[] array = new byte[32];
+				byte[] array = new byte[UNKNOWN_VAR_OF_32];// Was 32 for the offical CPS, but I don't know why its 32 really
 				array.Fill((byte)0);
-				Array.Copy(this.name, array, 16);
+				Array.Copy(this.name, array, ZONE_NAME_LENGTH);
 				ushort[] array2 = this.chList;
 				for (int i = 0; i < array2.Length; i++)
 				{
-					array[16 + num] = (byte)this.chList[num];
+					array[ZONE_NAME_LENGTH + num] = (byte)this.chList[num];
 				}
 				return array;
 			}
@@ -132,10 +143,10 @@ namespace DMR
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public class Zone : IData
 		{
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = ZONES_IN_USE_DATA_LENGTH)]
 			private byte[] zoneIndex;
 
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 250)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = NUM_ZONES)]
 			private ZoneOne[] zoneList;
 
 			public byte[] ZoneIndex
@@ -178,7 +189,7 @@ namespace DMR
 			{
 				get
 				{
-					return 250;
+					return NUM_ZONES;
 				}
 			}
 
@@ -241,8 +252,8 @@ namespace DMR
 			public Zone()
 			{
 				int num = 0;
-				this.zoneIndex = new byte[32];
-				this.zoneList = new ZoneOne[250];
+				this.zoneIndex = new byte[ZONES_IN_USE_DATA_LENGTH];
+				this.zoneList = new ZoneOne[NUM_ZONES];
 				for (num = 0; num < this.zoneList.Length; num++)
 				{
 					this.zoneList[num] = new ZoneOne(num);
@@ -328,7 +339,7 @@ namespace DMR
 
 			public bool DataIsValid(int index)
 			{
-				if (index < 250)
+				if (index < NUM_ZONES)
 				{
 					BitArray bitArray = new BitArray(this.zoneIndex);
 					return bitArray[index];
@@ -338,7 +349,7 @@ namespace DMR
 
 			public bool ZoneChIsValid(int index)
 			{
-				if (index < 250)
+				if (index < NUM_ZONES)
 				{
 					BitArray bitArray = new BitArray(this.zoneIndex);
 					if (bitArray[index] && this.zoneList[index].ChList[0] != 0)
@@ -440,7 +451,7 @@ namespace DMR
 			public byte[] ToEerom(int index, int length)
 			{
 				int num = 0;
-				byte[] array = new byte[32 * length];
+				byte[] array = new byte[UNKNOWN_VAR_OF_32 * length];// I'm not sure why this is 32 
 				for (num = 0; num < length; num++)
 				{
 					byte[] array2 = this.ZoneList[index + num].ToEerom();
@@ -592,7 +603,7 @@ namespace DMR
 			{
 				get
 				{
-					if (this.curZone < 250)
+					if (this.curZone < NUM_ZONES)
 					{
 						if (ZoneForm.data.ZoneChIsValid(this.curZone))
 						{
@@ -604,7 +615,7 @@ namespace DMR
 				}
 				set
 				{
-					if (value < 250)
+					if (value < NUM_ZONES)
 					{
 						this.curZone = (ushort)value;
 					}
@@ -653,7 +664,7 @@ namespace DMR
 			{
 				get
 				{
-					if (this.subZone < 250)
+					if (this.subZone < NUM_ZONES)
 					{
 						if (ZoneForm.data.ZoneChIsValid(this.subZone))
 						{
@@ -665,7 +676,7 @@ namespace DMR
 				}
 				set
 				{
-					if (value < 250)
+					if (value < NUM_ZONES)
 					{
 						this.subZone = (ushort)value;
 					}
@@ -1316,7 +1327,7 @@ namespace DMR
 			int count = this.lstUnselected.SelectedIndices.Count;
 			int num2 = this.lstUnselected.SelectedIndices[count - 1];
 			this.lstSelected.SelectedItems.Clear();
-			while (this.lstUnselected.SelectedItems.Count > 0 && this.lstSelected.Items.Count < 16)
+			while (this.lstUnselected.SelectedItems.Count > 0 && this.lstSelected.Items.Count < NUM_CHANNELS_PER_ZONE)
 			{
 				SelectedItemUtils @class = (SelectedItemUtils)this.lstUnselected.SelectedItems[0];
 				@class.method_1(this.lstSelected.Items.Count);
@@ -1466,7 +1477,7 @@ namespace DMR
 		private void method_5()
 		{
 			int num = Convert.ToInt32(base.Tag);
-			this.btnAdd.Enabled = (this.lstUnselected.Items.Count > 0 && this.lstSelected.Items.Count < 16);
+			this.btnAdd.Enabled = (this.lstUnselected.Items.Count > 0 && this.lstSelected.Items.Count < NUM_CHANNELS_PER_ZONE);
 			if (num == 0 && this.lstSelected.SelectedIndices.Contains(0))
 			{
 				this.btnDel.Enabled = false;
@@ -1553,7 +1564,7 @@ namespace DMR
 
 		private void tsmiAdd_Click(object sender, EventArgs e)
 		{
-			if (this.Node.Parent.Nodes.Count < 250)
+			if (this.Node.Parent.Nodes.Count < NUM_ZONES)
 			{
 				this.SaveData();
 				TreeNodeItem treeNodeItem = this.Node.Tag as TreeNodeItem;
@@ -1597,7 +1608,7 @@ namespace DMR
 
 		private void method_6()
 		{
-			this.tsbtnAdd.Enabled = (this.Node.Parent.Nodes.Count != 250);
+			this.tsbtnAdd.Enabled = (this.Node.Parent.Nodes.Count != NUM_ZONES);
 			this.tsbtnDel.Enabled = (this.Node.Parent.Nodes.Count != 1 && this.Node.Index != 0);
 			this.tsbtnFirst.Enabled = (this.Node != this.Node.Parent.FirstNode);
 			this.tsbtnPrev.Enabled = (this.Node != this.Node.Parent.FirstNode);

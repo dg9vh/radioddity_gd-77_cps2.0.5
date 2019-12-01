@@ -28,8 +28,8 @@ namespace DMR
 		private void AboutForm_Load(object sender, EventArgs e)
 		{
 			Settings.smethod_68(this);
-#if CP_VER_3_0_6
-			this.lblVersion.Text = "GD-77 CPS 3.0.6 Community Edition";
+#if OpenGD77
+			this.lblVersion.Text = "OpenGD77 CPS Community Edition";
 #elif CP_VER_3_1_X
 			this.lblVersion.Text = "GD-77 CPS 3.1.x Community Edition";
 #endif

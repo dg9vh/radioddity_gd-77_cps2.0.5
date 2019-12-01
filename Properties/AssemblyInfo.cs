@@ -7,8 +7,8 @@ using System.Runtime.InteropServices;
 [assembly: Guid("5fe60217-045f-4e01-82b5-3953a1856b3f")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: AssemblyTrademark("")]
-#if CP_VER_3_0_6
-[assembly: AssemblyTitle("GD-77 CPS V3.0.6 Community Edition")]
+#if OpenGD77
+[assembly: AssemblyTitle("OpenGD77 CPS Community Edition")]
 #elif CP_VER_3_1_X
 [assembly: AssemblyTitle("GD-77 CPS V3.1.x Community Edition")]
 #endif
@@ -19,8 +19,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Radioddity Community")]
-#if CP_VER_3_0_6
-[assembly: AssemblyProduct("GD-77 CPS V3.0.6 Community Edition")]
+#if OpenGD77
+[assembly: AssemblyProduct("OpenGD77 CPS Community Edition")]
 #elif CP_VER_3_1_X
 [assembly: AssemblyProduct("GD-77 CPS V3.1.x Community Edition")]
 #endif

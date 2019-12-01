@@ -48,7 +48,8 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
-    <DefineConstants>CP_VER_3_0_6</DefineConstants>
+    <DefineConstants>OpenGD77</DefineConstants>
+    <OutputPath>bin\ReleaseOpenGD77\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_3.1.x|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -69,7 +70,8 @@
     <DefineConstants>CP_VER_3_1_X</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DefineConstants>CP_VER_3_0_6</DefineConstants>
+    <DefineConstants>OpenGD77</DefineConstants>
+    <OutputPath>bin\Debug_OpenGD77\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -330,6 +332,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Default31X.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="DefaultOpenGD77.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="DockPanel.config">

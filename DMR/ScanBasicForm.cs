@@ -505,9 +505,9 @@ namespace DMR
 				0,
 				0
 			});
-#if CP_VER_3_0_6
-			this.nudScanTime.Visible=false;
-			this.lblScanTime.Visible=false;
+#if OpenGD77
+			this.nudScanTime.Visible = true;
+			this.lblScanTime.Visible = true;
 #elif CP_VER_3_1_X
 			this.nudScanTime.Visible = true;
 			this.lblScanTime.Visible = true;
