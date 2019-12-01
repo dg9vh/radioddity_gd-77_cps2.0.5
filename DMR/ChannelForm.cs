@@ -2766,7 +2766,11 @@ namespace DMR
 			this.nudTotRekey.Enabled &= flag;
 			this.lblArts.Enabled &= flag;
 			this.cmbArts.Enabled &= flag;
+#if OpenGD77
+			this.chkAutoScan.Enabled = true;
+#elif CP_VER_3_1_X
 			this.chkAutoScan.Enabled &= flag;
+#endif
 			this.chkLoneWoker.Enabled &= flag;
 			this.lblAdmitCriteria.Enabled &= flag;
 			this.cmbAdmitCriteria.Enabled &= flag;
@@ -3163,7 +3167,12 @@ namespace DMR
 
 		private void cmbScanList_SelectedIndexChanged(object sender, EventArgs e)
 		{
+#if OpenGD77
+			this.chkAutoScan.Enabled = true;
+#elif CP_VER_3_1_X
 			this.chkAutoScan.Enabled = (this.cmbScanList.SelectedIndex > 0);
+#endif
+
 		}
 
 		private void BbRiogasSx()
@@ -4459,10 +4468,19 @@ namespace DMR
 			this.chkVox.UseVisualStyleBackColor = true;
 			this.chkAutoScan.AutoSize = true;
 			this.chkAutoScan.Location = new Point(909, 87);
+#if OpenGD77
+			this.chkAutoScan.Name = "chkOpenGD77ScanSkip";
+#elif CP_VER_3_1_X
 			this.chkAutoScan.Name = "chkAutoScan";
+#endif
+
 			this.chkAutoScan.Size = new Size(92, 20);
 			this.chkAutoScan.TabIndex = 25;
+#if OpenGD77
+			this.chkAutoScan.Text = "Scan skip";
+#elif CP_VER_3_1_X
 			this.chkAutoScan.Text = "Auto Scan";
+#endif
 			this.chkAutoScan.UseVisualStyleBackColor = true;
 			this.cmbChMode.DropDownStyle = ComboBoxStyle.DropDownList;
 			this.cmbChMode.FormattingEnabled = true;

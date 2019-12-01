@@ -92,7 +92,8 @@
 			<Control Id="chkLoneWoker" Text="Lone Work" />
 			<Control Id="chkVox" Text="Vox" />
 			<Control Id="chkAutoScan" Text="Auto Scan" />
-			<Control Id="lblChName" Text="Name" />
+      <Control Id="chkOpenGD77ScanSkip" Text="Scan skip" />
+      <Control Id="lblChName" Text="Name" />
 			<Control Id="lblChMode" Text="Mode" />
 			<Control Id="lblTot" Text="TOT [s]" />
 			<Control Id="lblTotRekey" Text="TOT Rekey Delay [s]" />
