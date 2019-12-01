@@ -70,7 +70,7 @@ namespace DMR
 				return;
 			}
 
-			if (MessageBox.Show("This feature is experimental.\nYou use it at your own risk\n\nAre you sure you want to upload firmware to the radio?","Warning", MessageBoxButtons.YesNo)==DialogResult.Yes)
+			//if (MessageBox.Show("This feature is experimental.\nYou use it at your own risk\n\nAre you sure you want to upload firmware to the radio?","Warning", MessageBoxButtons.YesNo)==DialogResult.Yes)
 			{
 				Action<object> action = (object obj) =>
 				{
