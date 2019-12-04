@@ -2716,7 +2716,7 @@ namespace DMR
 				else
 				{
 					this.sfdMain.InitialDirectory = Path.GetDirectoryName(MainForm.CurFileName);
-					this.sfdMain.FileName = Path.GetFileName(MainForm.CurFileName);
+					this.sfdMain.FileName = Path.GetFileNameWithoutExtension(MainForm.CurFileName)+".g77";
 				}
 				this.method_3();
 				DialogResult dialogResult = this.sfdMain.ShowDialog();
@@ -3427,7 +3427,10 @@ namespace DMR
 
 		public static bool checkZonesFor80Channels(byte[] codeplug)
 		{
-			if (codeplug[0x806F] >= 0 && codeplug[0x806F] <= 0x04)
+			// Offset 0x51 into the Zones is the second character in the second zone's name
+			// If this value is non-ascii then this address must contain a channel number, hence this is a 80 channel zone
+
+			if (codeplug[Settings.ADDR_EX_ZONE_LIST + 0x51] <= 0x04)
 			{
 				return true;
 			}
@@ -3436,10 +3439,31 @@ namespace DMR
 
 		public static void convertTo80ChannelZoneCodeplug(byte[] cplg)
 		{
-			MessageBox.Show("Your codeplug uses 16 channel zones. You will need to manually update the zones");
-			byte[,] rxgroups= new byte[128,48];
-			int p;
-			int i;
+			MessageBox.Show("Your codeplug uses 16 channel zones.\nIt will be automatically updated.\nPlease check the Zones to ensure the update worked correctly");
+			byte[,] oldZones = new byte[68,48];
+			const int OLD_ZONE_LEN_BYTES = 16 + (16*2);
+			const int NEW_ZONE_LEN_BYTES = 16 + (80*2);
+			int ZONES_START_ADDRESS = Settings.ADDR_EX_ZONE_LIST + 32;
+
+			for (int zone = 0; zone < 68; zone++)
+			{
+				for (int i = 0; i < 48; i++)
+				{
+					oldZones[zone, i] = cplg[ZONES_START_ADDRESS + (zone * OLD_ZONE_LEN_BYTES) + i];			
+				}
+			}
+			for (int zone = 0; zone < 68; zone++)
+			{
+				for (int i = 0; i < OLD_ZONE_LEN_BYTES; i++)
+				{
+					cplg[ZONES_START_ADDRESS + (zone * NEW_ZONE_LEN_BYTES) + i] = oldZones[zone, i];			
+				}
+				// fill all other channel bytes with zeros
+				for (int i = OLD_ZONE_LEN_BYTES; i < NEW_ZONE_LEN_BYTES; i++)
+				{
+					cplg[ZONES_START_ADDRESS + (zone * NEW_ZONE_LEN_BYTES) + i] = 0x00;
+				}
+			}
 		}
 
 
