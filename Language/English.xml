@@ -199,17 +199,18 @@
 			<Control Id="btnDelete" Text="Delete" />
 			<Control Id="btnAdd" Text="Add" />
       <Control Id="btnInternetDownload" Text="Internet download" />      
-      <Control Id="dgvContacts" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone">
+      <Control Id="dgvContacts" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone,Repeater Slot override,">
 				<ControlItem Id="" Text="Number" />
 				<ControlItem Id="" Text="Name" />
 				<ControlItem Id="" Text="Call ID" />
 				<ControlItem Id="" Text="Type" />
 				<ControlItem Id="" Text="Ring Style" />
 				<ControlItem Id="" Text="Call Receive Tone" />
+        <ControlItem Id="" Text="Repeater Slot override" />
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone," />
+			<Item Id="HeaderText" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone,Repeater Slot override," />
 		</Commons>
 	</ContactsForm>
 	<DeviceInfoForm Text="Basic Information">

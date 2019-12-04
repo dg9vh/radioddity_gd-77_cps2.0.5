@@ -190,7 +190,44 @@ namespace DMR
 					{
 						this.reserve1 = (byte)((value - 1)<<1);
 					}
+				}
+			}
 
+			public string RepeaterSlotS
+			{
+				get
+				{
+					/*	if (this.reserve1 == 0xFF)
+						{
+							return Settings.SZ_NONE;
+						}
+					 */
+					if (this.RepeaterSlot == 0)
+					{
+						return Settings.SZ_NONE;
+					}
+					else
+					{
+						return this.RepeaterSlot.ToString();
+					}
+				}
+				set
+				{
+					try
+					{
+						if (value == Settings.SZ_NONE)
+						{
+							this.RepeaterSlot = 0;
+						}
+						else
+						{
+							this.RepeaterSlot = Convert.ToByte(value);
+						}
+					}
+					catch
+					{
+						this.RepeaterSlot = 0;
+					}
 				}
 			}
 
@@ -715,6 +752,16 @@ namespace DMR
 			public void SetRingStyle(int index, int ringStyle)
 			{
 				this.contactList[index].RingStyle = ringStyle;
+			}
+
+			public void SetRepeaterSlot(int index, string repeaterSlot)
+			{
+				this.contactList[index].RepeaterSlotS = repeaterSlot;
+			}
+
+			public void SetRepeaterSlot(int index, int repeaterSlot)
+			{
+				this.contactList[index].RepeaterSlot = repeaterSlot;
 			}
 
 			public void SetName(int index, string text)

@@ -28,6 +28,7 @@ namespace DMR
 		private ComboBox cmbCallRxTone;
 		private ComboBox cmbRingStyle;
 		private ComboBox cmbType;
+		private ComboBox cmbRepeaterSlot;
 		private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
 		private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
 		private DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
@@ -67,16 +68,17 @@ namespace DMR
 			this.btnImport = new System.Windows.Forms.Button();
 			this.btnExport = new System.Windows.Forms.Button();
 			this.btnDeleteSelect = new System.Windows.Forms.Button();
+			this.txtCallId = new DMR.SGTextBox();
+			this.txtName = new DMR.SGTextBox();
 			this.cmbCallRxTone = new System.Windows.Forms.ComboBox();
 			this.cmbRingStyle = new System.Windows.Forms.ComboBox();
+			this.cmbRepeaterSlot = new System.Windows.Forms.ComboBox();
 			this.cmbType = new System.Windows.Forms.ComboBox();
+			this.cmbAddType = new CustomCombo();
 			this.btnClear = new System.Windows.Forms.Button();
 			this.btnDelete = new System.Windows.Forms.Button();
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.dgvContacts = new System.Windows.Forms.DataGridView();
-			this.txtCallId = new DMR.SGTextBox();
-			this.txtName = new DMR.SGTextBox();
-			this.cmbAddType = new CustomCombo();
 			this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -107,7 +109,7 @@ namespace DMR
 			this.pnlContact.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlContact.Location = new System.Drawing.Point(0, 0);
 			this.pnlContact.Name = "pnlContact";
-			this.pnlContact.Size = new System.Drawing.Size(800, 381);
+			this.pnlContact.Size = new System.Drawing.Size(965, 381);
 			this.pnlContact.TabIndex = 0;
 			// 
 			// btnInternetDownload
@@ -150,6 +152,26 @@ namespace DMR
 			this.btnDeleteSelect.UseVisualStyleBackColor = true;
 			this.btnDeleteSelect.Click += new System.EventHandler(this.btnDeleteSelect_Click);
 			// 
+			// txtCallId
+			// 
+			this.txtCallId.InputString = null;
+			this.txtCallId.Location = new System.Drawing.Point(240, 3);
+			this.txtCallId.MaxByteLength = 0;
+			this.txtCallId.Name = "txtCallId";
+			this.txtCallId.Size = new System.Drawing.Size(61, 23);
+			this.txtCallId.TabIndex = 6;
+			this.txtCallId.Visible = false;
+			// 
+			// txtName
+			// 
+			this.txtName.InputString = null;
+			this.txtName.Location = new System.Drawing.Point(163, 2);
+			this.txtName.MaxByteLength = 0;
+			this.txtName.Name = "txtName";
+			this.txtName.Size = new System.Drawing.Size(61, 23);
+			this.txtName.TabIndex = 5;
+			this.txtName.Visible = false;
+			// 
 			// cmbCallRxTone
 			// 
 			this.cmbCallRxTone.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -182,6 +204,26 @@ namespace DMR
 			this.cmbType.Size = new System.Drawing.Size(61, 24);
 			this.cmbType.TabIndex = 4;
 			this.cmbType.Visible = false;
+			// 
+			// cmbAddType
+			// 
+			this.cmbAddType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbAddType.FormattingEnabled = true;
+			this.cmbAddType.Location = new System.Drawing.Point(22, 43);
+			this.cmbAddType.Name = "cmbAddType";
+			this.cmbAddType.Size = new System.Drawing.Size(112, 24);
+			this.cmbAddType.TabIndex = 0;
+
+			// 
+			// cmbAddType
+			// 
+			this.cmbRepeaterSlot.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbRepeaterSlot.FormattingEnabled = true;
+			this.cmbRepeaterSlot.Location = new System.Drawing.Point(22, 43);
+			this.cmbRepeaterSlot.Name = "cmbRepeaterSlot";
+			this.cmbRepeaterSlot.Size = new System.Drawing.Size(112, 24);
+			this.cmbRepeaterSlot.TabIndex = 0;
+
 			// 
 			// btnClear
 			// 
@@ -221,40 +263,11 @@ namespace DMR
 			this.dgvContacts.ReadOnly = true;
 			this.dgvContacts.RowHeadersWidth = 50;
 			this.dgvContacts.RowTemplate.Height = 23;
-			this.dgvContacts.Size = new System.Drawing.Size(750, 292);
+			this.dgvContacts.Size = new System.Drawing.Size(913, 292);
 			this.dgvContacts.TabIndex = 9;
 			this.dgvContacts.RowHeaderMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvContacts_RowHeaderMouseDoubleClick);
 			this.dgvContacts.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dgvContacts_RowPostPaint);
 			this.dgvContacts.SelectionChanged += new System.EventHandler(this.dgvContacts_SelectionChanged);
-			// 
-			// txtCallId
-			// 
-			this.txtCallId.InputString = null;
-			this.txtCallId.Location = new System.Drawing.Point(240, 3);
-			this.txtCallId.MaxByteLength = 0;
-			this.txtCallId.Name = "txtCallId";
-			this.txtCallId.Size = new System.Drawing.Size(61, 23);
-			this.txtCallId.TabIndex = 6;
-			this.txtCallId.Visible = false;
-			// 
-			// txtName
-			// 
-			this.txtName.InputString = null;
-			this.txtName.Location = new System.Drawing.Point(163, 2);
-			this.txtName.MaxByteLength = 0;
-			this.txtName.Name = "txtName";
-			this.txtName.Size = new System.Drawing.Size(61, 23);
-			this.txtName.TabIndex = 5;
-			this.txtName.Visible = false;
-			// 
-			// cmbAddType
-			// 
-			this.cmbAddType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cmbAddType.FormattingEnabled = true;
-			this.cmbAddType.Location = new System.Drawing.Point(22, 43);
-			this.cmbAddType.Name = "cmbAddType";
-			this.cmbAddType.Size = new System.Drawing.Size(112, 24);
-			this.cmbAddType.TabIndex = 0;
 			// 
 			// dataGridViewTextBoxColumn1
 			// 
@@ -288,7 +301,7 @@ namespace DMR
 			// 
 			// ContactsForm
 			// 
-			this.ClientSize = new System.Drawing.Size(800, 381);
+			this.ClientSize = new System.Drawing.Size(965, 381);
 			this.Controls.Add(this.pnlContact);
 			this.Font = new System.Drawing.Font("Arial", 10F);
 			this.Name = "ContactsForm";
@@ -320,7 +333,8 @@ namespace DMR
 						string name = ContactForm.data[i].Name;
 						string callRxToneS = ContactForm.data[i].CallRxToneS;
 						string ringStyleS = ContactForm.data[i].RingStyleS;
-						int index = this.dgvContacts.Rows.Add((i + 1).ToString(), name, callId, callTypeS, ringStyleS, callRxToneS);
+						string RepeaterSlotS = ContactForm.data[i].RepeaterSlotS;
+						int index = this.dgvContacts.Rows.Add((i + 1).ToString(), name, callId, callTypeS, ringStyleS, callRxToneS, RepeaterSlotS);
 						this.dgvContacts.Rows[index].Tag = i;
 					}
 				}
@@ -353,6 +367,7 @@ namespace DMR
 			this.dgvContacts.Rows[index2].Cells[3].Value = contactOne.CallTypeS;
 			this.dgvContacts.Rows[index2].Cells[4].Value = contactOne.RingStyleS;
 			this.dgvContacts.Rows[index2].Cells[5].Value = contactOne.CallRxToneS;
+			this.dgvContacts.Rows[index2].Cells[6].Value = contactOne.RepeaterSlotS;
 		}
 
 		public ContactsForm()
@@ -503,6 +518,7 @@ namespace DMR
 							csvRow.Add(ContactForm.data[i].CallTypeS);
 							csvRow.Add(ContactForm.data[i].CallRxToneS);
 							csvRow.Add(ContactForm.data[i].RingStyleS);
+							csvRow.Add(ContactForm.data[i].RepeaterSlotS);
 							csvFileWriter.WriteRow(csvRow);
 						}
 					}
@@ -522,7 +538,7 @@ namespace DMR
 				{
 					CsvRow csvRow = new CsvRow();
 					csvFileReader.ReadRow(csvRow);
-					if (csvRow.Count == 6 && csvRow.SequenceEqual(ContactsForm.SZ_HEADER_TEXT))
+					if (csvRow.Count == 7 && csvRow.SequenceEqual(ContactsForm.SZ_HEADER_TEXT))
 					{
 						for (num = 0; num < ContactForm.data.Count; num++)
 						{
@@ -543,6 +559,7 @@ namespace DMR
 									ContactForm.data.SetCallType(num2, ((List<string>)csvRow)[num++]);
 									ContactForm.data.SetCallRxTone(num2, ((List<string>)csvRow)[num++]);
 									ContactForm.data.SetRingStyle(num2, ((List<string>)csvRow)[num++]);
+									ContactForm.data.SetRepeaterSlot(num2, ((List<string>)csvRow)[num++]);
 								}
 							}
 						}
@@ -576,14 +593,15 @@ namespace DMR
 		private void method_2()
 		{
 			int num = 0;
-			int[] array = new int[6]
+			int[] array = new int[7]
 			{
 				80,
 				200,
 				100,
 				100,
 				100,
-				100
+				100,
+				150
 			};
 			this.dgvContacts.ReadOnly = true;
 			this.dgvContacts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -615,6 +633,7 @@ namespace DMR
 			Settings.smethod_37(this.cmbType, ContactForm.SZ_CALL_TYPE);
 			Settings.smethod_37(this.cmbCallRxTone, ContactForm.SZ_CALL_RX_TONE);
 			Settings.smethod_43(this.cmbRingStyle, 0, 10, 0, Settings.SZ_NONE);
+			Settings.smethod_43(this.cmbRepeaterSlot, 0, 4, 0, Settings.SZ_NONE);
 			this.txtName.MaxLength = 16;
 			this.txtCallId.MaxLength = 8;
 		}
@@ -629,7 +648,7 @@ namespace DMR
 					this.txtCallId,
 					this.cmbType,
 					this.cmbRingStyle,
-					this.cmbCallRxTone
+					this.cmbCallRxTone,
 				};
 				Control control = array[e.ColumnIndex];
 				if (this.dgvContacts.CurrentRow.Tag != null)
@@ -833,14 +852,15 @@ namespace DMR
 		static ContactsForm()
 		{
 			
-			ContactsForm.SZ_HEADER_TEXT = new string[6]
+			ContactsForm.SZ_HEADER_TEXT = new string[7]
 			{
-				"序号",
-				"名称",
-				"呼叫 ID",
-				"类型",
-				"音调",
-				"提示音"
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				""
 			};
 		}
 
