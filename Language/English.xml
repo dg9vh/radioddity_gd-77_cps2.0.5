@@ -72,7 +72,7 @@
 			<Control Id="chkEmgConfirmed" Text="Emergency Alarm Ack" />
 			<Control Id="chkEnhancedChAccess" Text="Enhanced Channel Access" />
 			<Control Id="lblRxColor" Text="Rx Color Code" />
-			<Control Id="lblRxGroup" Text="Rx Group List" />
+			<Control Id="lblRxGroup" Text="TG List" />
 			<Control Id="chkRxOnly" Text="Rx Only" />
 			<Control Id="chkAllowTalkaround" Text="Allow Talkaround" />
 			<Control Id="grpAnalog" Text="Analog" />
@@ -146,7 +146,7 @@
 			<Control Id="btnClear" Text="Clear all" />
 			<Control Id="btnDelete" Text="Delete" />
 			<Control Id="btnAdd" Text="Add" />
-			<Control Id="dgvChannels" Text="Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,Color Code,Rx Group List,Contact,Repeater Slot">
+			<Control Id="dgvChannels" Text="Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,Color Code,TG List,Contact,Repeater Slot">
 				<ControlItem Id="" Text="Number" />
 				<ControlItem Id="" Text="Name" />
 				<ControlItem Id="" Text="Rx Freq" />
@@ -156,13 +156,13 @@
 				<ControlItem Id="" Text="Rx Tone" />
 				<ControlItem Id="" Text="Tx Tone" />
 				<ControlItem Id="" Text="Color Code" />
-				<ControlItem Id="" Text="Rx Group List" />
+				<ControlItem Id="" Text="TG List" />
 				<ControlItem Id="" Text="Contact" />
 				<ControlItem Id="" Text="Repeater Slot" />
 			</Control>
 		</Controls>
 		<Commons>
-      <Item Id="DisplayHeaderText" Text="Number,Name,Ch Mode,Rx Freq,Tx Freq,Color Code,Repeater Slot,Contact,Rx Group List,Scan List,Rx Tone,Tx Tone"/>
+      <Item Id="DisplayHeaderText" Text="Number,Name,Ch Mode,Rx Freq,Tx Freq,Color Code,Repeater Slot,Contact,TG List,Scan List,Rx Tone,Tx Tone"/>
       <Item Id="ExportHeaderText" Text="Data type,Name,Channel Type,Rx Frequency,Tx Frequency,Color Code,Timeslot,Contact,Contact Type, Contact Id,Rx Group,Scanlist,Zone,RX CTCSS,TX CTCSS,Power,Bandwidth,Rx Only,Squelch,Tx Admit,TOT,TOT Rekey,Tx Signaling,Rx Signaling,Privacy Group,Emergency System,Flags1,Flags2,Flags3,Flags4,RssiThreshold,VoiceEmphasis,TxSignaling,UnmuteRule,RxSignaling,ArtsInterval" />
     </Commons>
 	</ChannelsForm>
@@ -379,7 +379,7 @@
 			<TreeNode Id="Contact" Text="Contacts" />
 			<TreeNode Id="DtmfContact" Text="DTMF" />
 			<TreeNode Id="DigitalContact" Text="Digital Contacts" />
-			<TreeNode Id="RxGroupList" Text="Rx Group List" />
+			<TreeNode Id="RxGroupList" Text="TG Lists" />
 			<TreeNode Id="Zone" Text="Zones" />
 			<TreeNode Id="Channel" Text="Channels" />
 			<TreeNode Id="Scan" Text="Scan" />
@@ -411,7 +411,7 @@
 			<MenuItem Id="tsmiDtmfContact" Text="DTMF" />
 			<MenuItem Id="tsmiDmrContact" Text="Digital Contact" />
 			<MenuItem Id="tsmiContacts" Text="Contacts" />
-			<MenuItem Id="tsmiGrpRxList" Text="Rx Group List" />
+			<MenuItem Id="tsmiGrpRxList" Text="TG Lists" />
 			<MenuItem Id="tsmiZone" Text="Zone" />
 			<MenuItem Id="tsmiZoneList" Text="ZoneList" />
 			<MenuItem Id="tsmiChannels" Text="Channels" />
@@ -567,7 +567,7 @@
 			<Control Id="lblPwd" Text="Password" />
 		</Controls>
 	</PowerPwdForm>
-	<RxGroupListForm Text="Rx Group List">
+	<RxGroupListForm Text="TG List">
 		<Controls>
 			<Control Id="btnDown" Text="Down" />
 			<Control Id="btnUp" Text="Up" />
@@ -639,7 +639,7 @@
 			<Control Id="chkEmgConfirmed" Text="Emergency Alarm Ack" />
 			<Control Id="chkEnhancedChAccess" Text="Enhanced Channel Access" />
 			<Control Id="lblRxColor" Text="Rx Color Code" />
-			<Control Id="lblRxGroup" Text="Rx Group List" />
+			<Control Id="lblRxGroup" Text="TG List" />
 			<Control Id="chkRxOnly" Text="Rx Only" />
 			<Control Id="chkAllowTalkaround" Text="Allow Talkaround" />
 			<Control Id="grpAnalog" Text="Analog" />
