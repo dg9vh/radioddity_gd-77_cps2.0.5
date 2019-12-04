@@ -1613,7 +1613,7 @@ internal class Settings
 		//Settings.ADDR_RX_GRP_LIST = 13352;
 		Settings.ADDR_RX_GRP_LIST_EX = 0x1D620;// 120352;
 		Settings.ADDR_ZONE_BASIC = 14136;
-		Settings.ADDR_ZONE_LIST = 14144;
+		Settings.ADDR_ZONE_LIST = 0x3740;// 14144;
 		Settings.ADDR_CHANNEL = 14208;
 		Settings.SPACE_SCAN_BASIC = Marshal.SizeOf(typeof(ScanBasicForm.ScanBasic));
 		Settings.ADDR_SCAN = 6024;

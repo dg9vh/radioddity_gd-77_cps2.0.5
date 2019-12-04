@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: AssemblyTrademark("")]
 #if OpenGD77
-[assembly: AssemblyTitle("OpenGD77 CPS Community Edition")]
+[assembly: AssemblyTitle("OpenGD77 CPS")]
 #elif CP_VER_3_1_X
 [assembly: AssemblyTitle("GD-77 CPS V3.1.x Community Edition")]
 #endif
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Radioddity Community")]
 #if OpenGD77
-[assembly: AssemblyProduct("OpenGD77 CPS Community Edition")]
+[assembly: AssemblyProduct("OpenGD77 CPS")]
 #elif CP_VER_3_1_X
 [assembly: AssemblyProduct("GD-77 CPS V3.1.x Community Edition")]
 #endif

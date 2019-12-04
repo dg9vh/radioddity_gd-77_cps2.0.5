@@ -2768,10 +2768,11 @@ namespace DMR
 			this.cmbArts.Enabled &= flag;
 #if OpenGD77
 			this.chkAutoScan.Enabled = true;
+			this.chkLoneWoker.Enabled = true;
 #elif CP_VER_3_1_X
 			this.chkAutoScan.Enabled &= flag;
-#endif
 			this.chkLoneWoker.Enabled &= flag;
+#endif
 			this.lblAdmitCriteria.Enabled &= flag;
 			this.cmbAdmitCriteria.Enabled &= flag;
 			this.lblKeySwitch.Enabled &= flag;
@@ -3105,7 +3106,12 @@ namespace DMR
 
 		private void method_4()
 		{
+
+#if OpenGD77
+			this.chkLoneWoker.Enabled = true;
+#elif CP_VER_3_1_X
 			this.chkLoneWoker.Enabled = (this.cmbEmgSystem.SelectedIndex != 0 && this.cmbChMode.SelectedIndex == 1);
+#endif
 			if (!this.chkLoneWoker.Enabled)
 			{
 				this.chkLoneWoker.Checked = false;
@@ -4454,11 +4460,18 @@ namespace DMR
 			this.chkDataPl.UseVisualStyleBackColor = true;
 			this.chkLoneWoker.AutoSize = true;
 			this.chkLoneWoker.Location = new Point(909, 111);
+
+#if OpenGD77
+			this.chkLoneWoker.Name = "chkOpenGD77ScanAllSkip";
+			this.chkLoneWoker.Text = "Scan: All skip";
+#elif CP_VER_3_1_X
 			this.chkLoneWoker.Name = "chkLoneWoker";
+			this.chkLoneWoker.Text = "Lone Worker";
+#endif
 			this.chkLoneWoker.Size = new Size(109, 20);
 			this.chkLoneWoker.TabIndex = 26;
-			this.chkLoneWoker.Text = "Lone Worker";
 			this.chkLoneWoker.UseVisualStyleBackColor = true;
+
 			this.chkVox.AutoSize = true;
 			this.chkVox.Location = new Point(659, 146);
 			this.chkVox.Name = "chkVox";
@@ -4469,7 +4482,7 @@ namespace DMR
 			this.chkAutoScan.AutoSize = true;
 			this.chkAutoScan.Location = new Point(909, 87);
 #if OpenGD77
-			this.chkAutoScan.Name = "chkOpenGD77ScanSkip";
+			this.chkAutoScan.Name = "chkOpenGD77ScanZoneSkip";
 #elif CP_VER_3_1_X
 			this.chkAutoScan.Name = "chkAutoScan";
 #endif
@@ -4477,7 +4490,7 @@ namespace DMR
 			this.chkAutoScan.Size = new Size(92, 20);
 			this.chkAutoScan.TabIndex = 25;
 #if OpenGD77
-			this.chkAutoScan.Text = "Scan skip";
+			this.chkAutoScan.Text = "Zone skip";
 #elif CP_VER_3_1_X
 			this.chkAutoScan.Text = "Auto Scan";
 #endif

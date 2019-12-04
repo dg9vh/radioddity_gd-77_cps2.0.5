@@ -861,8 +861,9 @@ namespace DMR
 			this.tsmiAllCall.Size = new Size(231, 22);
 			this.tsmiAllCall.Text = "All Call";
 			this.tsmiAllCall.Click += this.tsmiAllCall_Click;
-			this.ofdMain.Filter = "GD-77 codeplug (*.dat,*.g77)|*.dat;*.g77";
-			this.sfdMain.Filter = "GD-77 codeplug (*.dat,*.g77)|*.dat;*.g77";
+			//this.ofdMain.Filter = "GD-77 codeplug (*.dat,*.g77)|*.dat;*.g77";
+			this.ofdMain.Filter = "OpenGD77 (*.g77)|*.g77|GD-77 (*.dat,*.g77)|*.dat;*.g77";
+			this.sfdMain.Filter = "OpenGD77 (*.g77)|*.g77|GD-77 (*.dat,*.g77)|*.dat;*.g77";
 			this.cmsTree.Items.AddRange(new ToolStripItem[2]
 			{
 				this.tsmiCollapseAll,
@@ -2704,7 +2705,12 @@ namespace DMR
 				if (string.IsNullOrEmpty(MainForm.CurFileName))
 				{
 					//Console.WriteLine(GeneralSetForm.data.RadioName);
+#if OpenGD77
+					this.sfdMain.FileName = GeneralSetForm.data.RadioName + "_" + DateTime.Now.ToString("MMdd_HHmmss") + ".g77";
+#elif CP_VER_3_1_X
 					this.sfdMain.FileName = GeneralSetForm.data.RadioName + "_" +  DateTime.Now.ToString("MMdd_HHmmss") + ".dat";
+#endif
+
 					this.sfdMain.InitialDirectory = initialDirectory;
 				}
 				else
@@ -2752,10 +2758,16 @@ namespace DMR
 				this.closeAllForms();
 
 #if OpenGD77
+				/*
 				if (!checkCodeplugVersion311(array))			//Check to see if this is not a 3.1.1 codeplug
 				{
 					convertCodeplug(array);					     //Convert layout from 3.0.6 to 3.1.x
+				}*/
+				if (!checkZonesFor80Channels(array))
+				{
+					convertTo80ChannelZoneCodeplug(array);	
 				}
+
 #endif    
 
 				MainForm.ByteToData(array,true);
@@ -3411,6 +3423,23 @@ namespace DMR
 			}
 
 			return true;							//if it was neither of the above then we can't tell what version it is so we must assume it is 3.1.x
+		}
+
+		public static bool checkZonesFor80Channels(byte[] codeplug)
+		{
+			if (codeplug[0x806F] >= 0 && codeplug[0x806F] <= 0x04)
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public static void convertTo80ChannelZoneCodeplug(byte[] cplg)
+		{
+			MessageBox.Show("Your codeplug uses 16 channel zones. You will need to manually update the zones");
+			byte[,] rxgroups= new byte[128,48];
+			int p;
+			int i;
 		}
 
 
