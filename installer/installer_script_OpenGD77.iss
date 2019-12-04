@@ -44,7 +44,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\bin\ReleaseOpenGD77\OpenGD77CPS.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\bin\ReleaseOpenGD77\DefaultOpenGD77.dat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\bin\ReleaseOpenGD77\DefaultOpenGD77.g77"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\ReleaseOpenGD77\DockPanel.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\ReleaseOpenGD77\help.xml"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Setup.ini"; DestDir: "{app}";  Components: portable; Flags: ignoreversion
