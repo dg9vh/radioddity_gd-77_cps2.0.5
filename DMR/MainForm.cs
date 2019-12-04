@@ -3439,7 +3439,7 @@ namespace DMR
 
 		public static void convertTo80ChannelZoneCodeplug(byte[] cplg)
 		{
-			MessageBox.Show("Your codeplug uses 16 channel zones.\nIt will be automatically updated.\nPlease check the Zones to ensure the update worked correctly");
+			MessageBox.Show("Your codeplug uses 16 channel zones.\n\nIt will be automatically updated to 80 channel zones.\n\nPlease check the Zones to ensure the update worked correctly before saving or uploading the codeplug","Codeplug update warning");
 			byte[,] oldZones = new byte[68,48];
 			const int OLD_ZONE_LEN_BYTES = 16 + (16*2);
 			const int NEW_ZONE_LEN_BYTES = 16 + (80*2);
