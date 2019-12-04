@@ -21,7 +21,7 @@ namespace DMR
 	{
 
 #if OpenGD77
-		private const string DEFAULT_DATA_FILE_NAME = "DefaultOpenGD77.dat";
+		private const string DEFAULT_DATA_FILE_NAME = "DefaultOpenGD77.g77";
 #elif CP_VER_3_1_X
 		private const string DEFAULT_DATA_FILE_NAME = "Default31X.dat";
 #endif

@@ -334,8 +334,8 @@
     <None Include="Default31X.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="DefaultOpenGD77.dat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Include="DefaultOpenGD77.g77">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DockPanel.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
