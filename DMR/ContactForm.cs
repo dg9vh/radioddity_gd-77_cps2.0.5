@@ -63,9 +63,9 @@ namespace DMR
 						{
 							goto IL_0038;
 						}
-						return "00000001";
+						return "1";
 						IL_0038:
-						return num.ToString().PadLeft(8, '0');
+						return num.ToString();//.PadLeft(8, '0');
 					}
 					catch
 					{
@@ -1319,7 +1319,7 @@ namespace DMR
 				this.txtCallId.SelectAll();
 				base.Activate();
 			}
-			string text2 = this.txtCallId.Text.PadLeft(8, '0');
+			string text2 = this.txtCallId.Text;//.PadLeft(8, '0');
 			int repeaterSlot = ContactForm.data[index].RepeaterSlot;
 
 			if (ContactForm.data.CallIdExist(index, selectedIndex, text2, repeaterSlot))
@@ -1353,7 +1353,7 @@ namespace DMR
 		{
 			if (this.txtCallId.Text.Length < 8)
 			{
-				string text = this.txtCallId.Text.PadLeft(8, '0');
+				string text = this.txtCallId.Text;//.PadLeft(8, '0');
 				this.txtCallId.Text = text;
 			}
 		}
