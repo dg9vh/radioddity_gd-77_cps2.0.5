@@ -1719,11 +1719,11 @@ namespace DMR
 			int num = 0;
 			try
 			{
-				for (num = 0; num < 250; num++)
+				for (num = 0; num < ZoneForm.NUM_ZONES; num++)
 				{
 					if (ZoneForm.data.DataIsValid(num))
 					{
-						this.AddTreeViewNode(parentNode.Nodes, ZoneForm.data.GetName(num), new TreeNodeItem(this.cmsSub, typeof(ZoneForm), null, 250, num, 25, ZoneForm.data));
+						this.AddTreeViewNode(parentNode.Nodes, ZoneForm.data.GetName(num), new TreeNodeItem(this.cmsSub, typeof(ZoneForm), null, ZoneForm.NUM_ZONES, num, 25, ZoneForm.data));
 					}
 				}
 			}
@@ -3819,7 +3819,7 @@ namespace DMR
 			this.lstTreeNodeItem.Add(new TreeNodeItem(null, typeof(DtmfContactForm), null, 0, -1, 49, null));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroupContact, typeof(ContactsForm), typeof(ContactForm), 1024, -1, 17, ContactForm.data));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, null, typeof(RxGroupListForm), RxListData.CNT_RX_LIST, -1, 17, RxGroupListForm.data));
-			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, typeof(ZoneBasicForm), typeof(ZoneForm), 250, -1, 16, ZoneForm.data));
+			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, typeof(ZoneBasicForm), typeof(ZoneForm), ZoneForm.NUM_ZONES, -1, 16, ZoneForm.data));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, typeof(ChannelsForm), typeof(ChannelForm), ChannelForm.CurCntCh, -1, 17, ChannelForm.data));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, typeof(ScanBasicForm), typeof(NormalScanForm), 64, -1, 16, NormalScanForm.data));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(null, null, null, 0, -1, 17, null));

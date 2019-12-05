@@ -20,11 +20,11 @@ namespace DMR
 		const int ZONE_NAME_LENGTH = 16;
 		const int ZONES_IN_USE_DATA_LENGTH = 32;
 #if OpenGD77
-		const int NUM_CHANNELS_PER_ZONE = 80;
-		const int NUM_ZONES = 68;
+		public const int NUM_CHANNELS_PER_ZONE = 80;
+		public const int NUM_ZONES = 68;
 #elif CP_VER_3_1_X
-		const int NUM_CHANNELS_PER_ZONE	= 16;
-		const int NUM_ZONES				= 250;
+		public const int NUM_CHANNELS_PER_ZONE	= 16;
+		public const int NUM_ZONES				= 250;
 #endif
 		const int UNKNOWN_VAR_OF_32 = NUM_CHANNELS_PER_ZONE + ZONE_NAME_LENGTH;
 

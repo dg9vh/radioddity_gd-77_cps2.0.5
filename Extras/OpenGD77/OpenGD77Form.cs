@@ -434,6 +434,10 @@ namespace DMR
 							break;
 						case OpenGD77CommsTransferData.CommsAction.READ_CODEPLUG:
 							MessageBox.Show("Read Codeplug complete");
+							if (!MainForm.checkZonesFor80Channels(dataObj.dataBuff))
+							{
+								MainForm.convertTo80ChannelZoneCodeplug(dataObj.dataBuff);
+							}
 							MainForm.ByteToData(dataObj.dataBuff);
 							enableDisableAllButtons(true);
 							if (_initialAction == CommsAction.READ_CODEPLUG)
