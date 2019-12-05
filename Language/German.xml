@@ -93,6 +93,7 @@
 			<Control Id="chkVox" Text="Vox aktiviert" />
 			<Control Id="chkAutoScan" Text="Auto Suchlauf" />
 			<Control Id="lblChName" Text="Name" />
+      <Control Id="chkOpenGD77ScanZoneSkip" Text="Scan: Zone skip" />
 			<Control Id="lblChMode" Text="Art" />
 			<Control Id="lblTot" Text="TX-Zeit (TOT) [s]" />
 			<Control Id="lblTotRekey" Text="TOT Wiederfreigabe[s]" />
@@ -196,7 +197,7 @@
 			<Control Id="btnDelete" Text="Löschen" />
 			<Control Id="btnAdd" Text="Hinzu" />
       <Control Id="btnInternetDownload" Text="Internet download" />
-      <Control Id="dgvContacts" Text="Nummer,Name,Ruf ID,Typ,Hinweiston,Anrufbenachrichtigung">
+      <Control Id="dgvContacts" Text="Nummer,Name,Ruf ID,Typ,Hinweiston,Anrufbenachrichtigung,Repeater Slot override">
 				<ControlItem Id="" Text="Number" />
 				<ControlItem Id="" Text="Name" />
 				<ControlItem Id="" Text="Ruf ID" />
@@ -206,7 +207,7 @@
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Nummer,Name,Ruf ID,Typ,Kingelton,Anruf erhalten Ton," />
+			<Item Id="HeaderText" Text="Nummer,Name,Ruf ID,Typ,Kingelton,Anruf erhalten Ton,Repeater Slot override," />
 		</Commons>
 	</ContactsForm>
 	<DeviceInfoForm Text="Grundeinstellungen">

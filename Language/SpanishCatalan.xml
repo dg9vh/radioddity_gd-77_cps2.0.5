@@ -93,6 +93,7 @@
 			<Control Id="chkVox" Text="VOX" />
 			<Control Id="chkAutoScan" Text="Auto Exploració" />
 			<Control Id="lblChName" Text="CH" />
+      <Control Id="chkOpenGD77ScanZoneSkip" Text="Scan: Zone skip" />
 			<Control Id="lblChMode" Text="Mode" />
 			<Control Id="lblTot" Text="TOT [s]" />
 			<Control Id="lblTotRekey" Text="Retard TOT [s]" />
@@ -196,7 +197,7 @@
 			<Control Id="btnDelete" Text="Esborrar" />
 			<Control Id="btnAdd" Text="Afegir" />
       <Control Id="btnInternetDownload" Text="Descàrgues d'Internet" />
-      <Control Id="dgvContacts" Text="Número,Nom,ID Crida,Tipus,Tipus Avis,To Crida Rebuda">
+      <Control Id="dgvContacts" Text="Número,Nom,ID Crida,Tipus,Tipus Avis,To Crida Rebuda,Repeater Slot override">
 				<ControlItem Id="" Text="Número" />
 				<ControlItem Id="" Text="Nomb" />
 				<ControlItem Id="" Text="ID Crida" />
@@ -206,7 +207,7 @@
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Número,Nom,ID Crida,Tipus,Tipus Avis,To Crida Rebuda," />
+			<Item Id="HeaderText" Text="Número,Nom,ID Crida,Tipus,Tipus Avis,To Crida Rebuda,,Repeater Slot override," />
 		</Commons>
 	</ContactsForm>
 	<DeviceInfoForm Text="Informació Bàsica">

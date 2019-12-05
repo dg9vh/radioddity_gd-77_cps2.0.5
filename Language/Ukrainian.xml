@@ -92,6 +92,7 @@
 			<Control Id="chkLoneWoker" Text="Одинокий працівник"/>
 			<Control Id="chkVox" Text="VOX"/>
 			<Control Id="chkAutoScan" Text="Автосканування"/>
+      <Control Id="chkOpenGD77ScanZoneSkip" Text="Scan: Zone skip" />
 			<Control Id="lblChName" Text="Ім'я"/>
 			<Control Id="lblChMode" Text="Режим"/>
 			<Control Id="lblTot" Text="TOT [с]"/>
@@ -196,7 +197,7 @@
 			<Control Id="btnDelete" Text="Видалити"/>
 			<Control Id="btnAdd" Text="Додати"/>
 			<Control Id="btnInternetDownload" Text="Завантажити з Інтернету"/>
-			<Control Id="dgvContacts" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone">
+			<Control Id="dgvContacts" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone,Repeater Slot override">
 				<ControlItem Id="" Text="Номер"/>
 				<ControlItem Id="" Text="Ім'я"/>
 				<ControlItem Id="" Text="ID виклику"/>
@@ -206,7 +207,7 @@
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Номер,Назва,ID виклику,Тип,Стиль дзвінка,Тон вхідного виклику,???"/>
+			<Item Id="HeaderText" Text="Номер,Назва,ID виклику,Тип,Стиль дзвінка,Тон вхідного виклику,Repeater Slot override,"/>
 		</Commons>
 	</ContactsForm>
 	<DeviceInfoForm Text="Основна інформація">

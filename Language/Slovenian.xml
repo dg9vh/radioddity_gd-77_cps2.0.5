@@ -93,6 +93,7 @@
 			<Control Id="chkVox" Text="Vox" />
 			<Control Id="chkAutoScan" Text="Avto skeniranje" />
 			<Control Id="lblChName" Text="Ime" />
+      <Control Id="chkOpenGD77ScanZoneSkip" Text="Scan: Zone skip" />
 			<Control Id="lblChMode" Text="Način" />
 			<Control Id="lblTot" Text="TOT [s]" />
 			<Control Id="lblTotRekey" Text="TOT Zakasnitev [s]" />
@@ -196,7 +197,7 @@
 			<Control Id="btnDelete" Text="Izbriši" />
 			<Control Id="btnAdd" Text="Dodaj" />
       <Control Id="btnInternetDownload" Text="Naloži iz interneta" />      
-      <Control Id="dgvContacts" Text="Število,Ime,DMR ID,Tip,Tip zvonenja,Ton klica">
+      <Control Id="dgvContacts" Text="Število,Ime,DMR ID,Tip,Tip zvonenja,Ton klica,Repeater Slot override">
 				<ControlItem Id="" Text="Številka" />
 				<ControlItem Id="" Text="Ime" />
 				<ControlItem Id="" Text="DMR ID" />
@@ -206,7 +207,7 @@
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Število,Ime,DMR ID,Tip,Tip zvonenja,Klicni ton," />
+			<Item Id="HeaderText" Text="Število,Ime,DMR ID,Tip,Tip zvonenja,Klicni ton,Repeater Slot override," />
 		</Commons>
 	</ContactsForm>
 	<DeviceInfoForm Text="Osnovne informacije">

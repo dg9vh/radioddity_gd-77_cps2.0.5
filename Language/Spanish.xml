@@ -93,6 +93,7 @@
 			<Control Id="chkVox" Text="VOX" />
 			<Control Id="chkAutoScan" Text="Auto Exploración" />
 			<Control Id="lblChName" Text="CH" />
+      <Control Id="chkOpenGD77ScanZoneSkip" Text="Scan: Zone skip" />
 			<Control Id="lblChMode" Text="Modo" />
 			<Control Id="lblTot" Text="TOT [s]" />
 			<Control Id="lblTotRekey" Text="Retardo TOT [s]" />
@@ -196,7 +197,7 @@
 			<Control Id="btnDelete" Text="Borrar" />
 			<Control Id="btnAdd" Text="Añadir" />
       <Control Id="btnInternetDownload" Text="Descargas Internet" />
-      <Control Id="dgvContacts" Text="Número,Nombre,ID Llamada,Tipo,Estilo Timbre,Tono Llamada Recibida">
+      <Control Id="dgvContacts" Text="Número,Nombre,ID Llamada,Tipo,Estilo Timbre,Tono Llamada Recibida,Repeater Slot override">
 				<ControlItem Id="" Text="Número" />
 				<ControlItem Id="" Text="Nombre" />
 				<ControlItem Id="" Text="ID Llamada" />
@@ -206,7 +207,7 @@
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Número,Nombre,ID Llamada,Tipo,Estilo Timbre,Tono Llamada Recibida," />
+			<Item Id="HeaderText" Text="Número,Nombre,ID Llamada,Tipo,Estilo Timbre,Tono Llamada Recibida,Repeater Slot override," />
 		</Commons>
 	</ContactsForm>
 	<DeviceInfoForm Text="Información Básica">
