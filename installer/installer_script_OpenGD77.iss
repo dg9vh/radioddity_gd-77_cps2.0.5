@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "OpenGD77 CPS"
-#define MyAppVersion "0.0.0.1"
+#define MyAppVersion "0.0.0.2"
 #define MyAppURL "https://github.com/rogerclarkmelbourne/radioddity_gd-77_cps"
-#define MyAppExeName "OpenGD77CPS.exe"
+#define MyAppExeName "GD77CPS.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -43,7 +43,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\bin\ReleaseOpenGD77\OpenGD77CPS.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\bin\ReleaseOpenGD77\GD77CPS.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\ReleaseOpenGD77\DefaultOpenGD77.g77"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\ReleaseOpenGD77\DockPanel.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\ReleaseOpenGD77\help.xml"; DestDir: "{app}"; Flags: ignoreversion
