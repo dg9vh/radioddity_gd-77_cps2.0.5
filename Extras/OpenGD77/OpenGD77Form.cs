@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -464,9 +466,10 @@ namespace DMR
 							break;
 						case OpenGD77CommsTransferData.CommsAction.DOWLOAD_SCREENGRAB:
 
-							Bitmap bm = new Bitmap(128, 64);
-							Graphics g = Graphics.FromImage(bm);
-							g.Clear(Color.LightGray);
+							Bitmap bm_x1 = new Bitmap(128, 64);
+							Graphics g = Graphics.FromImage(bm_x1);
+							Color colour = ColorTranslator.FromHtml("#99d9ea");
+							g.Clear(colour);
 							
 							for (int stripe = 0; stripe < 8; stripe++)
 							{
@@ -476,20 +479,20 @@ namespace DMR
 									{
 										if (((dataObj.dataBuff[(stripe * 128) + column] >> line) & 0x01) !=0 )
 										{
-											bm.SetPixel(column, stripe * 8 + line, Color.Black);
+											bm_x1.SetPixel(column, stripe * 8 + line, Color.Black);
 										}
 									}
 								}
 							}
 
-							Clipboard.SetImage(bm);
+							Bitmap obm = ResizeImage(bm_x1, bm_x1.Width * 2, bm_x1.Height * 2);
+							Clipboard.SetImage(obm);
 
 							_saveFileDialog.Filter = "Screengrab files (*.png)|*.png";
 							_saveFileDialog.FilterIndex = 1;
 							if (_saveFileDialog.ShowDialog() == DialogResult.OK)
 							{
-								bm.Save(_saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
-								//File.WriteAllBytes(_saveFileDialog.FileName, dataObj.dataBuff);
+								obm.Save(_saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Png);
 							}
 							enableDisableAllButtons(true);
 							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
@@ -1208,5 +1211,26 @@ namespace DMR
 			enableDisableAllButtons(false);
 			perFormCommsTask(dataObj);
 		}
+
+		private Bitmap ResizeImage(Image image, int width, int height)
+		{
+			var destImage = new Bitmap(width, height);
+
+			destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+			using (var graphics = Graphics.FromImage(destImage))
+			{
+				graphics.CompositingMode = CompositingMode.SourceCopy;
+				graphics.CompositingQuality = CompositingQuality.AssumeLinear;
+				graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+				graphics.SmoothingMode = SmoothingMode.None;
+				graphics.PixelOffsetMode = PixelOffsetMode.Half;
+
+				graphics.DrawImage(image, 0, 0, width, height);                                                                                  //				}
+			}
+
+			return destImage;
+		}
+
 	}
 }
