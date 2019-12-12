@@ -77,7 +77,7 @@
 			<Control Id="chkAllowTalkaround" Text="Permetre Talkaround" />
 			<Control Id="grpAnalog" Text="Analògic" />
 			<Control Id="lblChBandwidth" Text="Ample Banda [KHz]" />
-			<Control Id="lblVoiceEmphasis" Text="Énfasis Veu" />
+			<Control Id="lblVoiceEmphasis" Text="Èmfasi Veu" />
 			<Control Id="lblSte" Text="STE" />
 			<Control Id="lblNonSte" Text="No STE" />
 			<Control Id="lblRxTone" Text="To RX [Hz]" />
@@ -105,7 +105,7 @@
 			<Control Id="lblAdmitCriteria" Text="Criteri TX" />
 			<Control Id="lblTxFreq" Text="Freq TX [MHz]" />
 			<Control Id="lblScanList" Text="Explorar" />
-      <Control Id="lblxband" Text="ATENCIÓ: Les bandes de RX y TX son diferents. El comportament de l'equip pot veure's afectat" />
+      <Control Id="lblxband" Text="ATENCIÓ: Les bandes de RX i TX son diferents. El comportament de l'equip pot veure's afectat" />
 			<Control Id="tsrCh" Text="toolStrip1">
 				<ToolStripItem Id="tslblInfo" Text="" />
 				<ToolStripItem Id="tsbtnFirst" Text="Primer" />
@@ -169,8 +169,8 @@
 			<Control Id="btnCancel" Text="Cancel·lar" />
 		</Controls>
 		<Commons>
-			<Item Id="ButtonItem" Text="Cap,Tots To d'Alerta Sí/No,Emergència On,Emergència Off,Potència Alta/Baixa,Monitor,Eliminar Canal Molest,Acces Directe 1,Accés Directe 2,Accés Directe 3,Accés Directe 4,Accés Directe 5,Accés Directe 6,Repetidor/Sortda Directe,Exploració Sí/No,Silenciador Estricte/Normal,Privacitat Sí/No,Vox Sí/No,Sel·lecció Zona,Indicador Batería,Treballador Aïsllat Sí/No,Monitor Permanent,Final Crida,Canal Amunt,Canal Abaix,Infomació Canal" />
-			<Item Id="Mode" Text="Ninguno,Digital,Analògic" />
+			<Item Id="ButtonItem" Text="Cap,Tots To d'Alerta Sí/No,Emergència On,Emergència Off,Potència Alta/Baixa,Monitor,Eliminar Canal Molest,Accés Directe 1,Accés Directe 2,Accés Directe 3,Accés Directe 4,Accés Directe 5,Accés Directe 6,Repetidor/Sortda Directe,Exploració Sí/No,Silenciador Estricte/Normal,Privacitat Sí/No,Vox Sí/No,Sel·lecció Zona,Indicador Bateria,Treballador Aïsllat Sí/No,Monitor Permanent,Final Crida,Canal Amunt,Canal Abaix,Infomació Canal" />
+			<Item Id="Mode" Text="Cap,Digital,Analògic" />
 			<Item Id="CallTypeD" Text="Crida,Missatge" />
 			<Item Id="CallTypeA" Text="Crida DTMF" />
 		</Commons>
@@ -196,10 +196,10 @@
 			<Control Id="btnClear" Text="Natejar" />
 			<Control Id="btnDelete" Text="Esborrar" />
 			<Control Id="btnAdd" Text="Afegir" />
-      <Control Id="btnInternetDownload" Text="Descàrgues d'Internet" />
+      <Control Id="btnInternetDownload" Text="Descàrregar d'Internet" />
       <Control Id="dgvContacts" Text="Número,Nom,ID Crida,Tipus,Tipus Avis,To Crida Rebuda,Repeater Slot override">
 				<ControlItem Id="" Text="Número" />
-				<ControlItem Id="" Text="Nomb" />
+				<ControlItem Id="" Text="Nom" />
 				<ControlItem Id="" Text="ID Crida" />
 				<ControlItem Id="" Text="Tipus" />
 				<ControlItem Id="" Text="Tipus Avis" />
@@ -225,7 +225,7 @@
 			<Control Id="lblModel" Text="Nom Model" />
 		</Controls>
 	</DeviceInfoForm>
-	<DigitalKeyContactForm Text="Tecles Numériques">
+	<DigitalKeyContactForm Text="Tecles Numèriques">
 		<Controls>
 			<Control Id="dgvContact" Text="Contacte">
 				<ControlItem Id="cmbContact" Text="Contacte" />
@@ -254,7 +254,7 @@
 			<Control Id="lblRespHoldTime" Text="Retenció Resposta [s]" />
 			<Control Id="lblKillCode" Text="Codi DESHABILITAR" />
 			<Control Id="lblAutoResetTime" Text="Tiemps Auto Reset [s]" />
-			<Control Id="lblDecTime" Text="Tiemps Decodificació [s]" />
+			<Control Id="lblDecTime" Text="Temps Decodificació [s]" />
 			<Control Id="lblWakeCode" Text="Codi HABILITAR" />
 			<Control Id="lblDelimiter" Text="Delimitador" />
 			<Control Id="lblGrpCallCode" Text="Codi Grup" />
@@ -279,7 +279,7 @@
 			<Control Id="lblAlarmType" Text="Tipus d'Alarma" />
 			<Control Id="lblAlarmMode" Text="Mode" />
 			<Control Id="lblRevertCh" Text="Canal" />
-			<Control Id="lblImpoliteRetries" Text="Intents Agresius" />
+			<Control Id="lblImpoliteRetries" Text="Intents Agressius" />
 			<Control Id="lblPoliteRetries" Text="Intents Amables" />
 			<Control Id="lblCycles" Text="Cicles" />
 			<Control Id="lblTxCycle" Text="Temps Cicle TX [s]" />
@@ -311,7 +311,7 @@
 			<Control Id="grpBeep" Text="Tons d'Alerta" />
 			<Control Id="chkResetTone" Text="To Reset" />
 			<Control Id="chkUnifamiliarNumber" Text="To Desconegut" />
-			<Control Id="lblCallAlertDur" Text="Duració To d'Alerta Crida [s]" />
+			<Control Id="lblCallAlertDur" Text="Durada To d'Alerta Crida [s]" />
 			<Control Id="chkSelfTestPassTone" Text="To d'Autocomprovació" />
 			<Control Id="chkCrescendoTone" Text="To Millorat*" />
 			<Control Id="chkChFreeTone" Text="To Indicació Canal Freqüència" />
@@ -320,7 +320,7 @@
 			<Control Id="lblArtsTone" Text="To ARTS" />
 			<Control Id="grpVoice" Text="Idioma" />
 			<Control Id="chkChVoice" Text="Canal Veu" />
-			<Control Id="lblVoiceLang" Text="Estalvi de Batería" />
+			<Control Id="lblVoiceLang" Text="Estalvi de Bateria" />
 			<Control Id="chkBatteryRx" Text="Recepció (RX)" />
 			<Control Id="chkBatteryPreamble" Text="Preàmbul" />
 			<Control Id="grpLoneWork" Text="Treballador Aïllat (Lone Worker)" />
@@ -328,9 +328,9 @@
 			<Control Id="lblRespTmr" Text="Temps Resposta [min]" />
 			<Control Id="grpTalkAround" Text="Sortida Repetidor (Talkaround)" />
 			<Control Id="lblPrivateHang" Text="Fi Crida Privada [ms]" />
-			<Control Id="lblGrpHold" Text="Fi Crida Grupo [ms]" />
+			<Control Id="lblGrpHold" Text="Fi Crida Grup [ms]" />
 			<Control Id="chkDisableAllLeds" Text="Deshabilitar LED" />
-			<Control Id="lblRadioName" Text="Indicatiu Emés" />
+			<Control Id="lblRadioName" Text="Indicatiu Emès" />
 			<Control Id="lblRadioID" Text="Identificador DMR ID" />
 			<Control Id="lblTxPreambleDur" Text="Durada preàmbul TX [ms]" />
 			<Control Id="lblProgramPwd" Text="Mot Privat Programació" />
@@ -365,7 +365,7 @@
 			<TreeNode Id="BasicInfo" Text="Informació Bàsica" />
 			<TreeNode Id="BootItem" Text="Elements d'Inici" />
 			<TreeNode Id="Menu" Text="Menú Ràdio" />
-			<TreeNode Id="NumKeyAssign" Text="Tecles Númeriques" />
+			<TreeNode Id="NumKeyAssign" Text="Tecles Numèriques" />
 			<TreeNode Id="GeneralSetting" Text="Configuració General" />
 			<TreeNode Id="Buttons" Text="Botons" />
 			<TreeNode Id="TextMsg" Text="Missatges de Text" />
@@ -385,7 +385,7 @@
 			<TreeNode Id="VFOB" Text="VFO B" />
 		</TreeView>
 		<MenuStrip>
-			<MenuItem Id="tsmiFile" Text="Archiu" />
+			<MenuItem Id="tsmiFile" Text="Arxiu" />
 			<MenuItem Id="tsmiNew" Text="Nou" />
 			<MenuItem Id="tsmiSave" Text="Desar" />
 			<MenuItem Id="tsmiOpen" Text="Obrir" />
@@ -394,7 +394,7 @@
 			<MenuItem Id="tsmiDeviceInfo" Text="Informació Bàsica" />
 			<MenuItem Id="tsmiBootItem" Text="Elements Inici" />
 			<MenuItem Id="tsmiMenu" Text="Menú Ràdio" />
-			<MenuItem Id="tsmiNumKeyContact" Text="Tecles Numeriques" />
+			<MenuItem Id="tsmiNumKeyContact" Text="Tecles Numèriques" />
 			<MenuItem Id="tsmiGerneralSet" Text="Configuració General" />
 			<MenuItem Id="tsmiButton" Text="Botons" />
 			<MenuItem Id="tsmiTextMsg" Text="Missatges de Text " />
@@ -430,8 +430,8 @@
 			<MenuItem Id="tsmiAbout" Text="Informació" />
 			<MenuItem Id="tsmiLanguage" Text="Idioma" />
 			<MenuItem Id="tsmiEnglish" Text="Anglés" />
-			<MenuItem Id="tsmiChinese" Text="Español" />
-      <MenuItem Id="tsmiExtras" Text="Extras" />
+			<MenuItem Id="tsmiChinese" Text="Espanyol" />
+      <MenuItem Id="tsmiExtras" Text="Utilitas" />
       <MenuItem Id="tsmiContactsDownload" Text="Descarregar contactes" />
       <MenuItem Id="tsmiDMRID" Text="DMR ID" />
       <MenuItem Id="tsmiCalibration" Text="Calibració" />
@@ -521,7 +521,7 @@
 			<Item Id="ChDispMode" Text="Número,Nom,Freqüència" />
 			<Item Id="KeyTone" Text="No,Sí" />
 			<Item Id="DoubleWait" Text="No,Doble Doble,Doble Simple" />
-			<Item Id="MenuLang" Text="Anglés,Xinés" />
+			<Item Id="MenuLang" Text="Anglès,Xinés" />
 		</Commons>
 	</MenuForm>
 	<NormalScanForm Text="Exploració (Scan)">
@@ -575,26 +575,26 @@
 	</RxGroupListForm>
 	<SignalingBasicForm Text="Senyalització Bàsica">
 		<Controls>
-			<Control Id="chkCallAlert" Text="Codificar Crida Alerta" />
-			<Control Id="chkRadioDisable" Text="Decodificar Deshabilitar Ràdio" />
-			<Control Id="chkRemoteMonitor" Text="Decodificar Monitor Remot" />
-			<Control Id="chkEmgRM" Text="Decodificar Monitor Remot Emergència" />
+			<Control Id="chkCallAlert" Text="Crida d'Alerta" />
+			<Control Id="chkRadioDisable" Text="Deshabilitar Ràdio" />
+			<Control Id="chkRemoteMonitor" Text="Monitor Remot" />
+			<Control Id="chkEmgRM" Text="Monitor Remot Emergència" />
 			<Control Id="lblTxSyncWakeTot" Text="TX TOT Habilitar [ms]" />
-			<Control Id="chkSelCall" Text="Codificar Crida Propia" />
+			<Control Id="chkSelCall" Text="Crida Propia" />
 			<Control Id="lblTxWakeMsgLimit" Text="Limit Missatge HABILITAR" />
 			<Control Id="lblSelCallToneId" Text="To/ID de Crida Propia" />
 			<Control Id="lblRMDuration" Text="Temps Monitor Remot [s]" />
-			<Control Id="lblSelCallHang" Text="Temps Caida Crida [ms]" />
+			<Control Id="lblSelCallHang" Text="Temps Retenció Crida [ms]" />
 			<Control Id="lblAutoResetTimer" Text="Temps Auto Reset [s]" />
 		</Controls>
 	</SignalingBasicForm>
 	<ScanBasicForm Text="Configuració Exploració">
 		<Controls>
       <Control Id="lblScanTime" Text="Scan Time [s]" />
-			<Control Id="lblDigitHang" Text="Temps Caida Digital [ms]" />
-			<Control Id="lblAnalogHang" Text="Temps Caida Analògic [ms]" />
-			<Control Id="lblVoteHang" Text="Temps Caida Itinerancia [s]" />
-			<Control Id="lblFastVoteRssi" Text="Umbral Rápid Itinerancia RSSI [dB]" />
+			<Control Id="lblDigitHang" Text="Temps Crida Digital [ms]" />
+			<Control Id="lblAnalogHang" Text="Temps Crida Analògic [ms]" />
+			<Control Id="lblVoteHang" Text="Temps Crida Itinerancia [s]" />
+			<Control Id="lblFastVoteRssi" Text="Umbral Ràpid Itinerancia RSSI [dB]" />
 			<Control Id="lblStartVoteRssi" Text="Inici Umbral Itinerancia RSSI [dB]" />
 			<Control Id="chkPriorityAlert" Text="Alerta Prioritaria" />
 		</Controls>
@@ -604,7 +604,7 @@
 			<Control Id="dgvMsg" Text="Contingut">
 				<ControlItem Id="txtMessage" Text="Missatge de Text" />
 			</Control>
-			<Control Id="btnAdd" Text="Afegdir" />
+			<Control Id="btnAdd" Text="Afedir" />
 			<Control Id="btnDel" Text="Esborrar" />
 		</Controls>
 	</TextMsgForm>
@@ -639,12 +639,12 @@
 			<Control Id="chkAllowTalkaround" Text="Permetre Talkaround" />
 			<Control Id="grpAnalog" Text="Analògic" />
 			<Control Id="lblChBandwidth" Text="Ample Banda [KHz]" />
-			<Control Id="lblVoiceEmphasis" Text="Énfasis Veu" />
+			<Control Id="lblVoiceEmphasis" Text="Èmfasi Veu" />
 			<Control Id="lblSte" Text="STE" />
 			<Control Id="lblNonSte" Text="No STE" />
 			<Control Id="lblRxTone" Text="To RX [Hz]" />
-			<Control Id="lblRxSignaling" Text="Senylització RX" />
-			<Control Id="lblUnmuteRule" Text="Regla Slienciamient" />
+			<Control Id="lblRxSignaling" Text="Senyalització RX" />
+			<Control Id="lblUnmuteRule" Text="Regla Silenciamient" />
 			<Control Id="lblArtsInterval" Text="Interval ARTS [s]" />
 			<Control Id="lblArts" Text="ARTS" />
 			<Control Id="lblPttidType" Text="Tipus PTTID" />
@@ -722,19 +722,19 @@
 	</ZoneForm>
 <DownloadContactsForm Text="Descarregar Contactes">
     <Controls>
-      <Control Id="lblMessage" Text="Introduiu prefixe de codi ID de regió i premeu Descarregar..." />
+      <Control Id="lblMessage" Text="Introdueix prefixe de codi ID de regió i premeu Descarregar..." />
       <Control Id="btnImport" Text="Importar sel·leccionats" />
       <Control Id="btnSelectAll" Text="Sel·leccionar Tots" />
       <Control Id="btnDownload" Text="Descarregar Dades URL" />
       <Control Id="btnDownloadDMRMARC" Text="Descarregar de DRM MARC" />      
       <Control Id="lblIDStart" Text="Prefixe Regional" />
       <Control Id="txtIDStart" Text="505" />
-      <Control Id="lblIDStartAlert" Text="Si us plau, introduiu codi prefixe de 3 digits de zoa. Ex.: 213 Andorra" />
+      <Control Id="lblIDStartAlert" Text="Si us plau, introdueix codi prefixe de 3 digits de zoa. Ex.: 213 Andorra" />
       <Control Id="lblMessageAdded" Text="Disponibles {0} noves IDs que no eren als contactes" />
       <Control Id="lblMessageDownloading" Text="Descarregant..." />
       <Control Id="dgvDownloadeContacts" Text="ID DMR,Indicatiu,Nom,Derrera Vegada">
         <ControlItem Id="" Text="ID DMR" />
-        <ControlItem Id="" Text="Ìndicatiu" />
+        <ControlItem Id="" Text="Indicatiu" />
         <ControlItem Id="" Text="Nom" />
         <ControlItem Id="" Text="Derrera Vegada" />
       </Control>
@@ -742,7 +742,7 @@
 </DownloadContactsForm>
   <DMRIDForm Text="DMR ID">
     <Controls>
-      <Control Id="lblMessage" Text="Introduiu codi prefixe d'ID de vostra regió i premeu Descarregar, per afegir-ho al llistat" />
+      <Control Id="lblMessage" Text="Introdueix codi prefixe d'ID de vostra regió i premeu Descarregar, per afegir-ho al llistat" />
       <Control Id="lblRegionId" Text="Regió" />
       <Control Id="lblInactivityFilter" Text="Filtre d'inactivitat (díes)" />
       <Control Id="btnDownload" Text="Descarregar" />
@@ -754,17 +754,17 @@
 	<Commons>
 		<Item Id="None" Text="Cap" />
 		<Item Id="Selected" Text="Sel·leccionat" />
-		<Item Id="RadioIdNotEmpty" Text="LID DMR no pot estar buit!" />
+		<Item Id="RadioIdNotEmpty" Text="L'ID DMR no pot estar buit!" />
 		<Item Id="RadioIdOutOfRange" Text="Radio ID fora de rang!" />
 		<Item Id="Read" Text="Llegint..." />
-		<Item Id="Write" Text="Escribin..." />
+		<Item Id="Write" Text="Escrivint..." />
 		<Item Id="ReadComplete" Text="Lectura Complerta" />
 		<Item Id="WriteComplete" Text="Escriptura Complerta" />
 		<Item Id="NameExist" Text="Nom ja existeix" />
 		<Item Id="FirstChNotDelete" Text="El primer Canal a la primera Zona, No es pot esborrar" />
-		<Item Id="FileFormatError" Text="ERROR de format de l'arxiu" />
-		<Item Id="OpenSuccessfully" Text="Obert amb éxit" />
-		<Item Id="SaveSuccessfully" Text="Desat amb éxit" />
+		<Item Id="FileFormatError" Text="ERROR de format a l'arxiu" />
+		<Item Id="OpenSuccessfully" Text="Obert amb èxit" />
+		<Item Id="SaveSuccessfully" Text="Desat amb èxit" />
 		<Item Id="TypeNotMatch" Text="No coincideixen els tipus" />
 		<Item Id="NotSelectItemNotCopyItem" Text="Element no sel·leccionat" />
 		<Item Id="KeyPressHex" Text="Si us plau, introdueix: " />
@@ -773,7 +773,7 @@
 		<Item Id="DeviceNotFound" Text="ERROR: Dispositiu no trovat" />
 		<Item Id="ModelNotMatch" Text="ERROR: Model Incorrecte" />
 		<Item Id="PromptKey1" Text="Vols desar el Codeplug abans de sortir?" />
-		<Item Id="PromptKey2" Text="Vols carregar un nou Codeplug per defecte? Totes les dades actuals ses perdràn." />
+		<Item Id="PromptKey2" Text="Vols carregar un nou Codeplug per defecte? Totes les dades actuals es perdràn." />
 		<Item Id="DataFormatError" Text="ERROR de format de dades" />
 		<Item Id="FirstNotDelete" Text="La primera fila no pot ser eliminada" />
 		<Item Id="OpenPortFail" Text="ERROR: Falla enl obrir el porto série" />
@@ -783,11 +783,11 @@
 		<Item Id="codePlugReadConfirm"  Text="Vols LLEGIR el Codeplug del GD-77?. Les dades al codeplug actual a pantalla es perdràn." />
 		<Item Id="codePlugWriteConfirm"  Text="Vols ESCRIURE aquest Codeplug al GD-77?. Les dades al GD77 es perdràn." />
 		<Item Id="pleaseConfirm"  Text="ATENCIÓ - Si us plau, confirma..." />
-    <Item Id="userAgreement"  Text="AQuest programa es subministra tal i com està 'AS IS', sense cap garantía. El feu servir sota el vostre própi risc tant pel vostre PC com pel vostre equipament DMR. Prement 'Sí' confirmes que entens aquesta advertència i ets d'acord." />
+    <Item Id="userAgreement"  Text="Aquest programa es subministra tal i com està 'AS IS', sense cap garantía. El feu servir sota el vostre própi risc tant pel vostre PC com pel vostre equipament DMR. Prement 'Sí' confirmes que entens aquesta advertència i ets d'acord." />
     <Item Id="DownloadContactsMessageAdded" Text="Disponibles {0} noves ID's que no estaven inclosses als teus contactes" />
-    <Item Id="DownloadContactsRegionEmpty" Text="Si us plau, introduiu el codi prefixe de al menys 3 digits de la seva zona. Per exemple: 213 per Andorra, 2143 per Catalunya , 208 França..." />
+    <Item Id="DownloadContactsRegionEmpty" Text="Si us plau, introdueix el codi prefixe de al menys 3 digits de la seva zona. Per exemple: 213 per Andorra, 2143 per Catalunya , 208 França..." />
     <Item Id="DownloadContactsDownloading" Text="Descarregant..." />
-    <Item Id="DownloadContactsSelectContactsToImport" Text="Si us plau, sel·leccioneu els contactes que voleu importar" />
+    <Item Id="DownloadContactsSelectContactsToImport" Text="Si us plau, sel·lecciona els contactes que vols importar" />
     <Item Id="DownloadContactsTooMany" Text="No s'han pogur importar tots els contacts. S'ha arribat al número màxim de Contactes Digitals" />
     <Item Id="Warning" Text="Avís" />
     <Item Id="UnableDownloadFromInternet" Text="Imposible descarregar les dades. Comprova la conexió a Internet" />
@@ -795,18 +795,18 @@
     <Item Id="CodeplugUpgradeNotice" Text="Aquest Codeplug sembla ser V3.0.6. El convertirem a V3.1.x" />
     <Item Id="CodeplugUpgradeWarningToManyRxGroups" Text="La versió 3.1.x només pot tenir 76 Rx Groups. La resta seràn ignorats" />
     <Item Id="CodeplugRead" Text="Llegint codeplug del GD-77" />
-    <Item Id="CodeplugWrite" Text="Escribint codeplug al GD-77" />
+    <Item Id="CodeplugWrite" Text="Escrivint codeplug al GD-77" />
     <Item Id="DMRIDRead" Text="Llegint base de dades DMR ID del GD-77" />
-    <Item Id="DMRIDWrite" Text="Escribint base de dades DMR ID al GD-77" />
+    <Item Id="DMRIDWrite" Text="Escrivint base de dades DMR ID al GD-77" />
     <Item Id="CalibrationRead" Text="Llegint calibracions del GD-77" />
-    <Item Id="CalibrationWrite" Text="Escribint calibracions al GD-77" />
-    <Item Id="IdAlreadyExists" Text="ID duplicada！" />
+    <Item Id="CalibrationWrite" Text="Escrivint calibracions al GD-77" />
+    <Item Id="IdAlreadyExists" Text="ID duplicada!" />
     <Item Id="IdOutOfRange" Text="ID fora de rang!" />
     <Item Id="IdNotEmpty" Text="ID no pot estar buida!" />
     <Item Id="ContactNameDuplicate" Text="Atenció. Nom de contacte duplicat." />
     <Item Id="EnableMemoryAccessMode" Text ="El GD-77 sembla no accedir al Modus Memory Access. Premeu (Blava, Verda i * mentre posseu en martxa l'equip i proveu novament" />
-    <Item Id="dataRead" Text="Lllegint dades del GD-77"/>
-    <Item Id="dataWrite" Text="Escribint dades al GD-77"/>
+    <Item Id="dataRead" Text="Llegint dades del GD-77"/>
+    <Item Id="dataWrite" Text="Escrivint dades al GD-77"/>
     <Item Id="DMRIdContcatsTotal" Text="Número Total d'IDs = {0}. De... {1} que hi caben" />
     <Item Id="ErrorParsingData" Text="Error analitzant dades" />    
   </Commons>
