@@ -2758,18 +2758,11 @@ namespace DMR
 				this.closeAllForms();
 
 #if OpenGD77
-				/*
-				if (!checkCodeplugVersion311(array))			//Check to see if this is not a 3.1.1 codeplug
-				{
-					convertCodeplug(array);					     //Convert layout from 3.0.6 to 3.1.x
-				}*/
 				if (!checkZonesFor80Channels(array))
 				{
 					convertTo80ChannelZoneCodeplug(array);	
 				}
-
 #endif    
-
 				MainForm.ByteToData(array,true);
 				this.InitTree();
 				this.Text = getMainTitleStub() + " " + fileName;
@@ -3395,7 +3388,7 @@ namespace DMR
 			return array;
 		}
 
-#if OpenGD77
+
 
 		//CJD  Check Codeplug and try to determine if it is a V3.1.1 type by looking at the Rx Group Entries. 
 
@@ -3512,7 +3505,7 @@ namespace DMR
 
 		}
 
-#endif
+
 
 		// This function reads the binary data e.g codeplug file and stores the data into the internal storage structures
 		public static void ByteToData(byte[] eerom, bool isFromFile = false)

@@ -104,6 +104,11 @@ namespace DMR
 			dataGridView1.UserDeletedRow += new DataGridViewRowEventHandler(dataGridRowDeleted);
 
 			rebindData();	
+
+#if OpenGD77
+			chkEnhancedFirmware.Checked = true;
+			chkEnhancedFirmware.Visible = false;
+#endif
 		}
 
 		private void dataGridRowDeleted(object sender, DataGridViewRowEventArgs e)
@@ -423,7 +428,11 @@ namespace DMR
 			}
 			else
 			{
-
+#if OpenGD77
+				cmbStringLen.SelectedIndex = 9;
+				cmbStringLen.Visible = true;
+				lblEnhancedLength.Visible = true;
+#else
 				if (DialogResult.OK == MessageBox.Show("This mode ONLY works with the OpenGD77 or other modified firmware installed in the GD-77.", "WARNING", MessageBoxButtons.OKCancel, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button2))
 				{
 					cmbStringLen.SelectedIndex = 9;
@@ -434,6 +443,7 @@ namespace DMR
 				{
 					this.Close();
 				}
+#endif
 			}
 			
 			updateTotalNumberMessage();
