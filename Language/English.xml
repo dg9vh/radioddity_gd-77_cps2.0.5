@@ -230,8 +230,8 @@
 	</DeviceInfoForm>
 	<DigitalKeyContactForm Text="Number Key Assign">
 		<Controls>
-			<Control Id="dgvContact" Text="Contact">
-				<ControlItem Id="cmbContact" Text="Contact" />
+			<Control Id="dgvContact" Text="Menu">
+				<ControlItem Id="cmbContact" Text="Menu" />
 			</Control>
 		</Controls>
 		<Commons>

@@ -3320,29 +3320,29 @@ namespace DMR
 			byte[] array = new byte[Settings.EEROM_SPACE];
 			array.Fill((byte)255);
 			MainForm.DataVerify();
-			byte[] array2 = Settings.smethod_61(GeneralSetForm.data, Marshal.SizeOf(GeneralSetForm.data.GetType()));
+			byte[] array2 = Settings.objectToByteArray(GeneralSetForm.data, Marshal.SizeOf(GeneralSetForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_GENERAL_SET, array2.Length);
-			array2 = Settings.smethod_61(DeviceInfoForm.data, Marshal.SizeOf(DeviceInfoForm.data.GetType()));
+			array2 = Settings.objectToByteArray(DeviceInfoForm.data, Marshal.SizeOf(DeviceInfoForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_DEVICE_INFO, array2.Length);
-			array2 = Settings.smethod_61(ButtonForm.data, Marshal.SizeOf(ButtonForm.data.GetType()));
+			array2 = Settings.objectToByteArray(ButtonForm.data, Marshal.SizeOf(ButtonForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_BUTTON, array2.Length);
-			array2 = Settings.smethod_61(ButtonForm.data1, Marshal.SizeOf(ButtonForm.data1.GetType()));
+			array2 = Settings.objectToByteArray(ButtonForm.data1, Marshal.SizeOf(ButtonForm.data1.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_ONE_TOUCH, array2.Length);
-			array2 = Settings.smethod_61(TextMsgForm.data, Marshal.SizeOf(TextMsgForm.data.GetType()));
+			array2 = Settings.objectToByteArray(TextMsgForm.data, Marshal.SizeOf(TextMsgForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_TEXT_MSG, array2.Length);
-			array2 = Settings.smethod_61(EncryptForm.data, Marshal.SizeOf(EncryptForm.data.GetType()));
+			array2 = Settings.objectToByteArray(EncryptForm.data, Marshal.SizeOf(EncryptForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_ENCRYPT, array2.Length);
-			array2 = Settings.smethod_61(SignalingBasicForm.data, Marshal.SizeOf(SignalingBasicForm.data.GetType()));
+			array2 = Settings.objectToByteArray(SignalingBasicForm.data, Marshal.SizeOf(SignalingBasicForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_SIGNALING_BASIC, array2.Length);
-			array2 = Settings.smethod_61(DtmfForm.data, Marshal.SizeOf(DtmfForm.data.GetType()));
+			array2 = Settings.objectToByteArray(DtmfForm.data, Marshal.SizeOf(DtmfForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_DTMF_BASIC, array2.Length);
-			array2 = Settings.smethod_61(EmergencyForm.data, Marshal.SizeOf(EmergencyForm.data.GetType()));
+			array2 = Settings.objectToByteArray(EmergencyForm.data, Marshal.SizeOf(EmergencyForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_EMG_SYSTEM, array2.Length);
-			array2 = Settings.smethod_61(ContactForm.data, Marshal.SizeOf(ContactForm.data.GetType()));
+			array2 = Settings.objectToByteArray(ContactForm.data, Marshal.SizeOf(ContactForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_DMR_CONTACT_EX, array2.Length);
-			array2 = Settings.smethod_61(DtmfContactForm.data, Marshal.SizeOf(DtmfContactForm.data.GetType()));
+			array2 = Settings.objectToByteArray(DtmfContactForm.data, Marshal.SizeOf(DtmfContactForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_DTMF_CONTACT, array2.Length);
-			array2 = Settings.smethod_61(RxGroupListForm.data, Marshal.SizeOf(RxGroupListForm.data.GetType()));
+			array2 = Settings.objectToByteArray(RxGroupListForm.data, Marshal.SizeOf(RxGroupListForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_RX_GRP_LIST_EX, array2.Length);
 			ZoneForm.basicData.Verify();
 			array[Settings.ADDR_ZONE_BASIC] = ZoneForm.data.ZoneIndex[0];
@@ -3352,29 +3352,29 @@ namespace DMR
 			Array.Copy(array2, 0, array, Settings.ADDR_ZONE_LIST, array2.Length);
 			array2 = ChannelForm.data.ToEerom(0);
 			Array.Copy(array2, 0, array, Settings.ADDR_CHANNEL, array2.Length);
-			array2 = Settings.smethod_61(ScanBasicForm.data, Marshal.SizeOf(ScanBasicForm.data.GetType()));
+			array2 = Settings.objectToByteArray(ScanBasicForm.data, Marshal.SizeOf(ScanBasicForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_SCAN, array2.Length);
-			array2 = Settings.smethod_61(NormalScanForm.data, Marshal.SizeOf(NormalScanForm.data.GetType()));
+			array2 = Settings.objectToByteArray(NormalScanForm.data, Marshal.SizeOf(NormalScanForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_SCAN_LIST, array2.Length);
-			array2 = Settings.smethod_61(BootItemForm.data, Settings.SPACE_BOOT_ITEM);
+			array2 = Settings.objectToByteArray(BootItemForm.data, Settings.SPACE_BOOT_ITEM);
 			Array.Copy(array2, 0, array, Settings.ADDR_BOOT_ITEM, array2.Length);
-			array2 = Settings.smethod_61(DigitalKeyContactForm.data, Settings.SPACE_DIGITAL_KEY_CONTACT);
+			array2 = Settings.objectToByteArray(DigitalKeyContactForm.data, Settings.SPACE_DIGITAL_KEY_CONTACT);
 			Array.Copy(array2, 0, array, Settings.ADDR_DIGITAL_KEY_CONTACT, Settings.SPACE_DIGITAL_KEY_CONTACT);
-			array2 = Settings.smethod_61(MenuForm.data, Settings.SPACE_MENU_CONFIG);
+			array2 = Settings.objectToByteArray(MenuForm.data, Settings.SPACE_MENU_CONFIG);
 			Array.Copy(array2, 0, array, Settings.ADDR_MENU_CONFIG, Settings.SPACE_MENU_CONFIG);
-			array2 = Settings.smethod_61(BootItemForm.dataContent, Settings.SPACE_BOOT_CONTENT);
+			array2 = Settings.objectToByteArray(BootItemForm.dataContent, Settings.SPACE_BOOT_CONTENT);
 			Array.Copy(array2, 0, array, Settings.ADDR_BOOT_CONTENT, Settings.SPACE_BOOT_CONTENT);
-			array2 = Settings.smethod_61(AttachmentForm.data, Settings.SPACE_ATTACHMENT);
+			array2 = Settings.objectToByteArray(AttachmentForm.data, Settings.SPACE_ATTACHMENT);
 			Array.Copy(array2, 0, array, Settings.ADDR_ATTACHMENT, Settings.SPACE_ATTACHMENT);
 			array2 = VfoForm.data.ToEerom();
 			Array.Copy(array2, 0, array, Settings.ADDR_VFO, array2.Length);
 			if (ChannelForm.CurCntCh > 128)
 			{
-				array2 = Settings.smethod_61(ZoneForm.basicData, Marshal.SizeOf(ZoneForm.basicData));
+				array2 = Settings.objectToByteArray(ZoneForm.basicData, Marshal.SizeOf(ZoneForm.basicData));
 				Array.Copy(array2, 0, array, Settings.ADDR_EX_ZONE_BASIC, array2.Length);
-				array2 = Settings.smethod_61(ZoneForm.data, Settings.SPACE_EX_ZONE);
+				array2 = Settings.objectToByteArray(ZoneForm.data, Settings.SPACE_EX_ZONE);
 				Array.Copy(array2, 0, array, Settings.ADDR_EX_ZONE_LIST, array2.Length);
-				array2 = Settings.smethod_61(EmergencyForm.dataEx, Marshal.SizeOf(EmergencyForm.dataEx));
+				array2 = Settings.objectToByteArray(EmergencyForm.dataEx, Marshal.SizeOf(EmergencyForm.dataEx));
 				Array.Copy(array2, 0, array, Settings.ADDR_EX_EMERGENCY, array2.Length);
 				for (int i = 1; i < 8; i++)
 				{
@@ -3382,6 +3382,8 @@ namespace DMR
 					Array.Copy(array2, 0, array, Settings.ADDR_EX_CH + (i - 1) * ChannelForm.SPACE_CH_GROUP, ChannelForm.SPACE_CH_GROUP);
 				}
 			}
+
+			Array.Copy(OpenGD77Form.CustomData, 0, array, 0x1EE60, OpenGD77Form.CustomData.Length);
 
 		//	Array.Copy(DMRIDFormNew.DMRIDBuffer, 0, array, 0x20000, 0x20000);// Save the CurrentDMRID to the codeplug.
 
@@ -3608,6 +3610,9 @@ namespace DMR
 			{
 				MessageBox.Show(ex.Message);
 			}
+
+			OpenGD77Form.LoadCustomData(eerom);
+
 
 /*
 			if (isFromFile && eerom.Length == 0x40000)

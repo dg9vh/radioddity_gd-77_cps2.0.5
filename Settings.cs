@@ -346,6 +346,8 @@ internal class Settings
 
 	public static readonly int ADDR_EX_CH;
 
+	public static readonly int ADDR_UNUSED_START = 0x1EE60;
+
 	public static Dictionary<string, string> dicCommon;
    // static string _003CLangXml_003Ek__BackingField;
 	private static XmlDocument _languageXML=null;
@@ -1176,7 +1178,7 @@ internal class Settings
 		}
 	}
 
-	public static byte[] smethod_61(object object_0, int int_0)
+	public static byte[] objectToByteArray(object object_0, int int_0)
 	{
 		byte[] array = new byte[int_0];
 		IntPtr intPtr = Marshal.AllocHGlobal(int_0);

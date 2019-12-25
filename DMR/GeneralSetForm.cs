@@ -2018,7 +2018,7 @@ namespace DMR
 				GeneralSetForm.data.TxExitTone = this.chkTxExitTone.Checked;
 				GeneralSetForm.data.ScanMode = this.cmbScanMode.SelectedIndex;
 				GeneralSetForm.data.PrgPwd = this.txtProgramPwd.Text;
-				Settings.smethod_61(GeneralSetForm.data, Marshal.SizeOf(GeneralSetForm.data.GetType()));
+				Settings.objectToByteArray(GeneralSetForm.data, Marshal.SizeOf(GeneralSetForm.data.GetType()));
 			}
 			catch (Exception ex)
 			{

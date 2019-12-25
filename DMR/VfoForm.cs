@@ -1623,7 +1623,7 @@ namespace DMR
 				byte[] array = new byte[2 * VfoForm.SPACE_CH];
 				for (num = 0; num < 2; num++)
 				{
-					byte[] array2 = Settings.smethod_61(this.chList[num], Marshal.SizeOf(this.chList[num]));
+					byte[] array2 = Settings.objectToByteArray(this.chList[num], Marshal.SizeOf(this.chList[num]));
 					Array.Copy(array2, 0, array, num2, array2.Length);
 					num2 += array2.Length;
 				}

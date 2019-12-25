@@ -2198,7 +2198,7 @@ namespace DMR
 				for (num = 0; num < 128; num++)
 				{
 					num3 = chGroupIndex * 128 + num;
-					byte[] array2 = Settings.smethod_61(this.chList[num3], Marshal.SizeOf(this.chList[num3]));
+					byte[] array2 = Settings.objectToByteArray(this.chList[num3], Marshal.SizeOf(this.chList[num3]));
 					Array.Copy(array2, 0, array, num2, array2.Length);
 					num2 += array2.Length;
 				}

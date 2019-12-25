@@ -11,18 +11,21 @@ using System.Windows.Forms;
 using System.IO;
 using System.IO.Ports;
 using System.Threading;
+//using Toub.Sound.Midi;
 
 namespace DMR
 {
 	public partial class OpenGD77Form : Form
 	{
-
+		public static byte[] CustomData;
 		private SerialPort _port = null;
+		const string IDENTIFIER = "OpenGD77";
 
 		private BackgroundWorker worker;
 
 		public enum CommsDataMode { DataModeNone = 0, DataModeReadFlash = 1, DataModeReadEEPROM = 2, DataModeWriteFlash = 3, DataModeWriteEEPROM = 4 };
 		public enum CommsAction { NONE, BACKUP_EEPROM, BACKUP_FLASH,RESTORE_EEPROM, RESTORE_FLASH ,READ_CODEPLUG, WRITE_CODEPLUG }
+		public enum CustomDataType { UNINITIALISED_TYPE = 0xFF, IMAGE_TYPE = 1, MELODY_TYPE = 2 }
 
 		private SaveFileDialog _saveFileDialog = new SaveFileDialog();
 		private OpenFileDialog _openFileDialog = new OpenFileDialog();
@@ -36,7 +39,108 @@ namespace DMR
 			_initialAction = initAction;
 			InitializeComponent();
 			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
+			int imagePosition=0;
+
+			if (findCustomDataBlock(CustomDataType.IMAGE_TYPE, ref imagePosition))
+			{
+				loadImageFromCodeplug(imagePosition+8);
+			}
+			if (findCustomDataBlock(CustomDataType.MELODY_TYPE, ref imagePosition))
+			{
+				loadMelodyFromCodeplug(imagePosition + 8);
+			}
 		}
+
+		int littleEndianToInt(byte[] dataBytes, int offset)
+		{
+			return dataBytes[offset] + dataBytes[offset+1] * 256 + dataBytes[offset+2] * 256 * 256 + dataBytes[offset+3] * 256 * 256 * 256;
+		}
+		private bool findCustomDataBlock(CustomDataType typeToFind, ref int returnedOffsetPos)
+		{
+			const int CUSTOM_DATA_BLOCK_HEADER_LENGTH = 8;
+			returnedOffsetPos = 12;// Header is 12 bytes long in total
+			do
+			{
+				if (CustomData[returnedOffsetPos] == (byte)typeToFind)
+				{
+					return true;
+				}
+				returnedOffsetPos += CUSTOM_DATA_BLOCK_HEADER_LENGTH + littleEndianToInt(CustomData, returnedOffsetPos + 4);// Move to next block
+
+			} while (returnedOffsetPos < CustomData.Length - CUSTOM_DATA_BLOCK_HEADER_LENGTH);
+
+			return false;
+		}
+
+		private void loadMelodyFromCodeplug(int position)
+		{
+			string melodyStr = "";
+			for (int i = 0; i < 512; i++)
+			{
+				if (CustomData[position + i] == 0 && CustomData[position + i + 1] == 0)
+				{
+					break;
+				}
+				melodyStr += CustomData[position + i].ToString() + ",";
+			}
+
+			txtBootTune.Text = melodyStr.Substring(0,melodyStr.Length-1);// remove the last comma
+		}
+		private void loadImageFromCodeplug(int position)
+		{
+			Bitmap bm_x1 = new Bitmap(128, 64);
+			Graphics g = Graphics.FromImage(bm_x1);
+
+			g.Clear(Color.White);
+							
+			for (int stripe = 0; stripe < 8; stripe++)
+			{
+				for (int column = 0; column < 128; column++)
+				{
+					for (int line = 0; line < 8; line++)
+					{
+						if (((CustomData[position + (stripe * 128) + column] >> line) & 0x01) != 0)
+						{
+							bm_x1.SetPixel(column, stripe * 8 + line, Color.Black);
+						}
+					}
+				}
+			}
+			pictureBox1.Image = bm_x1;
+		}
+
+		public static byte[] LoadCustomData(byte [] eeprom)
+		{
+			CustomData=new byte[0x20000-0x1EE60];
+			
+			Array.Copy(eeprom, 0x1EE60, OpenGD77Form.CustomData, 0, CustomData.Length);
+
+			bool foundTheIdentifier = true;
+			for (int i = 0; i < IDENTIFIER.Length; i++)
+			{
+				if (CustomData[i] != IDENTIFIER[i])
+				{
+					foundTheIdentifier = false;
+					break;
+				}
+			}
+
+			if (foundTheIdentifier == false)
+			{
+				CustomData.Fill((byte)0xFF);
+
+				Array.Copy(Encoding.ASCII.GetBytes(IDENTIFIER), CustomData, IDENTIFIER.Length);// Add the indentifier
+				CustomData[8] = 0x01;// version
+				CustomData[9] = 0x00;
+				CustomData[10] = 0x00;
+				CustomData[11] = 0x00;
+			}
+
+			return CustomData;
+		}
+
+
+
 
 		bool sendCommand(int commandNumber, int x_or_command_option_number = 0, int y = 0, int iSize = 0, int alignment = 0, int isInverted = 0, string message = "")
 		{
@@ -63,14 +167,14 @@ namespace DMR
 					break;
 
 			}
-			_port.Write(buffer, 0, 32);
-			while (_port.BytesToRead == 0 && retries-- > 0)
+			commPort.Write(buffer, 0, 32);
+			while (commPort.BytesToRead == 0 && retries-- > 0)
 			{
 				Thread.Sleep(1);
 			}
 			if (retries != -1)
 			{
-				_port.Read(buffer, 0, 64);
+				commPort.Read(buffer, 0, 64);
 			}
 			return ((buffer[1] == commandNumber) && (retries!=-1));
 		}
@@ -85,12 +189,12 @@ namespace DMR
 			sendbuffer[2] = (byte)((dataObj.data_sector >> 16) & 0xFF);
 			sendbuffer[3] = (byte)((dataObj.data_sector >> 8) & 0xFF);
 			sendbuffer[4] = (byte)((dataObj.data_sector >> 0) & 0xFF);
-			_port.Write(sendbuffer, 0, 5);
-			while (_port.BytesToRead == 0)
+			commPort.Write(sendbuffer, 0, 5);
+			while (commPort.BytesToRead == 0)
 			{
 				Thread.Sleep(0);
 			}
-			_port.Read(readbuffer, 0, 64);
+			commPort.Read(readbuffer, 0, 64);
 
 			return ((readbuffer[0] == sendbuffer[0]) && (readbuffer[1] == sendbuffer[1]));
 		}
@@ -105,12 +209,12 @@ namespace DMR
 			sendbuffer[5] = (byte)((address >> 0) & 0xFF);
 			sendbuffer[6] = (byte)((len >> 8) & 0xFF);
 			sendbuffer[7] = (byte)((len >> 0) & 0xFF);
-			_port.Write(sendbuffer, 0, len + 8);
-			while (_port.BytesToRead == 0)
+			commPort.Write(sendbuffer, 0, len + 8);
+			while (commPort.BytesToRead == 0)
 			{
 				Thread.Sleep(0);
 			}
-			_port.Read(readbuffer, 0, 64);
+			commPort.Read(readbuffer, 0, 64);
 
 			return ((readbuffer[0] == sendbuffer[0]) && (readbuffer[1] == sendbuffer[1]));
 		}
@@ -121,12 +225,12 @@ namespace DMR
 
 			sendbuffer[0] = (byte)'W';
 			sendbuffer[1] = 3;
-			_port.Write(sendbuffer, 0, 2);
-			while (_port.BytesToRead == 0)
+			commPort.Write(sendbuffer, 0, 2);
+			while (commPort.BytesToRead == 0)
 			{
 				Thread.Sleep(0);
 			}
-			_port.Read(readbuffer, 0, 64);
+			commPort.Read(readbuffer, 0, 64);
 
 			return ((readbuffer[0] == sendbuffer[0]) && (readbuffer[1] == sendbuffer[1]));
 		}
@@ -164,12 +268,12 @@ namespace DMR
 				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
 				sendbuffer[6] = (byte)((size >> 8) & 0xFF);
 				sendbuffer[7] = (byte)((size >> 0) & 0xFF);
-				_port.Write(sendbuffer, 0, 8);
-				while (_port.BytesToRead == 0)
+				commPort.Write(sendbuffer, 0, 8);
+				while (commPort.BytesToRead == 0)
 				{
 					Thread.Sleep(0);
 				}
-				_port.Read(readbuffer, 0, 64);
+				commPort.Read(readbuffer, 0, 64);
 
 				if (readbuffer[0] == 'R')
 				{
@@ -243,6 +347,8 @@ namespace DMR
 							break;
 						}
 					}
+
+
 					if (flashSendData(currentDataAddressInTheRadio, len, ref sendbuffer, ref readbuffer))
 					{
 						int progress = (currentDataAddressInTheRadio - dataObj.startDataAddressInTheRadio) * 100 / dataObj.transferLength;
@@ -330,12 +436,12 @@ namespace DMR
 				sendbuffer[5] = (byte)((currentDataAddressInTheRadio >> 0) & 0xFF);
 				sendbuffer[6] = (byte)((len >> 8) & 0xFF);
 				sendbuffer[7] = (byte)((len >> 0) & 0xFF);
-				_port.Write(sendbuffer, 0, len + 8);
-				while (_port.BytesToRead == 0)
+				commPort.Write(sendbuffer, 0, len + 8);
+				while (commPort.BytesToRead == 0)
 				{
 					Thread.Sleep(0);
 				}
-				_port.Read(readbuffer, 0, 64);
+				commPort.Read(readbuffer, 0, 64);
 
 				if ((readbuffer[0] == sendbuffer[0]) && (readbuffer[1] == sendbuffer[1]))
 				{
@@ -515,7 +621,7 @@ namespace DMR
 			OpenGD77CommsTransferData dataObj = e.Argument as OpenGD77CommsTransferData;
 			const int CODEPLUG_FLASH_PART_END	= 0x1EE60;
 			const int CODEPLUG_FLASH_PART_START = 0xB000;
-			if (_port == null)
+			if (commPort == null)
 			{
 				return;
 			}
@@ -524,7 +630,19 @@ namespace DMR
 				switch (dataObj.action)
 				{
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_FLASH:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						// show CPS screen
 						if (!sendCommand(0))
 						{
@@ -555,10 +673,22 @@ namespace DMR
 							displayMessage("");
 						}
 						sendCommand(5);// close CPS screen
-						_port.Close();
+						commPort.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_CALIBRATION:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						if (!sendCommand(0))
 						{
 							displayMessage("Error connecting to the OpenGD77");
@@ -588,10 +718,22 @@ namespace DMR
 							displayMessage("");
 						}
 						sendCommand(5);// close CPS screen
-						_port.Close();
+						commPort.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_EEPROM:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						if (!sendCommand(0))
 						{
 							displayMessage("Error connecting to the OpenGD77");
@@ -622,11 +764,23 @@ namespace DMR
 							displayMessage("");
 						}
 						sendCommand(5);
-						_port.Close();
+						commPort.Close();
 						break;
 
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_FLASH:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						if (!sendCommand(0))
 						{
 							displayMessage("Error connecting to the OpenGD77");
@@ -657,10 +811,22 @@ namespace DMR
 						}
 						sendCommand(6, 2);// Save settings and VFO
 						sendCommand(6, 1);// Reboot
-						_port.Close();
+						commPort.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_CALIBRATION:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						if (!sendCommand(0))
 						{
 							displayMessage("Error connecting to the OpenGD77");
@@ -692,10 +858,22 @@ namespace DMR
 						}
 						sendCommand(6, 2);// Save settings and VFO's to codeplug
 						sendCommand(6, 1);// Reboot
-						_port.Close();
+						commPort.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.RESTORE_EEPROM:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						if (!sendCommand(0))
 						{
 							displayMessage("Error connecting to the OpenGD77");
@@ -725,10 +903,22 @@ namespace DMR
 							dataObj.responseCode = 1;
 						}
 						sendCommand(6, 0);// save settings (Not VFOs ) and reboot
-						_port.Close();
+						commPort.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.READ_CODEPLUG:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						if (!sendCommand(0))
 						{
 							displayMessage("Error connecting to the OpenGD77");
@@ -786,10 +976,23 @@ namespace DMR
 							displayMessage("Codeplug read complete");
 						}
 						sendCommand(5);// close CPS screen on radio
-						_port.Close();
+						commPort.Close();
 						break;
 					case OpenGD77CommsTransferData.CommsAction.WRITE_CODEPLUG:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
+					
 						if (!sendCommand(0))
 						{
 							displayMessage("Error connecting to the OpenGD77");
@@ -843,17 +1046,51 @@ namespace DMR
 							dataObj.responseCode = 1;
 							break;
 						}
+						
+						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteFlash;
+						dataObj.localDataBufferStartPosition = 0x1EE60;
+						dataObj.startDataAddressInTheRadio = 0x00000;
+						dataObj.transferLength = 0x20000 - dataObj.localDataBufferStartPosition;
+						displayMessage(String.Format("Writing Flash 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+
+						for (int c = 0; c < 1024; c++)
+						{
+							Console.Write(dataObj.dataBuff[dataObj.localDataBufferStartPosition + c].ToString("X2"));
+							if (c % 16 == 15)
+							{
+								Console.WriteLine("");
+							}
+						}
+						if (!WriteFlash(dataObj))
+						{
+							displayMessage("Error while writing");
+							dataObj.responseCode = 1;
+							break;
+						}
 						else
 						{
 							displayMessage("Codeplug write complete");
 						}
 
+
 						sendCommand(6, 0);// Save settings (NOT VFOs)
-						_port.Close();
+						commPort.Close();
 						break;
 
 					case OpenGD77CommsTransferData.CommsAction.BACKUP_MCU_ROM:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						// show CPS screen
 						if (!sendCommand(0))
 						{
@@ -884,11 +1121,23 @@ namespace DMR
 							displayMessage("");
 						}
 						sendCommand(5);// close CPS screen
-						_port.Close();
+						commPort.Close();
 						break;
 
 					case OpenGD77CommsTransferData.CommsAction.DOWLOAD_SCREENGRAB:
-						_port.Open();
+						if (commPort == null)
+						{
+							return;
+						}
+						try
+						{
+							commPort.Open();
+						}
+						catch (Exception)
+						{
+							MessageBox.Show("Comm port not available");
+							return;
+						}
 						// show CPS screen
 						/*
 						if (!sendCommand(0))
@@ -914,7 +1163,7 @@ namespace DMR
 							displayMessage("");
 						}
 						//sendCommand(5);// close CPS screen
-						_port.Close();
+						commPort.Close();
 						break;
 
 				}
@@ -943,7 +1192,7 @@ namespace DMR
 
 		private void btnBackupEEPROM_Click(object sender, EventArgs e)
 		{
-			if (_port==null)
+			if (commPort==null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -955,7 +1204,7 @@ namespace DMR
 
 		private void btnBackupFlash_Click(object sender, EventArgs e)
 		{
-			if (_port==null)
+			if (commPort==null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -968,7 +1217,7 @@ namespace DMR
 
 		private void btnBackupCalibration_Click(object sender, EventArgs e)
 		{
-			if (_port == null)
+			if (commPort == null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -995,7 +1244,7 @@ namespace DMR
 
 		private void btnRestoreEEPROM_Click(object sender, EventArgs e)
 		{
-			if (_port == null)
+			if (commPort == null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -1021,7 +1270,7 @@ namespace DMR
 
 		private void btnRestoreCalibration_Click(object sender, EventArgs e)
 		{
-			if (_port == null)
+			if (commPort == null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -1048,7 +1297,7 @@ namespace DMR
 
 		private void btnRestoreFlash_Click(object sender, EventArgs e)
 		{
-			if (_port == null)
+			if (commPort == null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -1086,65 +1335,87 @@ namespace DMR
 
 		private void OpenGD77Form_Load(object sender, EventArgs e)
 		{
-			try
+			switch (_initialAction)
 			{
-				String gd77CommPort=null;
-		
-
-				gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
-				if (gd77CommPort == null)
-				{
-					CommPortSelector cps = new CommPortSelector();
-					if (DialogResult.OK == cps.ShowDialog())
-					{
-						gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix(cps.SelectedPort);
-						IniFileUtils.WriteProfileString("Setup", "LastCommPort", gd77CommPort);// assume they selected something useful !
-					}
-					else
-					{
-						this.Close();
-						return;
-					}
-				}
-
-				if (gd77CommPort==null)
-				{
-					MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
-				}
-				else
-				{
-					_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
-					_port.ReadTimeout = 1000;
-
-					switch (_initialAction)
-					{
-						case CommsAction.READ_CODEPLUG:
-							readCodeplug();
-							break;
-						case CommsAction.WRITE_CODEPLUG:
-							writeCodeplug();
-							break;
-						default:
-							break;
-					}
-				}
-
-			}
-			catch (Exception)
-			{
-				_port = null;
-				MessageBox.Show("Failed to open comm port", "Error");
-				IniFileUtils.WriteProfileString("Setup", "LastCommPort", "");// clear any port they may have saved
+				case CommsAction.READ_CODEPLUG:
+					readCodeplug();
+					break;
+				case CommsAction.WRITE_CODEPLUG:
+					writeCodeplug();
+					break;
+				default:
+					break;
 			}
 		}
 
+		private SerialPort commPort
+		{
+			get
+			{
+				if (_port == null)
+				{
+					try
+					{
+						String gd77CommPort = null;
+
+						gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
+						if (gd77CommPort == null)
+						{
+							CommPortSelector cps = new CommPortSelector();
+							if (DialogResult.OK == cps.ShowDialog())
+							{
+								gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix(cps.SelectedPort);
+								IniFileUtils.WriteProfileString("Setup", "LastCommPort", gd77CommPort);// assume they selected something useful !
+							}
+							else
+							{
+								//this.Close();
+								return null;
+							}
+						}
+
+						if (gd77CommPort == null)
+						{
+							MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
+						}
+						else
+						{
+							_port = new SerialPort(gd77CommPort, 115200, Parity.None, 8, StopBits.One);
+							commPort.ReadTimeout = 1000;
+						}
+
+					}
+					catch (Exception)
+					{
+						_port = null;
+						MessageBox.Show("Failed to open comm port", "Error");
+						IniFileUtils.WriteProfileString("Setup", "LastCommPort", "");// clear any port they may have saved
+						return null;
+					}
+					return _port;
+				}
+				else
+				{
+					return _port;
+				}
+
+			}
+
+			set
+			{
+				_port = value;
+			}
+		}
+
+
 		private void OpenGD77Form_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			if (_port != null)
+			//MidiPlayer.CloseMidi();
+			if (commPort != null)
 			{
 				try
 				{
-					_port = null;
+					commPort = null;
 				}
 				catch (Exception)
 				{
@@ -1155,7 +1426,7 @@ namespace DMR
 
 		private void readCodeplug()
 		{			
-			if (_port == null)
+			if (commPort == null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -1174,11 +1445,13 @@ namespace DMR
 
 		private void writeCodeplug()
 		{
-			if (_port == null)
+			if (commPort == null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
 			}
+
+			melodyToBytes(false);
 
 			OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.WRITE_CODEPLUG);
 			enableDisableAllButtons(false);
@@ -1192,7 +1465,7 @@ namespace DMR
 
 		private void btnBackupMCUROM_Click(object sender, EventArgs e)
 		{
-			if (_port == null)
+			if (commPort == null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -1204,7 +1477,7 @@ namespace DMR
 
 		private void btnDownloadScreenGrab_Click(object sender, EventArgs e)
 		{
-			if (_port == null)
+			if (commPort == null)
 			{
 				MessageBox.Show("No com port. Close and reopen the OpenGD77 window to select a com port");
 				return;
@@ -1228,11 +1501,145 @@ namespace DMR
 				graphics.SmoothingMode = SmoothingMode.None;
 				graphics.PixelOffsetMode = PixelOffsetMode.Half;
 
-				graphics.DrawImage(image, 0, 0, width, height);                                                                                  //				}
+				graphics.DrawImage(image, 0, 0, width, height);    
 			}
 
 			return destImage;
 		}
 
+		private void btnOpenFile_Click(object sender, EventArgs e)
+		{
+			byte[] bytes = new byte[1024];
+
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Filter = "Files (*.png)|*.png";
+			if (DialogResult.OK == ofd.ShowDialog())
+			{
+				BootItemForm.data.BootScreenType = 0;// Image Type
+				Bitmap fileImage = new Bitmap(ofd.FileName);
+				Bitmap bw1 = ResizeImage(fileImage, 128, 64);
+				
+				Bitmap bw = bw1.Clone(new Rectangle(0, 0, bw1.Width, bw1.Height), PixelFormat.Format1bppIndexed);
+				pictureBox1.Image = bw;
+
+				int rowOffset, lineInRow;
+				for (int y = 0; y < 64; y++)
+				{
+					rowOffset = (y / 8)*128;
+					lineInRow = y % 8;
+					for (int x = 0; x < 128; x++)
+					{
+						Color pixel = bw.GetPixel(x,y);
+
+						if (pixel.R == 0)
+						{
+							bytes[rowOffset + x] += (byte)(1 << (lineInRow));
+						}
+					}
+				}
+
+				int address=0;
+				bool foundAddress = false;
+
+				if (findCustomDataBlock(CustomDataType.IMAGE_TYPE, ref address))
+				{
+					foundAddress = true;
+				}
+				else
+				{
+					if (findCustomDataBlock(CustomDataType.UNINITIALISED_TYPE, ref address))
+					{
+						foundAddress = true;
+					}
+				}
+
+				if (foundAddress)
+				{
+					CustomData[address] = (byte)CustomDataType.IMAGE_TYPE;// image;
+					CustomData[address + 1] = 0x00;
+					CustomData[address + 2] = 0x00;
+					CustomData[address + 3] = 0x00;
+
+					// image is 1k long
+					CustomData[address + 4] = 0x00;
+					CustomData[address + 5] = 0x04;
+					CustomData[address + 6] = 0x00;
+					CustomData[address + 7] = 0x00;
+					Array.Copy(bytes, 0, CustomData, address + 8, 1024);
+				}
+			}
+		}
+
+		private void melodyToBytes(bool playTune)
+		{
+			byte[] arr = new byte[512 + 8];
+			arr[0] = (byte)CustomDataType.MELODY_TYPE;// image;
+			arr[1] = 0x00;
+			arr[2] = 0x00;
+			arr[3] = 0x00;
+
+			// Max length of melody is 256 notes and durations = 512 bytes
+			arr[4] = 0x00;
+			arr[5] = 0x02;
+			arr[6] = 0x00;
+			arr[7] = 0x00;
+
+			string melodyStr = txtBootTune.Text;
+
+			melodyStr = melodyStr.Replace(" ", "");
+			melodyStr = melodyStr.Replace("\r\n", "");
+			string[] melodyArr = melodyStr.Split(',');
+
+			if (melodyArr.Length % 2 == 0)
+			{
+				int pos = 0;
+				try
+				{
+					while (pos < (melodyArr.Length - 1))
+					{
+						int n = (int)Math.Round(98 * Math.Pow(2, ((float)float.Parse(melodyArr[pos]) / 12.0f)));
+						if (n == 98)
+						{
+							n = 37;
+						}
+						int len = int.Parse(melodyArr[pos + 1]);
+						if (playTune)
+						{
+							Console.Beep(n, len * 35);
+						}
+						arr[pos + 8] = (byte)int.Parse(melodyArr[pos]);
+						arr[pos + 8 + 1] = (byte)len;
+						pos += 2;
+					}
+
+					// terminate
+					arr[pos + 8] = 0;
+					arr[pos + 8 + 1] = 0;
+
+					int address = 0;
+					if (findCustomDataBlock(CustomDataType.MELODY_TYPE, ref address))
+					{
+						Array.Copy(arr, 0, CustomData, address, arr.Length);
+					}
+					else
+					{
+						if (findCustomDataBlock(CustomDataType.UNINITIALISED_TYPE, ref address))
+						{
+							Array.Copy(arr, 0, CustomData, address, arr.Length);
+						}
+					}
+				}
+				catch (Exception)
+				{
+
+				}
+			}
+		}
+
+
+		private void btnPlayTune_Click(object sender, EventArgs e)
+		{
+			melodyToBytes(true);
+		}
 	}
 }
