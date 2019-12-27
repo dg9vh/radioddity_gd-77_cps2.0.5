@@ -72,7 +72,7 @@
 			<Control Id="chkEmgConfirmed" Text="Acquisition alarme d'urgence" />
 			<Control Id="chkEnhancedChAccess" Text="Accès canal évolué" />
 			<Control Id="lblRxColor" Text="Code couleur Rx" />
-			<Control Id="lblRxGroup" Text="Liste Groupe Rx" />
+			<Control Id="lblRxGroup" Text="Listes TG" />
 			<Control Id="chkRxOnly" Text="Rx seul" />
 			<Control Id="chkAllowTalkaround" Text="Autorisation Talkaround" />
 			<Control Id="grpAnalog" Text="Analog" />
@@ -144,7 +144,7 @@
 			<Control Id="btnClear" Text="Efface tous" />
 			<Control Id="btnDelete" Text="Enlève" />
 			<Control Id="btnAdd" Text="Ajoute" />
-			<Control Id="dgvChannels" Text="Numéro,Nom,Rx Freq,Tx Freq,Mode canal,Puissance,Tonalité Rx,Tonalité Tx,Code couleur,Liste groupe Rx,Contact,Slot Répéteur">
+			<Control Id="dgvChannels" Text="Numéro,Nom,Rx Freq,Tx Freq,Mode canal,Puissance,Tonalité Rx,Tonalité Tx,Code couleur,Listes TG,Contact,Slot Répéteur">
 				<ControlItem Id="" Text="Numéro" />
 				<ControlItem Id="" Text="Nom" />
 				<ControlItem Id="" Text="Rx Fréq." />
@@ -154,7 +154,7 @@
 				<ControlItem Id="" Text="Tonalité Rx" />
 				<ControlItem Id="" Text="Tonalité Tx" />
 				<ControlItem Id="" Text="Code couleur" />
-				<ControlItem Id="" Text="Liste groupe Rx" />
+				<ControlItem Id="" Text="Listes TG" />
 				<ControlItem Id="" Text="Contact" />
 				<ControlItem Id="" Text="Slot Répéteur" />
 			</Control>
@@ -375,8 +375,8 @@
 			<TreeNode Id="Contact" Text="Contacts" />
 			<TreeNode Id="DtmfContact" Text="DTMF" />
 			<TreeNode Id="DigitalContact" Text="Contact Digital" />
-			<TreeNode Id="RxGroupList" Text="Liste groupe Rx" />
-			<TreeNode Id="Zone" Text="Zone" />
+			<TreeNode Id="RxGroupList" Text="Listes TG" />
+			<TreeNode Id="Zone" Text="Zones" />
 			<TreeNode Id="Channel" Text="Canaux" />
 			<TreeNode Id="Scan" Text="Scan" />
 			<TreeNode Id="DtmfSignal" Text="DTMF" />
@@ -407,7 +407,7 @@
 			<MenuItem Id="tsmiDtmfContact" Text="DTMF" />
 			<MenuItem Id="tsmiDmrContact" Text="Contact Digital" />
 			<MenuItem Id="tsmiContacts" Text="Contacts" />
-			<MenuItem Id="tsmiGrpRxList" Text="Liste Groupe Rx" />
+			<MenuItem Id="tsmiGrpRxList" Text="Listes TG" />
 			<MenuItem Id="tsmiZone" Text="Zone" />
 			<MenuItem Id="tsmiZoneList" Text="Liste Zone" />
 			<MenuItem Id="tsmiChannels" Text="Canaux" />
@@ -562,7 +562,7 @@
 			<Control Id="lblPwd" Text="Mot de passe" />
 		</Controls>
 	</PowerPwdForm>
-	<RxGroupListForm Text="Liste groupe Rx">
+	<RxGroupListForm Text="Listes TG">
 		<Controls>
 			<Control Id="btnDown" Text="Bas" />
 			<Control Id="btnUp" Text="Haut" />
@@ -634,7 +634,7 @@
 			<Control Id="chkEmgConfirmed" Text="Alarme Urgence Validée" />
 			<Control Id="chkEnhancedChAccess" Text="Accès canal évolué" />
 			<Control Id="lblRxColor" Text="Code couleur Rx" />
-			<Control Id="lblRxGroup" Text="Liste Groupe Rx" />
+			<Control Id="lblRxGroup" Text="Listes TG" />
 			<Control Id="chkRxOnly" Text="Rx seul" />
 			<Control Id="chkAllowTalkaround" Text="Autorise Talkaround" />
 			<Control Id="grpAnalog" Text="Analog" />
@@ -742,8 +742,8 @@
       <Control Id="lblRegionId" Text="Region" />
       <Control Id="lblInactivityFilter" Text="Filtre d'inactivité (jours)" />
       <Control Id="btnDownload" Text="Télécharger de HamDigital" />
-      <Control Id="btnImportCSV" Text="Importer CSV - Filtre d'region" />
-      <Control Id="btnRead" Text="RLire de GD-77" />
+      <Control Id="btnImportCSV" Text="Importer CSV - Filtre de région" />
+      <Control Id="btnRead" Text="Lit de GD-77" />
       <Control Id="btnWrite" Text="Ecrit a GD-77" />
       <Control Id="btnClear" Text="Effacer la liste" />
     </Controls>
@@ -791,14 +791,14 @@
     <Item Id="DownloadContactsImportComplete" Text="Importation terminée" />
     <Item Id="CodeplugUpgradeNotice" Text="Ceci existe depuis le CodePlug V3.0.6.Il peut être converti vers la version V3.1.x" />
     <Item Id="CodeplugUpgradeWarningToManyRxGroups" Text="La version 3.1.x peut avoir 76 Listes Groupe Rx.les suivantes seronts ignorées" />
-    <Item Id="IdAlreadyExists" Text="ID already exists！" />
-    <Item Id="IdOutOfRange" Text="ID out of range!" />
-    <Item Id="IdNotEmpty" Text="ID can not be empty!" />
-    <Item Id="ContactNameDuplicate" Text="Warning. Duplicate contact name." />
-    <Item Id="EnableMemoryAccessMode" Text ="The GD-77 does not seem to be in Memory Access modeHold keys SK2 (Blue side key), Green Menu and * when turning on the transceiver, and try again" />
-    <Item Id="dataRead" Text="Reading data from GD-77"/>
-    <Item Id="dataWrite" Text="Writing data to GD-77"/>
-    <Item Id="DMRIdContcatsTotal" Text="Total number of IDs = {0}. Max of {1} can be uploaded" />
-    <Item Id="ErrorParsingData" Text="Error while parsing data" />
+    <Item Id="IdAlreadyExists" Text="ID exixte deja！" />
+    <Item Id="IdOutOfRange" Text="ID impossible !" />
+    <Item Id="IdNotEmpty" Text="ID vide !" />
+    <Item Id="ContactNameDuplicate" Text="Warning. Contact en double." />
+    <Item Id="EnableMemoryAccessMode" Text ="Le GD-77 n'est pas en mode d'accès à la mémoire : Touches SK2 (bleue)+ noire appuyées lors de la mise sous tension du GD-77, et réessayer" />
+    <Item Id="dataRead" Text="Lecture données depuis GD-77"/>
+    <Item Id="dataWrite" Text="Ecriture données vers GD-77"/>
+    <Item Id="DMRIdContcatsTotal" Text="Nombre total d'ID = {0}. Un maximum de {1} peut être téléchargé" />
+    <Item Id="ErrorParsingData" Text="Erreur lors de l'analyse des données" />
   </Commons>
 </Resource>
