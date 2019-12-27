@@ -29,7 +29,7 @@ namespace DMR
 		{
 			Settings.smethod_68(this);
 #if OpenGD77
-			this.lblVersion.Text = "OpenGD77 CPS Community Edition";
+			this.lblVersion.Text = "OpenGD77 CPS";
 #elif CP_VER_3_1_X
 			this.lblVersion.Text = "GD-77 CPS 3.1.x Community Edition";
 #endif
