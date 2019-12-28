@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Resource>
 	<Settings>
 		<Item Id="MaxZoneCount" Text="32" />
@@ -9,7 +9,7 @@
 			<Control Id="lblVersion" Text="" />
 			<Control Id="lblCompany" Text="GD-77 Community Español EA" />
 			<Control Id="btnClose" Text="OK" />
-      <Control Id="lblTranslationCredit" Text="Spanish version by EA4ALX" />
+      <Control Id="lblTranslationCredit" Text="Spanish version by EA4ALX/EA5SW" />
 		</Controls>
 	</AboutForm>
 	<BootItemForm Text="Elementos Inicio">
@@ -793,23 +793,23 @@
     <Item Id="DownloadContactsTooMany" Text="No todos los contactos pudieron ser importados. Se ha alcanzado el número máximo de Contactos Digitales" />
     <Item Id="Warning" Text="Aviso" />
     <Item Id="UnableDownloadFromInternet" Text="Imposible descargar los datos. Compruebe su conexión a Internet" />
-    <Item Id="DownloadContactsImportComplete" Text="Import complete" />
-    <Item Id="CodeplugUpgradeNotice" Text="This appears to be a V3.0.6 Codeplug. It will be converted to V3.1.x" />
-    <Item Id="CodeplugUpgradeWarningToManyRxGroups" Text="Version 3.1.x can only have 76 Rx Groups. Additional Rx Groups have been ignored" />
-    <Item Id="CodeplugRead" Text="Reading codeplug from GD-77" />
-    <Item Id="CodeplugWrite" Text="Writing codeplug to GD-77" />
-    <Item Id="DMRIDRead" Text="Reading DMR ID database from GD-77" />
-    <Item Id="DMRIDWrite" Text="Writing DMR ID database to GD-77" />
-    <Item Id="CalibrationRead" Text="Reading calibration data from GD-77" />
-    <Item Id="CalibrationWrite" Text="Writing calibration data to GD-77" />
-    <Item Id="IdAlreadyExists" Text="ID already exists！" />
-    <Item Id="IdOutOfRange" Text="ID out of range!" />
-    <Item Id="IdNotEmpty" Text="ID can not be empty!" />
-    <Item Id="ContactNameDuplicate" Text="Warning. Duplicate contact name." />
-    <Item Id="EnableMemoryAccessMode" Text ="The GD-77 does not seem to be in Memory Access modeHold keys SK2 (Blue side key), Green Menu and * when turning on the transceiver, and try again" />
-    <Item Id="dataRead" Text="Reading data from GD-77"/>
-    <Item Id="dataWrite" Text="Writing data to GD-77"/>
-    <Item Id="DMRIdContcatsTotal" Text="Total number of IDs = {0}. Max of {1} can be uploaded" />
-    <Item Id="ErrorParsingData" Text="Error while parsing data" />    
+    <Item Id="DownloadContactsImportComplete" Text="Importación completada" />
+    <Item Id="CodeplugUpgradeNotice" Text="Parece un Codeplug de la V3.0.6,se convertirá a la V3.1.x" />
+    <Item Id="CodeplugUpgradeWarningToManyRxGroups" Text="La version 3.1.x solo tiene 76 Rx Groups. Los demás Rx Groups serán ignorados" />
+    <Item Id="CodeplugRead" Text="Leyendo codeplug desde GD-77" />
+    <Item Id="CodeplugWrite" Text="Escribiendo codeplug a GD-77" />
+    <Item Id="DMRIDRead" Text="Leyendo base de datos DMR ID desde GD-77" />
+    <Item Id="DMRIDWrite" Text="Escribiendo base de datos DMR ID a GD-77" />
+    <Item Id="CalibrationRead" Text="Leyendo datos de calibración desde GD-77" />
+    <Item Id="CalibrationWrite" Text="Escribiendo datos de calibración a GD-77" />
+    <Item Id="IdAlreadyExists" Text="ID ya existe!" />
+    <Item Id="IdOutOfRange" Text="ID fuera de rango!" />
+    <Item Id="IdNotEmpty" Text="ID no puede estar vacío!" />
+    <Item Id="ContactNameDuplicate" Text="Aviso. Nombre de contacto duplicado." />
+    <Item Id="EnableMemoryAccessMode" Text ="El GD-77 no parece estar en modo de acceso memoria.Aprieta tecla SK2 (Azul lateral), Menu verde y * cuando enciendas el equipo, y vuelve a probar" />
+    <Item Id="dataRead" Text="Leyendo datos desde GD-77"/>
+    <Item Id="dataWrite" Text="Escribiendo datos a GD-77"/>
+    <Item Id="DMRIdContcatsTotal" Text="Número total de IDs = {0}. Máximo de {1} se pueden escribir" />
+    <Item Id="ErrorParsingData" Text="Error mientras analizaba datos" />    
   </Commons>
 </Resource>
