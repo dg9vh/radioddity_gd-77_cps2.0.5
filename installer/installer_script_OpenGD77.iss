@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "OpenGD77 CPS"
-#define MyAppVersion "0.0.0.4"
+#define MyAppVersion "0.0.0.5"
 #define MyAppURL "https://github.com/rogerclarkmelbourne/radioddity_gd-77_cps"
 #define MyAppExeName "OpenGD77CPS.exe"
 
