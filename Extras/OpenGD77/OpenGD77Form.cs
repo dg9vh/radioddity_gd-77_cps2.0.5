@@ -550,6 +550,17 @@ namespace DMR
 #endif
 							MainForm.ByteToData(dataObj.dataBuff);
 							enableDisableAllButtons(true);
+							{
+								int imagePosition=0;
+								if (findCustomDataBlock(CustomDataType.IMAGE_TYPE, ref imagePosition))
+								{
+									loadImageFromCodeplug(imagePosition + 8);
+								}
+								if (findCustomDataBlock(CustomDataType.MELODY_TYPE, ref imagePosition))
+								{
+									loadMelodyFromCodeplug(imagePosition + 8);
+								}
+							}
 							if (_initialAction == CommsAction.READ_CODEPLUG)
 							{
 								this.Close();
@@ -971,6 +982,20 @@ namespace DMR
 							dataObj.responseCode = 1;
 							break;
 						}
+
+
+						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadFlash;
+						dataObj.localDataBufferStartPosition = 0x1EE60;// OpenGD77 custom data in Flash
+						dataObj.startDataAddressInTheRadio = 0;
+						dataObj.transferLength = 0x20000 - 0x1EE60;
+						displayMessage(String.Format("Reading Flash 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
+
+						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
+						{
+							displayMessage("Error while reading");
+							dataObj.responseCode = 1;
+							break;
+						}
 						else
 						{
 							displayMessage("Codeplug read complete");
@@ -1053,14 +1078,6 @@ namespace DMR
 						dataObj.transferLength = 0x20000 - dataObj.localDataBufferStartPosition;
 						displayMessage(String.Format("Writing Flash 0x{0:X6} - 0x{1:X6}", dataObj.localDataBufferStartPosition, dataObj.localDataBufferStartPosition + dataObj.transferLength));
 
-						for (int c = 0; c < 1024; c++)
-						{
-							Console.Write(dataObj.dataBuff[dataObj.localDataBufferStartPosition + c].ToString("X2"));
-							if (c % 16 == 15)
-							{
-								Console.WriteLine("");
-							}
-						}
 						if (!WriteFlash(dataObj))
 						{
 							displayMessage("Error while writing");
