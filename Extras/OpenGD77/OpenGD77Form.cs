@@ -83,9 +83,13 @@ namespace DMR
 				}
 				melodyStr += CustomData[position + i].ToString() + ",";
 			}
-
-			txtBootTune.Text = melodyStr.Substring(0,melodyStr.Length-1);// remove the last comma
+			if (melodyStr == "")
+			{
+				melodyStr = "0,0,";
+			}
+			txtBootTune.Text = melodyStr.Substring(0, melodyStr.Length - 1);// remove the last comma
 		}
+
 		private void loadImageFromCodeplug(int position)
 		{
 			Bitmap bm_x1 = new Bitmap(128, 64);
