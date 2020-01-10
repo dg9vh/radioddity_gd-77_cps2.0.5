@@ -1432,7 +1432,7 @@ namespace DMR
 		private void OpenGD77Form_FormClosed(object sender, FormClosedEventArgs e)
 		{
 			//MidiPlayer.CloseMidi();
-			if (commPort != null)
+			if (_port != null)
 			{
 				try
 				{
