@@ -17,10 +17,12 @@ namespace DMR
 {
 	public partial class CalibrationForm : Form
 	{
-		//private const int MEMORY_LOCATION = 0x8F000;//0x7c00;
+		public static int MEMORY_LOCATION = 0xF000;//0x8F000;//0x7c00;
 		public static int CALIBRATION_MEMORY_LOCATION_OFFICIAL_USB_PROTOCOL = 0x7c00;
 		private const int VHF_OFFSET = 0x70;
-		private const int CALIBRATION_DATA_SIZE = 224;
+		public static int CALIBRATION_DATA_SIZE = 224;
+		public static byte[] CALIBRATION_HEADER = { 0xA0, 0x0F, 0xC0, 0x12, 0xA0, 0x0F, 0xC0, 0x12 };
+
 		private const int MAX_TRANSFER_SIZE = 32;
 		private SerialPort _port = null;
 
@@ -178,7 +180,7 @@ namespace DMR
 				dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadFlash;
 				dataObj.dataBuff = new Byte[CALIBRATION_DATA_SIZE];
 				dataObj.localDataBufferStartPosition = 0;
-				dataObj.startDataAddressInTheRadio = 0x8f000;
+				dataObj.startDataAddressInTheRadio = MEMORY_LOCATION;
 				dataObj.transferLength = CALIBRATION_DATA_SIZE;
 				//displayMessage("Reading Calibration");
 				if (!ReadFlashOrEEPROM(dataObj))
@@ -194,6 +196,17 @@ namespace DMR
 				}
 				sendCommand(5);// close CPS screen
 				_port.Close();
+
+
+
+				for (int p = 0; p < 8; p++)
+				{
+					if (dataObj.dataBuff[p] != CALIBRATION_HEADER[p])
+					{
+						MessageBox.Show("Calibration data could not be found. Please update your firmware");
+						return false;
+					}
+				}
 
 				Array.Copy(dataObj.dataBuff, 0, array, 0, calibrationDataSize);
 				this.calibrationBandControlUHF.data = (CalibrationData)ByteToData(array);
@@ -285,7 +298,7 @@ namespace DMR
 				dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteFlash;
 				 
 				dataObj.localDataBufferStartPosition = 0;
-				dataObj.startDataAddressInTheRadio = 0x8f000;
+				dataObj.startDataAddressInTheRadio = MEMORY_LOCATION;
 				dataObj.transferLength = CALIBRATION_DATA_SIZE;
 				//displayMessage("Restoring Flash");
 				if (WriteFlash(dataObj))

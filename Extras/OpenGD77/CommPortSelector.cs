@@ -30,8 +30,11 @@ namespace DMR
 
 		private void btnSelect_Click(object sender, EventArgs e)
 		{
-			SelectedPort = cmbPorts.SelectedItem.ToString();
-			this.DialogResult = DialogResult.OK;
+			if (cmbPorts.SelectedItem != null)
+			{
+				SelectedPort = cmbPorts.SelectedItem.ToString();
+				this.DialogResult = DialogResult.OK;
+			}
 			this.Close();
 		}
 	}

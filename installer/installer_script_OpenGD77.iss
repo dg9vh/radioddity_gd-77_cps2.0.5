@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "OpenGD77 CPS"
-#define MyAppVersion "0.0.0.5"
+#define MyAppVersion "0.0.0.6"
 #define MyAppURL "https://github.com/rogerclarkmelbourne/radioddity_gd-77_cps"
 #define MyAppExeName "OpenGD77CPS.exe"
 
@@ -22,8 +22,8 @@ CreateAppDir=yes
 DisableProgramGroupPage=yes
 OutputDir=..\installer
 OutputBaseFilename=OpenGD77CPSInstaller
-Compression=none
-SolidCompression=yes  
+Compression=zip
+SolidCompression=no  
 UsePreviousAppDir=no
 UsePreviousSetupType=no
 

@@ -100,7 +100,7 @@ namespace DMR
 			this.btnWrite.Name = "btnWrite";
 			this.btnWrite.Size = new System.Drawing.Size(102, 23);
 			this.btnWrite.TabIndex = 1;
-			this.btnWrite.Text = "Write to GD-77";
+			this.btnWrite.Text = "Write to radio";
 			this.btnWrite.UseVisualStyleBackColor = true;
 			this.btnWrite.Visible = false;
 			this.btnWrite.Click += new System.EventHandler(this.btnWrite_Click);
@@ -131,7 +131,7 @@ namespace DMR
 			this.btnReadFromRadio.Name = "btnReadFromRadio";
 			this.btnReadFromRadio.Size = new System.Drawing.Size(154, 23);
 			this.btnReadFromRadio.TabIndex = 1;
-			this.btnReadFromRadio.Text = "Read calibration from GD77";
+			this.btnReadFromRadio.Text = "Read calibration from radio";
 			this.btnReadFromRadio.UseVisualStyleBackColor = true;
 			this.btnReadFromRadio.Click += new System.EventHandler(this.btnReadFromRadio_Clk);
 			// 

@@ -31,7 +31,7 @@ namespace DMR
 		private OpenFileDialog _openFileDialog = new OpenFileDialog();
 
 		private const int MAX_TRANSFER_SIZE = 32;
-		private const int CALIBRATION_DATA_SIZE = 224;
+
 		private OpenGD77Form.CommsAction _initialAction;
 
 		public OpenGD77Form(OpenGD77Form.CommsAction initAction)
@@ -528,6 +528,15 @@ namespace DMR
 							dataObj.action = OpenGD77CommsTransferData.CommsAction.NONE;
 							break;
 						case OpenGD77CommsTransferData.CommsAction.BACKUP_CALIBRATION:
+
+							for (int p = 0; p < 8; p++)
+							{
+								if (dataObj.dataBuff[p] != CalibrationForm.CALIBRATION_HEADER[p])
+								{
+									MessageBox.Show("Calibration data could not be found. Please update your firmware");
+									return;
+								}
+							}
 							_saveFileDialog.Filter = "Flash files (*.bin)|*.bin";
 							_saveFileDialog.FilterIndex = 1;
 							if (_saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -718,10 +727,10 @@ namespace DMR
 						sendCommand(6, 3);// flash green LED
 
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeReadFlash;
-						dataObj.dataBuff = new Byte[CALIBRATION_DATA_SIZE];
+						dataObj.dataBuff = new Byte[CalibrationForm.CALIBRATION_DATA_SIZE];
 						dataObj.localDataBufferStartPosition = 0;
-						dataObj.startDataAddressInTheRadio = 0x8f000;
-						dataObj.transferLength = CALIBRATION_DATA_SIZE;
+						dataObj.startDataAddressInTheRadio = CalibrationForm.MEMORY_LOCATION;
+						dataObj.transferLength = CalibrationForm.CALIBRATION_DATA_SIZE;
 						displayMessage("Reading Calibration");
 						if (!ReadFlashOrEEPROMOrROMOrScreengrab(dataObj))
 						{
@@ -858,8 +867,8 @@ namespace DMR
 
 						dataObj.mode = OpenGD77CommsTransferData.CommsDataMode.DataModeWriteFlash;
 						dataObj.localDataBufferStartPosition = 0;
-						dataObj.startDataAddressInTheRadio = 0x8f000;
-						dataObj.transferLength = CALIBRATION_DATA_SIZE;
+						dataObj.startDataAddressInTheRadio = CalibrationForm.MEMORY_LOCATION;
+						dataObj.transferLength = CalibrationForm.CALIBRATION_DATA_SIZE;
 						displayMessage("Restoring Calibration");
 						if (WriteFlash(dataObj))
 						{
@@ -1298,13 +1307,22 @@ namespace DMR
 			}
 			if (DialogResult.Yes == MessageBox.Show("Are you sure you want to restore the Calibartion from a previously saved file?", "Warning", MessageBoxButtons.YesNo))
 			{
+				_openFileDialog.Filter = "Calibration files (*.bin)|*.bin";
 				if (DialogResult.OK == _openFileDialog.ShowDialog())
 				{
 					OpenGD77CommsTransferData dataObj = new OpenGD77CommsTransferData(OpenGD77CommsTransferData.CommsAction.RESTORE_CALIBRATION);
 					dataObj.dataBuff = File.ReadAllBytes(_openFileDialog.FileName);
 
-					if (dataObj.dataBuff.Length == CALIBRATION_DATA_SIZE)
+					if (dataObj.dataBuff.Length == CalibrationForm.CALIBRATION_DATA_SIZE)
 					{
+						for (int p = 0; p < 8; p++)
+						{
+							if (dataObj.dataBuff[p] != CalibrationForm.CALIBRATION_HEADER[p])
+							{
+								MessageBox.Show("Invalid Calibration data.");
+								return;
+							}
+						}
 						enableDisableAllButtons(false);
 						perFormCommsTask(dataObj);
 					}
