@@ -155,6 +155,7 @@ namespace DMR
 		{
 			bool retVal = true;
 			DialogResult result = DialogResult.OK;
+			lblMessage.Text = "";
 
 			int calibrationDataSize = Marshal.SizeOf(typeof(CalibrationData));
 			byte[] array = new byte[calibrationDataSize];
@@ -246,9 +247,11 @@ namespace DMR
 				}
 				else
 				{
+					lblMessage.Text = "Error";
 					retVal = false;
 				}
 			}
+			
 			return retVal;
 
 		}
@@ -259,11 +262,11 @@ namespace DMR
 		{
 			bool retVal;
 
-			if (DialogResult.Yes != MessageBox.Show("Writing the calibration data to Radioddity GD-77 or any other compatible radio, could potentially damage your radio. By clicking 'Yes' you acknowledge that you use this feature entirely at your own risk", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button2))
+		/*	if (DialogResult.Yes != MessageBox.Show("Writing the calibration data to Radioddity GD-77 or any other compatible radio, could potentially damage your radio. By clicking 'Yes' you acknowledge that you use this feature entirely at your own risk", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button2))
 			{
 				return;
 			}
-
+			*/
 			String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
 
 			if (gd77CommPort != null)
@@ -314,7 +317,8 @@ namespace DMR
 				sendCommand(6, 2);// Save settings and VFO's
 				sendCommand(6, 1);// Reboot
 				_port.Close();
-				MessageBox.Show("Calibration update completed");
+				lblMessage.Text = "Calibration update completed";
+				//MessageBox.Show("Calibration update completed");
 			}
 			else
 			{
@@ -527,6 +531,8 @@ namespace DMR
 			Byte[] buf=null;
 			OpenFileDialog ofd = new OpenFileDialog();
 
+			lblMessage.Text = "";
+
 			DialogResult dialogResult = ofd.ShowDialog();
 			if (dialogResult == DialogResult.OK && !string.IsNullOrEmpty(ofd.FileName))
 			{
@@ -534,17 +540,24 @@ namespace DMR
 				byte[] array = new byte[calibrationDataSize];
 
 				buf = File.ReadAllBytes(ofd.FileName);
-				if (buf.Length == CALIBRATION_DATA_SIZE && buf[0]==0xA0 && buf[1]==0x0F)
+				if (buf.Length == CALIBRATION_DATA_SIZE)
 				{
-					Array.Copy(buf, 0, array, 0, calibrationDataSize);
-					this.calibrationBandControlUHF.data = (CalibrationData)ByteToData(array);
+					if (buf[0] == 0xA0 && buf[1] == 0x0F)
+					{
+						Array.Copy(buf, 0, array, 0, calibrationDataSize);
+						this.calibrationBandControlUHF.data = (CalibrationData)ByteToData(array);
 
-					array = new byte[calibrationDataSize];
-					Array.Copy(buf, VHF_OFFSET, array, 0, calibrationDataSize);
-					this.calibrationBandControlVHF.data = (CalibrationData)ByteToData(array);
+						array = new byte[calibrationDataSize];
+						Array.Copy(buf, VHF_OFFSET, array, 0, calibrationDataSize);
+						this.calibrationBandControlVHF.data = (CalibrationData)ByteToData(array);
 
-					tabCtlBands.Visible = true;
-					btnWrite.Visible = true;
+						tabCtlBands.Visible = true;
+						btnWrite.Visible = true;
+					}
+					else
+					{
+						MessageBox.Show("File contains invalid calibration header");
+					}
 				}
 				else
 				{
@@ -561,6 +574,11 @@ namespace DMR
 				tabCtlBands.Visible = true;
 				btnWrite.Visible = true;
 			}
+		}
+
+		private void label1_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

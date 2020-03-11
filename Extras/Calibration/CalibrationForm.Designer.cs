@@ -40,6 +40,7 @@ namespace DMR
 			this.btnClose = new System.Windows.Forms.Button();
 			this.btnReadFile = new System.Windows.Forms.Button();
 			this.btnReadFromRadio = new System.Windows.Forms.Button();
+			this.lblMessage = new System.Windows.Forms.Label();
 			this.tabCtlBands.SuspendLayout();
 			this.tabVHF.SuspendLayout();
 			this.tabUHF.SuspendLayout();
@@ -135,11 +136,22 @@ namespace DMR
 			this.btnReadFromRadio.UseVisualStyleBackColor = true;
 			this.btnReadFromRadio.Click += new System.EventHandler(this.btnReadFromRadio_Clk);
 			// 
+			// lblMessage
+			// 
+			this.lblMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblMessage.Location = new System.Drawing.Point(327, 12);
+			this.lblMessage.Name = "lblMessage";
+			this.lblMessage.Size = new System.Drawing.Size(436, 35);
+			this.lblMessage.TabIndex = 2;
+			this.lblMessage.Text = "Please read the calibration data from the radio or open a calibration file";
+			this.lblMessage.Click += new System.EventHandler(this.label1_Click);
+			// 
 			// CalibrationForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(945, 632);
+			this.Controls.Add(this.lblMessage);
 			this.Controls.Add(this.btnClose);
 			this.Controls.Add(this.btnReadFromRadio);
 			this.Controls.Add(this.btnReadFile);
@@ -167,5 +179,6 @@ namespace DMR
 		private CalibrationBandControl calibrationBandControlVHF;
 		private Button btnReadFile;
 		private Button btnReadFromRadio;
+		private Label lblMessage;
 	}
 }

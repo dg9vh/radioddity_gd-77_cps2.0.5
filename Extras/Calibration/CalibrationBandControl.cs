@@ -30,14 +30,10 @@ namespace DMR
 			set
 			{
 				_type = value;
-				string[] oneToEight = { "1", "2", "3", "4", "5", "6", "7", "8" };
-				string[] oneToSix = { "1", "2", "3", "4", "5", "6" };
 				string[] freqBandNamesVHF8 = { "136MHz", "140MHz", "145MHz", "150MHz", "155MHz", "160MHz", "165MHz", "172MHz" };
 				string[] freqBandNamesUHF16 = { "400MHz", "405MHz", "410MHz", "415MHz", "420MHz", "425MHz", "430MHz", "435MHz", "440MHz", "445MHz", "450MHz", "455MHz", "460MHz", "465MHz", "470MHz", "475MHz" };
 				string[] freqBandNamesUHF8 = { "405MHz", "415MHz", "425MHz", "435MHz", "445MHz", "455MHz", "465MHz", "475MHz" };
 				
-				this.calibrationTXIandQ.Names = oneToEight;
-
 				switch(_type)
 				{
 					case "VHF":
@@ -46,6 +42,7 @@ namespace DMR
 							this.calibrationPowerControlLow.Cols = 8;
 							this.calibrationPowerControlLow.Names = freqBandNamesVHF8;
 							this.calibrationPowerControlHigh.Names = freqBandNamesVHF8;
+							this.calibrationTXIandQ.Names = freqBandNamesVHF8;
 						}
 						break;
 					case "UHF":
@@ -54,6 +51,7 @@ namespace DMR
 							this.calibrationPowerControlLow.Cols = 16;
 							this.calibrationPowerControlLow.Names = freqBandNamesUHF16;
 							this.calibrationPowerControlHigh.Names = freqBandNamesUHF16;
+							this.calibrationTXIandQ.Names = freqBandNamesUHF8;
 						}
 						break;
 				}

@@ -82,9 +82,9 @@
 			this.nudAnalogRxGainNarrowband = new System.Windows.Forms.NumericUpDown();
 			this.nudAnalogRxGainWideband = new System.Windows.Forms.NumericUpDown();
 			this.lblAnalogAudioGainRx = new System.Windows.Forms.Label();
-			this.calibrationTXIandQ = new CalibrationPowerControl();
-			this.calibrationPowerControlLow = new CalibrationPowerControl();
-			this.calibrationPowerControlHigh = new CalibrationPowerControl();
+			this.calibrationTXIandQ = new DMR.CalibrationPowerControl();
+			this.calibrationPowerControlLow = new DMR.CalibrationPowerControl();
+			this.calibrationPowerControlHigh = new DMR.CalibrationPowerControl();
 			this.grpSquelch.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.nudSquelchNarrowTightClose)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudSquelchWideTightClose)).BeginInit();
@@ -726,7 +726,7 @@
 			// calibrationTXIandQ
 			// 
 			this.calibrationTXIandQ.Cols = 8;
-			this.calibrationTXIandQ.CtrlText = "Tx I && Q";
+			this.calibrationTXIandQ.CtrlText = "DMR Tx 4FSK";
 			this.calibrationTXIandQ.Location = new System.Drawing.Point(8, 178);
 			this.calibrationTXIandQ.Name = "calibrationTXIandQ";
 			this.calibrationTXIandQ.Names = new string[] {
@@ -741,7 +741,7 @@
 			this.calibrationTXIandQ.Rows = 1;
 			this.calibrationTXIandQ.Size = new System.Drawing.Size(420, 98);
 			this.calibrationTXIandQ.TabIndex = 9;
-			this.calibrationTXIandQ.Text = "Tx I && Q";
+			this.calibrationTXIandQ.Text = "DMR Tx 4FSK";
 			this.calibrationTXIandQ.Values = new int[] {
         0,
         0,
