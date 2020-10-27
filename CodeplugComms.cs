@@ -30,8 +30,6 @@ internal class CodeplugComms
     private static readonly byte[] CMD_PRG =    new byte[7] { 2, (byte)'P', (byte)'R', (byte)'O', (byte)'G', (byte)'R', (byte)'A' };// 80,82,79,71,82,65}
 	private static readonly byte[] CMD_PRG2 =   new byte[2] {77,2};
 
-  
-
 	public int[] START_ADDR;
 	public int[] END_ADDR;
 
@@ -47,26 +45,20 @@ internal class CodeplugComms
 	}
 
 	[CompilerGenerated]
-	public void method_1(bool bool_0)
+	public void SetCancelComm(bool bool_0)
 	{
 		this._CancelComm = bool_0;
 	}
 
-    bool _IsRead;
+	public enum CommunicationType { codeplugRead, codeplugWrite, DMRIDRead, DMRIDWrite, calibrationRead, calibrationWrite,dataRead,dataWrite };
 
-	[CompilerGenerated]
-	public bool getIsRead()
+	public static CodeplugComms.CommunicationType CommunicationMode
 	{
-		return this._IsRead;
+		get;
+		set;
 	}
 
-	[CompilerGenerated]
-	public void method_3(bool bool_0)
-	{
-		this._IsRead = bool_0;
-	}
-
-	public bool method_4()
+	public bool isThreadAlive()
 	{
 		if (this.thread != null)
 		{
@@ -75,9 +67,9 @@ internal class CodeplugComms
 		return false;
 	}
 
-	public void method_5()
+	public void JoinThreadIfAlive()
 	{
-		if (this.method_4())
+		if (this.isThreadAlive())
 		{
 			this.thread.Join();
 		}
@@ -85,15 +77,48 @@ internal class CodeplugComms
 
 	public void startCodeplugReadOrWriteInNewThread()
 	{
-		if (this.getIsRead())
+		this.thread = null;
+		switch (CommunicationMode)
 		{
-			this.thread = new Thread(this.readCodeplug);
+			case CommunicationType.codeplugRead:
+				this.thread = new Thread(this.readCodeplug);
+				break;
+			case CommunicationType.codeplugWrite:
+				this.thread = new Thread(this.writeCodeplug);
+				break;
+			case CommunicationType.DMRIDRead:
+				startAddress = 0x30000;
+				transferLength = 0x20000;
+				this.thread = new Thread(this.readData);
+				break;
+			case CommunicationType.DMRIDWrite:
+				startAddress = 0x30000;
+				transferLength = 0x20000;
+				this.thread = new Thread(writeData);
+				break;
+			case CommunicationType.calibrationRead:
+				startAddress = DMR.CalibrationForm.CALIBRATION_MEMORY_LOCATION_OFFICIAL_USB_PROTOCOL;//0x80000;
+				transferLength = 0x1000;
+				this.thread = new Thread(readData);
+				break;
+			case CommunicationType.calibrationWrite:
+				startAddress = DMR.CalibrationForm.CALIBRATION_MEMORY_LOCATION_OFFICIAL_USB_PROTOCOL;//0x80000;
+				transferLength = 0x1000;
+				this.thread = new Thread(writeData);
+				break;
+			case CommunicationType.dataWrite:
+				this.thread = new Thread(writeData);
+				break;
+			case CommunicationType.dataRead:
+				this.thread = new Thread(readData);
+				break;
+
 		}
-		else
+
+		if (this.thread != null)
 		{
-			this.thread = new Thread(this.writeCodeplug);
+			this.thread.Start();
 		}
-		this.thread.Start();
 	}
 
 	public static string ByteArrayToString(byte[] ba)
@@ -111,12 +136,12 @@ internal class CodeplugComms
 	// Its strange that address 0x020000 - 0x02FFFF does not seem to be accessible
 	// Note. Valid transfer lengths seem to be 8,16 or 32 bytes.  64 bytes does not work, as it just returns 0x00 in addresses after 32 bytes
 
-	public void dumpFlash()
+	public static int transferLength;
+	public static int startAddress;
+	public void readData()
 	{
-		byte[] masterBuf = new byte[128 * 1024];// 128 for whole of thecodeplug
 		byte[] usbBuf = new byte[160];// buffer for individual transfers
-
-		int transferLen = 0;
+		int blockLength = 0;
 		int addr32 = 0;
 		int addr16 = 0;
 		int pageAddr = 0;
@@ -128,7 +153,7 @@ internal class CodeplugComms
 			{
 				if (this.OnFirmwareUpdateProgress != null)
 				{
-					this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, Settings.SZ_DEVICE_NOT_FOUND, true, true));
+					this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, "Device not found", true, true));
 				}
 			}
 			else
@@ -158,16 +183,17 @@ internal class CodeplugComms
 						if (usbBuf[0] == CodeplugComms.CMD_ACK[0])
 						{
 							// --------------- removed the password checking
-							transferLen = 32;// Max transfer length is 32 bytes
+							blockLength = 32;// Max transfer length is 32 bytes
 							int currentPage = 0;
-							int bankSize = 65536;
-							int numBlocks = masterBuf.Length / transferLen;
-							for (int block = 0; block < numBlocks; block++)
+							int bankSize = 0x10000;//64k
+							int numBlocks = transferLength / blockLength;
+							int startBlock = startAddress / blockLength;
+							for (int block = startBlock; block < (startBlock + numBlocks); block++)
 							{
-								if (currentPage != (block * transferLen) / bankSize)
+								if (currentPage != (block * blockLength) / bankSize)
 								{
-									currentPage = (block * transferLen) / bankSize;
-									addr32 = transferLen * block;
+									currentPage = (block * blockLength) / bankSize;
+									addr32 = blockLength * block;
 									byte[] array4 = new byte[8] { (byte)'C', (byte)'W', (byte)'B', 4, 0, 0, 0, 0 };
 									pageAddr = addr32 >> 16 << 16;
 									array4[4] = (byte)(pageAddr >> 24);
@@ -184,36 +210,27 @@ internal class CodeplugComms
 									}
 								}
 
-								addr16 = (block * transferLen) & 0xffff;
+								addr16 = (block * blockLength) & 0xffff;
 								// Send request for dcata
-								byte[] data2 = new byte[4] { 82, (byte)(addr16 >> 8), (byte)addr16, (byte)transferLen };
-								
+								byte[] data2 = new byte[4] { 82, (byte)(addr16 >> 8), (byte)addr16, (byte)blockLength };
+
 								Array.Clear(usbBuf, 0, usbBuf.Length);
 								specifiedDevice.SendData(data2, 0, 4);
 								if (!specifiedDevice.ReceiveData(usbBuf))
 								{
 									goto end_IL_02a2;
 								}
-								byte[] outBuf = new byte[transferLen];
-								if (false)
-								{
-									Buffer.BlockCopy(usbBuf, 0, outBuf, 0, transferLen);// Extract the first 8 bytes from the response
-									Console.WriteLine(SpecifiedDevice.ByteArrayToString(outBuf));
-								}
-								else
-								{
-									Buffer.BlockCopy(usbBuf, 4, masterBuf, (block * transferLen), transferLen);// Extract the first 8 bytes from the response
-								}
+
+								Buffer.BlockCopy(usbBuf, 4, MainForm.CommsBuffer, (block * blockLength), blockLength);// Extract the first 8 bytes from the response
+
 								if (this.OnFirmwareUpdateProgress != null)
 								{
-									this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs((float)(block+1) *100 / (float)numBlocks, "", false, false));
+									this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs((float)(block + 1 - startBlock) * 100 / (float)numBlocks, "", false, false));
 								}
 							}
 							// SEND END OF READ
 							specifiedDevice.SendData(CodeplugComms.CMD_ENDR);
 							specifiedDevice.ReceiveData(usbBuf);
-
-							System.IO.File.WriteAllBytes("d:\\gd-77-factor_settings.bin", masterBuf);
 						}
 						break;
 					}
@@ -229,7 +246,7 @@ internal class CodeplugComms
 			Console.WriteLine(ex.Message);
 			if (this.OnFirmwareUpdateProgress != null)
 			{
-				this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, Settings.SZ_COMM_ERROR, false, false));
+				this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, "Comms error", false, false));
 			}
 		}
 		finally
@@ -247,12 +264,12 @@ internal class CodeplugComms
 	}
 
 
-	public void writeflash()
+	public void writeData()//(int startAddress, int transferLength)
 	{
-		byte[] masterBuf;// no need to allocate this as its read in from file. = new byte[128 * 1024];// whole of the codeplug
+		//byte[] MainForm.eeprom;// no need to allocate this as its read in from file. = new byte[128 * 1024];// whole of the codeplug
 		byte[] usbBuf = new byte[160];// buffer for individual usb transfers
 
-		int transferLen = 0;
+		int blockLength = 0;
 		int addr32 = 0;
 		int addr16 = 0;
 		int pageAddr = 0;
@@ -264,60 +281,56 @@ internal class CodeplugComms
 			{
 				if (this.OnFirmwareUpdateProgress != null)
 				{
-					this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, Settings.SZ_DEVICE_NOT_FOUND, true, true));
+					this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, "Device not found", true, true));
 				}
 			}
 			else
 			{
-				masterBuf = System.IO.File.ReadAllBytes(Application.StartupPath + "\\factory_settings.dat");
-				if (masterBuf.Length != Settings.EEROM_SPACE)
-				{
-					this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, "ERROR. Invalid default settings file", false, false));
-					return;
-				}
-				//System.IO.File.WriteAllBytes(Application.StartupPath+"factory_settings.dat", masterBuf);
 				while (true)
 				{
 					Array.Clear(usbBuf, 0, usbBuf.Length);
 					specifiedDevice.SendData(CodeplugComms.CMD_PRG);// Send PROGRA command to initiate comms
+					//Console.WriteLine("Send PRG1");
 					specifiedDevice.ReceiveData(usbBuf);// Wait for response
 					if (usbBuf[0] != CodeplugComms.CMD_ACK[0])
 					{
 						break;// Exit if not ack
 					}
 					specifiedDevice.SendData(CodeplugComms.CMD_PRG2);// Send second half of comms init sequence
+					//Console.WriteLine("Send PRG2");
 					Array.Clear(usbBuf, 0, usbBuf.Length);
 					specifiedDevice.ReceiveData(usbBuf);// GD77 send back device information
 					byte[] array3 = new byte[8];
 					Buffer.BlockCopy(usbBuf, 0, array3, 0, 8);// Extract the first 8 bytes from the response
-					// REMOVED CURRENT MODEL CHECK !!!  if (array3.smethod_4(Settings.CUR_MODEL))
 					{
 						// its the correct model number
 						specifiedDevice.SendData(CodeplugComms.CMD_ACK);// send ACK
 						Array.Clear(usbBuf, 0, usbBuf.Length);
 						specifiedDevice.ReceiveData(usbBuf);// Wait for response (of ACK)
 
-
 						if (usbBuf[0] == CodeplugComms.CMD_ACK[0])
 						{
+							//Console.WriteLine("Got ACK");
 							// --------------- removed the password checking
-							transferLen = 32;// Max transfer length is 32 bytes
+							blockLength = 32;// Max transfer length is 32 bytes
 							int currentPage = 0;
-							int bankSize = 65536;
-							int numBlocks = masterBuf.Length / transferLen;
-							for (int block = 0; block < numBlocks; block++)
+							int bankSize = 0x10000;// 64k
+							int numBlocks = transferLength / blockLength;
+							int startBlock = startAddress / blockLength;
+							for (int block = startBlock; block < (startBlock + numBlocks); block++)
 							{
-								if (currentPage != (block * transferLen) / bankSize)
+								//Console.Write("Processing block " + block + " end block " + (startBlock + numBlocks));
+								if (currentPage != (block * blockLength) / bankSize)
 								{
-									currentPage = (block * transferLen) / bankSize;
-									addr32 = transferLen * block;
+									currentPage = (block * blockLength) / bankSize;
+									addr32 = blockLength * block;
 									byte[] array4 = new byte[8] { (byte)'C', (byte)'W', (byte)'B', 4, 0, 0, 0, 0 };
 									pageAddr = addr32 >> 16 << 16;
 									array4[4] = (byte)(pageAddr >> 24);
 									array4[5] = (byte)(pageAddr >> 16);
 									array4[6] = (byte)(pageAddr >> 8);
 									array4[7] = (byte)pageAddr;
-									Console.WriteLine(SpecifiedDevice.ByteArrayToString(array4));
+									//Console.WriteLine("Send address changed to 0x" + pageAddr.ToString("X"));
 									Array.Clear(usbBuf, 0, usbBuf.Length);
 									specifiedDevice.SendData(array4, 0, array4.Length);
 									specifiedDevice.ReceiveData(usbBuf);
@@ -327,31 +340,24 @@ internal class CodeplugComms
 									}
 								}
 
-								addr16 = (block * transferLen) & 0xffff;
+								addr16 = (block * blockLength) & 0xffff;
 								// Send request for dcata
-								byte[] data2 = new byte[4+32] { 87, (byte)(addr16 >> 8), (byte)addr16, (byte)transferLen,
+								byte[] data2 = new byte[4 + 32] { 87, (byte)(addr16 >> 8), (byte)addr16, (byte)blockLength,
 								0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 								Array.Clear(usbBuf, 0, usbBuf.Length);
-								Buffer.BlockCopy(masterBuf, (block * transferLen), data2, 4, transferLen);
-								specifiedDevice.SendData(data2, 0, 4);
-								if (!specifiedDevice.ReceiveData(usbBuf))
+								Buffer.BlockCopy(MainForm.CommsBuffer, (block * blockLength), data2, 4, blockLength);
+								specifiedDevice.SendData(data2, 0, 4 + 32);
+
+
+								specifiedDevice.ReceiveData(usbBuf);
+								if (usbBuf[0] != CodeplugComms.CMD_ACK[0])
 								{
 									goto end_IL_02a2;
 								}
-								byte[] outBuf = new byte[transferLen];
-								if (false)
-								{
-									Buffer.BlockCopy(usbBuf, 0, outBuf, 0, transferLen);// Extract the first 8 bytes from the response
-									Console.WriteLine(SpecifiedDevice.ByteArrayToString(outBuf));
-								}
-								else
-								{
-									Buffer.BlockCopy(usbBuf, 4, masterBuf, (block * transferLen), transferLen);// Extract the first 8 bytes from the response
-								}
 								if (this.OnFirmwareUpdateProgress != null)
 								{
-									this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs((float)(block + 1) * 100 / (float)numBlocks, "", false, false));
+									this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs((float)(block + 1 - startBlock) * 100 / (float)numBlocks, "", false, false));
 								}
 							}
 							// SEND END OF WRITE
@@ -362,9 +368,11 @@ internal class CodeplugComms
 					}
 					return;
 				end_IL_02a2:
+					// SEND END OF WRITE
+					specifiedDevice.SendData(CodeplugComms.CMD_ENDW);
+					specifiedDevice.ReceiveData(usbBuf);
 					break;
 				}
-
 			}
 		}
 		catch (TimeoutException ex)
@@ -372,7 +380,7 @@ internal class CodeplugComms
 			Console.WriteLine(ex.Message);
 			if (this.OnFirmwareUpdateProgress != null)
 			{
-				this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, Settings.SZ_COMM_ERROR, false, false));
+				this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(0f, "Error", false, false));
 			}
 		}
 		finally
@@ -388,6 +396,8 @@ internal class CodeplugComms
 			this.OnFirmwareUpdateProgress(this, new FirmwareUpdateProgressEventArgs(100f, "", false, true));
 		}
 	}
+
+
 
 
 
@@ -843,9 +853,6 @@ internal class CodeplugComms
 		Array.Copy(array3, 0, array2, Settings.ADDR_DEVICE_INFO + Settings.OFS_LAST_PRG_TIME, 6);
 		SpecifiedDevice specifiedDevice = SpecifiedDevice.FindSpecifiedDevice(HID_VID, 0x0073);
 
-//		writeflash();// Testing only
-//		return;
-
 		if (specifiedDevice == null)
 		{
 			if (this.OnFirmwareUpdateProgress != null)
@@ -1042,6 +1049,7 @@ internal class CodeplugComms
 												array7[5] = (byte)(num7 >> 16);
 												array7[6] = (byte)(num7 >> 8);
 												array7[7] = (byte)num7;
+												//Console.WriteLine(string.Format("Page\t0x{0:X8}", num7));
 												Array.Clear(array, 0, array.Length);
 												specifiedDevice.SendData(array7, 0, array7.Length);
 												specifiedDevice.ReceiveData(array);
@@ -1137,7 +1145,7 @@ internal class CodeplugComms
 	}
 
 	[MethodImpl(MethodImplOptions.Synchronized)]
-	public void method_9(Delegate1 delegate1_0)
+	public void SetProgressCallback(Delegate1 delegate1_0)
 	{
 		this.OnFirmwareUpdateProgress = (Delegate1)Delegate.Combine(this.OnFirmwareUpdateProgress, delegate1_0);
 	}
@@ -1150,9 +1158,7 @@ internal class CodeplugComms
 
 	public CodeplugComms()
 	{
-		
 		this.START_ADDR = new int[0];
 		this.END_ADDR = new int[0];
-		//base._002Ector();
 	}
 }

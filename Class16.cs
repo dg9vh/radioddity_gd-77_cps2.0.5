@@ -4,46 +4,46 @@ using System.Windows.Forms;
 
 internal static class Class16
 {
-	public static void smethod_0<rt3taJc668VtubSdh8>(this rt3taJc668VtubSdh8[] gparam_0, rt3taJc668VtubSdh8 TJy0bJ6CPmnHVTHqX0) where rt3taJc668VtubSdh8 : struct
+	public static void Fill<templateType>(this templateType[] arrayData, templateType fillValue) where templateType : struct
 	{
 		int num = 0;
-		for (num = 0; num < gparam_0.Length; num++)
+		for (num = 0; num < arrayData.Length; num++)
 		{
-			gparam_0[num] = TJy0bJ6CPmnHVTHqX0;
+			arrayData[num] = fillValue;
 		}
 	}
 
-	public static void smethod_1<tXsfBFbiIUSVTcy2lA>(this tXsfBFbiIUSVTcy2lA[] gparam_0, tXsfBFbiIUSVTcy2lA jM2pPMR5B8EL3kGNmP, int int_0, int int_1) where tXsfBFbiIUSVTcy2lA : struct
+	public static void FillFromPositionWithLength<templateType>(this templateType[] arrayData, templateType item, int startPosition, int length) where templateType : struct
 	{
 		int num = 0;
-		if (int_0 + int_1 > gparam_0.Length)
+		if (startPosition + length > arrayData.Length)
 		{
 			throw new IndexOutOfRangeException();
 		}
-		for (num = 0; num < int_1; num++)
+		for (num = 0; num < length; num++)
 		{
-			gparam_0[int_0 + num] = jM2pPMR5B8EL3kGNmP;
+			arrayData[startPosition + num] = item;
 		}
 	}
 
-	public static void smethod_2<CSKfdEjN8ycF6T7FDD>(this CSKfdEjN8ycF6T7FDD[] gparam_0, int int_0)
+	public static void RemoveItemFromArray<templateType>(this templateType[] arrayData, int indexNum)
 	{
 		int i;
-		for (i = int_0; i < gparam_0.Length - 1; i++)
+		for (i = indexNum; i < arrayData.Length - 1; i++)
 		{
-			gparam_0[i] = gparam_0[i + 1];
+			arrayData[i] = arrayData[i + 1];
 		}
-		gparam_0[i] = default(CSKfdEjN8ycF6T7FDD);
+		arrayData[i] = default(templateType);
 	}
 
-	public static void smethod_3<SpCwUWiBBg3c5QqL4S>(this SpCwUWiBBg3c5QqL4S[] gparam_0, int int_0, SpCwUWiBBg3c5QqL4S DlFJSfTSt94Fo1BXTX) where SpCwUWiBBg3c5QqL4S : struct
+	public static void smethod_3<templateType>(this templateType[] arrayData, int int_0, templateType item) where templateType : struct
 	{
 		int i;
-		for (i = int_0; i < gparam_0.Length - 1; i++)
+		for (i = int_0; i < arrayData.Length - 1; i++)
 		{
-			gparam_0[i] = gparam_0[i + 1];
+			arrayData[i] = arrayData[i + 1];
 		}
-		gparam_0[i] = DlFJSfTSt94Fo1BXTX;
+		arrayData[i] = item;
 	}
 
 	public static bool smethod_4(this byte[] byte_0, byte[] byte_1)

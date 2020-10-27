@@ -171,7 +171,7 @@ internal class FirmwareUpdate : Win32Usb, IFirmwareUpdate
 	{
 		this.CCancelComm = bool_0;
 	}
-
+	/*
     private bool _IsRead;
 	[CompilerGenerated]
 	public bool method_2()
@@ -183,7 +183,7 @@ internal class FirmwareUpdate : Win32Usb, IFirmwareUpdate
 	public void method_3(bool bool_0)
 	{
 		this._IsRead = bool_0;
-	}
+	}*/
 
 	public bool getIsThreadAlive()
 	{
@@ -204,6 +204,8 @@ internal class FirmwareUpdate : Win32Usb, IFirmwareUpdate
 
 	public void UpdateFirmware()
 	{
+		Console.WriteLine("Here");
+		/*
 		if (this.method_2())
 		{
 			this.thread = new Thread(this.method_6);
@@ -212,7 +214,7 @@ internal class FirmwareUpdate : Win32Usb, IFirmwareUpdate
 		{
 			this.thread = new Thread(this.method_7);
 		}
-		this.thread.Start();
+		this.thread.Start();*/
 	}
 
 	public void MassErase()

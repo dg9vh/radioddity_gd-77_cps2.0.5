@@ -35,7 +35,17 @@ namespace UsbLibrary
 
 		public bool SendData(byte[] data)
 		{
-#if SHOW_USB_DATA
+#if false
+			switch (data[0])
+			{
+				case 0x52:
+					Console.WriteLine(data[1] * 256 + data[2]);
+					break;
+				case 0x57:
+					Console.WriteLine(data[1] * 256 + data[2]);
+					break;
+			}
+
             Console.WriteLine("SendData " + SpecifiedDevice.ByteArrayToString(data));
 #endif
 			SpecifiedOutputReport specifiedOutputReport = new SpecifiedOutputReport(this);
@@ -61,8 +71,34 @@ namespace UsbLibrary
 			return true;
 		}
 
+		int offset = 0;
+
 		public bool SendData(byte[] data, int index, int length)
 		{
+
+#if false
+			//Console.WriteLine("SendData " + SpecifiedDevice.ByteArrayToString(data));
+
+			if (data[0] == 0x43 && data[1] == 0x57 && data[2] == 0x42)
+			{
+				offset = data[5] * 65536 + data[6] * 256 + data[7];
+				//Console.WriteLine("Offset " + offset);
+			}
+
+			else
+			{
+				switch (data[0])
+				{
+					case 0x52:
+						//Console.WriteLine((data[1] * 256 + data[2] + offset) + "\t" + data[3]);
+						break;
+					case 0x57:
+						//Console.WriteLine(string.Format("0x{0:X8}\t", (data[1] * 256 + data[2] + offset), data[3]));
+						Console.WriteLine((data[1] * 256 + data[2] + offset) );//+ "\t" + data[3]);
+						break;
+				}
+			}
+#endif
 			SpecifiedOutputReport specifiedOutputReport = new SpecifiedOutputReport(this);
 			specifiedOutputReport.SendData(data, index, length);
 			try
@@ -89,8 +125,18 @@ namespace UsbLibrary
 		public bool ReceiveData(byte[] data)
 		{
             bool retVal = base.BeginAsyncRead(data);
-#if SHOW_USB_DATA
-            Console.WriteLine("ReceiveData " + SpecifiedDevice.ByteArrayToString(data));
+#if false
+			switch (data[0])
+			{
+				case 0x52:
+					Console.WriteLine(data[1] * 256 + data[2]);
+					break;
+				case 0x57:
+					//Console.WriteLine(data[1] * 256 + data[2]);
+					break;
+			}
+
+           // Console.WriteLine("ReceiveData " + SpecifiedDevice.ByteArrayToString(data));
 #endif
             return retVal;
 		}

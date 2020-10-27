@@ -3,12 +3,13 @@
 	<Settings>
 		<Item Id="MaxZoneCount" Text="32" />
 	</Settings>
-	<Language Id="Eng" Text="Polski" />
+	<Language Id="Pol" Text="Polski" />
 	<AboutForm Text="O programie">
 		<Controls>
-			<Control Id="lblVersion" Text="v2.0.5" />
+			<Control Id="lblVersion" Text="" />
 			<Control Id="lblCompany" Text="Radioddity and GD-77 Community" />
 			<Control Id="btnClose" Text="OK" />
+      <Control Id="lblTranslationCredit" Text="Polish version by Rysiek - SQ9MDD" />
 		</Controls>
 	</AboutForm>
 	<BootItemForm Text="Ekran Logowania">
@@ -92,6 +93,7 @@
 			<Control Id="chkVox" Text="Vox" />
 			<Control Id="chkAutoScan" Text="Auto Scan" />
 			<Control Id="lblChName" Text="Name" />
+      <Control Id="chkOpenGD77ScanZoneSkip" Text="Scan: Zone skip" />
 			<Control Id="lblChMode" Text="Mode" />
 			<Control Id="lblTot" Text="TOT [s]" />
 			<Control Id="lblTotRekey" Text="TOT Rekey Delay [s]" />
@@ -138,8 +140,8 @@
 			<Controls>
 			<Control Id="btnImport" Text="Import" />
 			<Control Id="btnExport" Text="Export" />
-			<Control Id="btnDeleteSelect" Text="Delete Select" />
-			<Control Id="btnClear" Text="Clear" />
+			<Control Id="btnDeleteSelect" Text="Delete Selected" />
+			<Control Id="btnClear" Text="Clear all" />
 			<Control Id="btnDelete" Text="Delete" />
 			<Control Id="btnAdd" Text="Add" />
 			<Control Id="dgvChannels" Text="Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,Color Code,Rx Group List,Contact,Repeater Slot">
@@ -158,8 +160,9 @@
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,Color Code,Rx Group List,Contact,Repeater Slot," />
-		</Commons>
+      <Item Id="DisplayHeaderText" Text="Number,Name,Ch Mode,Rx Freq,Tx Freq,Color Code,Repeater Slot,Contact,Rx Group List,Scan List,Rx Tone,Tx Tone"/>
+      <Item Id="ExportHeaderText" Text="Data type,Name,Channel Type,Rx Frequency,Tx Frequency,Color Code,Timeslot,Contact,Contact Type, Contact Id,Rx Group,Scanlist,Zone,RX CTCSS,TX CTCSS,Power,Bandwidth,Rx Only,Squelch,Tx Admit,TOT,TOT Rekey,Tx Signaling,Rx Signaling,Privacy Group,Emergency System,Flags1,Flags2,Flags3,Flags4,RssiThreshold,VoiceEmphasis,TxSignaling,UnmuteRule,RxSignaling,ArtsInterval" />
+    </Commons>
 	</ChannelsForm>
 	<CommPrgForm Text="">
 		<Controls>
@@ -193,7 +196,8 @@
 			<Control Id="btnClear" Text="Clear" />
 			<Control Id="btnDelete" Text="Delete" />
 			<Control Id="btnAdd" Text="Add" />
-			<Control Id="dgvContacts" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone">
+      <Control Id="btnInternetDownload" Text="Internet download" />
+      <Control Id="dgvContacts" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone,Repeater Slot override">
 				<ControlItem Id="" Text="Number" />
 				<ControlItem Id="" Text="Name" />
 				<ControlItem Id="" Text="Call ID" />
@@ -203,7 +207,7 @@
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone," />
+			<Item Id="HeaderText" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone,Repeater Slot override," />
 		</Commons>
 	</ContactsForm>
 	<DeviceInfoForm Text="Podstawowe Informacje">
@@ -356,7 +360,7 @@
 	<HelpForm Text="Widok Pomocy">
 		<Controls />
 	</HelpForm>
-	<MainForm Text="Radioddity GD-77 CPS 2.0.5 Community Edition">
+	<MainForm Text="Radioddity GD-77 CPS 3.0.6 Community Edition">
 		<TreeView>
 			<TreeNode Id="Model" Text="GD-77" />
 			<TreeNode Id="BasicInfo" Text="Podstawowe Informacje" />
@@ -396,7 +400,8 @@
 			<MenuItem Id="tsmiButton" Text="Klawisze" />
 			<MenuItem Id="tsmiTextMsg" Text="Wiadomości tekstowe" />
 			<MenuItem Id="tsmiEncrypt" Text="Szyfrowanie" />
-			<MenuItem Id="tsmiSignaling" Text="System sygnalizacji" />
+			<MenuItem Id="tsmiSignaling" Text="Sygnalizacji" />
+      <MenuItem Id="tsmiSignalingSystem" Text="System sygnalizacji" />      
 			<MenuItem Id="tsmiDtmf" Text="DTMF" />
 			<MenuItem Id="tsmiEmgSystem" Text="Emergency System" />
 			<MenuItem Id="tsmiContact" Text="Kontakty" />
@@ -406,7 +411,7 @@
 			<MenuItem Id="tsmiGrpRxList" Text="Grupy odbiorcze" />
 			<MenuItem Id="tsmiZone" Text="Strefy" />
 			<MenuItem Id="tsmiZoneList" Text="Lista stref" />
-			<MenuItem Id="tsmiCh" Text="Kanał" />
+			<MenuItem Id="tsmiChannels" Text="Kanał" />
 			<MenuItem Id="tsmiScan" Text="Skanowanie" />
 			<MenuItem Id="tsmiScanList" Text="Lista skanowania" />
 			<MenuItem Id="tsmiProgram" Text="Zaprogramuj" />
@@ -427,7 +432,11 @@
 			<MenuItem Id="tsmiLanguage" Text="Język" />
 			<MenuItem Id="tsmiEnglish" Text="Angielski" />
 			<MenuItem Id="tsmiChinese" Text="Chiński" />
-		</MenuStrip>
+      <MenuItem Id="tsmiExtras" Text="Extras" />
+      <MenuItem Id="tsmiContactsDownload" Text="Pobierz kontakty" />
+      <MenuItem Id="tsmiDMRID" Text="DMR ID" />
+      <MenuItem Id="tsmiCalibration" Text="Kalibracji" />
+    </MenuStrip>
 		<ContextMenuStrip>
 			<MenuItem Id="tsmiAdd" Text="Dodaj" />
 			<MenuItem Id="tsmiClear" Text="Wyczyść" />
@@ -437,6 +446,8 @@
 			<MenuItem Id="tsmiRename" Text="Zmień nazwe" />
 			<MenuItem Id="tsmiCopy" Text="Kopiuj" />
 			<MenuItem Id="tsmiPaste" Text="Wklej" />
+      <MenuItem Id="tsmiMoveUp" Text="Move up" />
+      <MenuItem Id="tsmiMoveDown" Text="Move down" />      
 		</ContextMenuStrip>
 		<ContextMenuStrip>
 			<MenuItem Id="tsmiCollapseAll" Text="Zwiń wszystko" />
@@ -580,6 +591,7 @@
 	</SignalingBasicForm>
 	<ScanBasicForm Text="Scan Basic">
 		<Controls>
+      <Control Id="lblScanTime" Text="Scan Time [s]" />
 			<Control Id="lblDigitHang" Text="Digital Hang Time [ms]" />
 			<Control Id="lblAnalogHang" Text="Analog Hang Time [ms]" />
 			<Control Id="lblVoteHang" Text="Vote Scan Hang Time [s]" />
@@ -709,7 +721,36 @@
 			<Control Id="lblName" Text="Nazwa" />
 		</Controls>
 	</ZoneForm>
-	<Commons>
+  <DownloadContactsForm Text="Download contacts">
+    <Controls>
+      <Control Id="lblMessage" Text="Enter the ID prefix code for your region and press Download..." />
+      <Control Id="btnImport" Text="Import selected" />
+      <Control Id="btnSelectAll" Text="Select all" />
+      <Control Id="btnDownload" Text="Download from URL" />
+      <Control Id="btnDownloadDMRMARC" Text="Download from DRM MARC" />
+      <Control Id="lblIDStart" Text="Region Prefix code" />
+      <Control Id="lblMessageDownloading" Text="Downloading" />
+      <Control Id="dgvDownloadeContacts" Text="ID,Callsign,Name,Last heard">
+        <ControlItem Id="" Text="ID." />
+        <ControlItem Id="" Text="Callsign" />
+        <ControlItem Id="" Text="Name" />
+        <ControlItem Id="" Text="Last heard" />
+      </Control>
+    </Controls>
+  </DownloadContactsForm>
+  <DMRIDForm Text="DMR ID">
+    <Controls>
+      <Control Id="lblMessage" Text="Enter ID prefix code for your region and press Download, to append to the list" />
+      <Control Id="lblRegionId" Text="Region" />
+      <Control Id="lblInactivityFilter" Text="Filtr nieaktywności (dni)" />
+      <Control Id="btnDownload" Text="Pobieranie HamDigital" />
+      <Control Id="btnImportCSV" Text="Import CSV - Filtr region" />
+      <Control Id="btnRead" Text="Przeczytaj z GD-77" />
+      <Control Id="btnWrite" Text="Napisz na GD-77" />
+      <Control Id="btnClear" Text="Jasny" />
+    </Controls>
+  </DMRIDForm>  
+  <Commons>
 		<Item Id="None" Text="None" />
 		<Item Id="Selected" Text="Selected" />
 		<Item Id="RadioIdNotEmpty" Text="ID radia nie może być puste!" />
@@ -720,7 +761,6 @@
 		<Item Id="WriteComplete" Text="Zapis zakończony" />
 		<Item Id="NameExist" Text="Taka nazwa już istnieje" />
 		<Item Id="FirstChNotDelete" Text="Pierwszy kanał w pierwszej strefie nie może zostać usunięty" />
-		<Item Id="FirstNotDelete" Text="Pierwszy nie może być usunięty" />
 		<Item Id="FileFormatError" Text="Błąd formatu pliku" />
 		<Item Id="OpenSuccessfully" Text="Plik załadowany" />
 		<Item Id="SaveSuccessfully" Text="Plik zapisany" />
@@ -742,5 +782,30 @@
 		<Item Id="codePlugReadConfirm"  Text="Czy napewno chcesz odczytać ustawienia z radia?.Ta operacja nadpisze bieżące ustawienia w programie." />
 		<Item Id="codePlugWriteConfirm"  Text="Czy napewno chcesz wgrać ustawienia do radia? Ta operacja nadpisze bieżącą konfigurację w radiu." />
 		<Item Id="pleaseConfirm"  Text="Proszę potwierdzić" />
-	</Commons>
+    <Item Id="DownloadContactsMessageAdded" Text="There are {0} new ID's which are not already in your contacts" />
+    <Item Id="DownloadContactsRegionEmpty" Text="Please enter the 3 digit Region previx code. e.g. 505 for Australia." />
+    <Item Id="DownloadContactsDownloading" Text="Downloading..." />
+    <Item Id="DownloadContactsSelectContactsToImport" Text="Please select the contacts you would like to import" />
+    <Item Id="DownloadContactsTooMany" Text="Not all contacts could be imported because the maximum number of Digital Contacts has been reached" />
+    <Item Id="Warning" Text="Warning" />
+    <Item Id="UnableDownloadFromInternet" Text="Unable to download data. Please check your Internet connection" />
+    <Item Id="DownloadContactsImportComplete" Text="Import complete" />
+    <Item Id="CodeplugUpgradeNotice" Text="This appears to be a V3.0.6 Codeplug. It will be converted to V3.1.x" />
+    <Item Id="CodeplugUpgradeWarningToManyRxGroups" Text="Version 3.1.x can only have 76 Rx Groups. Additional Rx Groups have been ignored" />
+    <Item Id="CodeplugRead" Text="Reading codeplug from GD-77" />
+    <Item Id="CodeplugWrite" Text="Writing codeplug to GD-77" />
+    <Item Id="DMRIDRead" Text="Reading DMR ID database from GD-77" />
+    <Item Id="DMRIDWrite" Text="Writing DMR ID database to GD-77" />
+    <Item Id="CalibrationRead" Text="Reading calibration data from GD-77" />
+    <Item Id="CalibrationWrite" Text="Writing calibration data to GD-77" />
+    <Item Id="IdAlreadyExists" Text="ID already exists！" />
+    <Item Id="IdOutOfRange" Text="ID out of range!" />
+    <Item Id="IdNotEmpty" Text="ID can not be empty!" />
+    <Item Id="ContactNameDuplicate" Text="Warning. Duplicate contact name." />
+    <Item Id="EnableMemoryAccessMode" Text ="The GD-77 does not seem to be in Memory Access modeHold keys SK2 (Blue side key), Green Menu and * when turning on the transceiver, and try again" />
+    <Item Id="dataRead" Text="Reading data from GD-77"/>
+    <Item Id="dataWrite" Text="Writing data to GD-77"/>
+    <Item Id="DMRIdContcatsTotal" Text="Total number of IDs = {0}. Max of {1} can be uploaded" />
+    <Item Id="ErrorParsingData" Text="Error while parsing data" />
+  </Commons>
 </Resource>

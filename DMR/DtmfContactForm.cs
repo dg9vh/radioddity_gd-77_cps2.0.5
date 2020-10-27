@@ -28,7 +28,7 @@ namespace DMR
 				set
 				{
 					byte[] array = Settings.smethod_23(value);
-					this.name.smethod_0((byte)255);
+					this.name.Fill((byte)255);
 					Array.Copy(array, 0, this.name, 0, Math.Min(array.Length, this.name.Length));
 				}
 			}
@@ -273,6 +273,7 @@ namespace DMR
 			
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

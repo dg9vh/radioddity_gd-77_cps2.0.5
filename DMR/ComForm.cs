@@ -125,7 +125,7 @@ namespace DMR
 			try
 			{
 				MainForm.CurCom = this.cmbPort.SelectedItem.ToString();
-				IniFileUtils.WriteProfileString("Setup", "Com", MainForm.CurCom);
+				//IniFileUtils.WriteProfileString("Setup", "Com", MainForm.CurCom);
 				base.Close();
 			}
 			catch (Exception ex)

@@ -26,7 +26,10 @@ namespace DMR
 
 			private byte flag1;
 
-			private ushort reserve;
+			private byte scanTime;						//added for 3.1.1 
+
+			private byte reserve;
+
 
 			public decimal DigitHang
 			{
@@ -127,11 +130,30 @@ namespace DMR
 				}
 			}
 
+			public decimal ScanTime
+			{
+				get
+				{
+					if (this.scanTime >= 1 && this.scanTime <= 13)
+					{
+						return this.scanTime * 5;
+					}
+					return 5m;
+				}
+				set
+				{
+					this.scanTime = Convert.ToByte(value / 5m);
+				}
+			}
+
 			public ScanBasic()
 			{
-				
+
 				//base._002Ector();
-				this.reserve = 65535;
+#if CP_VER_3_0_6
+				this.scanTime=255;					//not used in 3.0.6 so set it to FF
+#endif
+				this.reserve = 255;
 			}
 
 			public void Verify(ScanBasic def)
@@ -195,6 +217,18 @@ namespace DMR
 
 		private const byte LEN_START_VOTE_RSSI = 4;
 
+		private const byte INC_SCAN_TIME = 1;
+
+		private const byte MIN_SCAN_TIME = 1;
+
+		private const byte MAX_SCAN_TIME = 12;
+
+		private const ushort SCL_SCAN_TIME = 5;
+
+		private const byte LEN_SCAN_TIME = 2;
+
+		private const string SZ_SCAN_TIME = "0123456789\b";
+
 		public static ScanBasic DefaultScanBasic;
 
 		public static ScanBasic data;
@@ -211,11 +245,15 @@ namespace DMR
 
 		private Label lblStartVoteRssi;
 
+		private Label lblScanTime;
+
 		private CheckBox chkPriorityAlert;
 
 		private CustomNumericUpDown nudDigitHang;
 
 		private CustomNumericUpDown nudAnalogHang;
+
+		private CustomNumericUpDown nudScanTime;
 
 		private CustomNumericUpDown nudVoteHang;
 
@@ -233,9 +271,8 @@ namespace DMR
 
 		public ScanBasicForm()
 		{
-			
-			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 
@@ -245,6 +282,7 @@ namespace DMR
 			{
 				ScanBasicForm.data.DigitHang = this.nudDigitHang.Value;
 				ScanBasicForm.data.AnalogHang = this.nudAnalogHang.Value;
+				ScanBasicForm.data.ScanTime = this.nudScanTime.Value;
 				ScanBasicForm.data.VoteHang = this.nudVoteHang.Value;
 				ScanBasicForm.data.FastVoteRssi = this.nudFastVoteRssi.Value;
 				ScanBasicForm.data.StartVoteRssi = this.nudStartVoteRssi.Value;
@@ -262,6 +300,7 @@ namespace DMR
 			{
 				this.nudDigitHang.Value = ScanBasicForm.data.DigitHang;
 				this.nudAnalogHang.Value = ScanBasicForm.data.AnalogHang;
+				this.nudScanTime.Value = ScanBasicForm.data.ScanTime;
 				this.nudVoteHang.Value = ScanBasicForm.data.VoteHang;
 				this.nudFastVoteRssi.Value = ScanBasicForm.data.FastVoteRssi;
 				this.nudStartVoteRssi.Value = ScanBasicForm.data.StartVoteRssi;
@@ -281,6 +320,7 @@ namespace DMR
 			this.nudDigitHang.Enabled &= flag;
 			this.lblAnalogHang.Enabled &= flag;
 			this.nudAnalogHang.Enabled &= flag;
+			this.nudScanTime.Enabled &= flag;
 			this.chkPriorityAlert.Enabled &= flag;
 		}
 
@@ -300,6 +340,11 @@ namespace DMR
 			this.nudAnalogHang.Maximum = 10000m;
 			this.nudAnalogHang.method_0(4);
 			this.nudAnalogHang.method_2("0123456789\b");
+			this.nudScanTime.Increment = 5m;
+			this.nudScanTime.Minimum = 5m;
+			this.nudScanTime.Maximum = 60m;
+			this.nudScanTime.method_0(2);
+			this.nudScanTime.method_2("0123456789\b");
 			this.nudVoteHang.Increment = 0.25m;
 			this.nudVoteHang.Minimum = 0.00m;
 			this.nudVoteHang.Maximum = 63.75m;
@@ -345,6 +390,8 @@ namespace DMR
 		{
 			this.pnlScanBasic = new CustomPanel();
 			this.nudAnalogHang = new CustomNumericUpDown();
+			this.nudScanTime = new CustomNumericUpDown();
+			this.lblScanTime = new Label();
 			this.nudStartVoteRssi = new CustomNumericUpDown();
 			this.lblDigitHang = new Label();
 			this.nudFastVoteRssi = new CustomNumericUpDown();
@@ -361,14 +408,17 @@ namespace DMR
 			((ISupportInitialize)this.nudFastVoteRssi).BeginInit();
 			((ISupportInitialize)this.nudVoteHang).BeginInit();
 			((ISupportInitialize)this.nudDigitHang).BeginInit();
+			((ISupportInitialize)this.nudScanTime).BeginInit();
 			base.SuspendLayout();
 			this.pnlScanBasic.AutoScroll = true;
 			this.pnlScanBasic.AutoSize = true;
 			this.pnlScanBasic.Controls.Add(this.nudAnalogHang);
+			this.pnlScanBasic.Controls.Add(this.nudScanTime);
 			this.pnlScanBasic.Controls.Add(this.nudStartVoteRssi);
 			this.pnlScanBasic.Controls.Add(this.lblDigitHang);
 			this.pnlScanBasic.Controls.Add(this.nudFastVoteRssi);
 			this.pnlScanBasic.Controls.Add(this.lblAnalogHang);
+			this.pnlScanBasic.Controls.Add(this.lblScanTime);
 			this.pnlScanBasic.Controls.Add(this.nudVoteHang);
 			this.pnlScanBasic.Controls.Add(this.lblVoteHang);
 			this.pnlScanBasic.Controls.Add(this.lblFastVoteRssi);
@@ -417,6 +467,52 @@ namespace DMR
 				0,
 				0
 			});
+
+			this.nudScanTime.Increment = new decimal(new int[4]
+			{
+				5,
+				0,
+				0,
+				0
+			});
+			this.nudScanTime.method_2(null);
+			this.nudScanTime.Location = new Point(261, 40);
+			this.nudScanTime.Maximum = new decimal(new int[4]
+			{
+				60,
+				0,
+				0,
+				0
+			});
+			this.nudScanTime.Minimum = new decimal(new int[4]
+			{
+				5,
+				0,
+				0,
+				0
+			});
+			this.nudScanTime.Name = "nudScanTime";
+			this.nudScanTime.method_6(null);
+			CustomNumericUpDown class9 = this.nudScanTime;
+			int[] bits9 = new int[4];
+			this.nudScanTime.method_4(new decimal(bits9));
+			this.nudScanTime.Size = new Size(140, 23);
+			this.nudScanTime.TabIndex = 6;
+			this.nudScanTime.Value = new decimal(new int[4]
+			{
+				5,
+				0,
+				0,
+				0
+			});
+#if OpenGD77
+			this.nudScanTime.Visible = true;
+			this.lblScanTime.Visible = true;
+#elif CP_VER_3_1_X
+			this.nudScanTime.Visible = true;
+			this.lblScanTime.Visible = true;
+#endif
+
 			this.nudStartVoteRssi.method_2(null);
 			this.nudStartVoteRssi.Location = new Point(261, 234);
 			this.nudStartVoteRssi.Maximum = new decimal(new int[4]
@@ -491,6 +587,14 @@ namespace DMR
 			this.lblAnalogHang.TabIndex = 2;
 			this.lblAnalogHang.Text = "Analog Hang Time [ms]";
 			this.lblAnalogHang.TextAlign = ContentAlignment.MiddleRight;
+
+			this.lblScanTime.Location = new Point(50, 40);
+			this.lblScanTime.Name = "lblScanTime";
+			this.lblScanTime.Size = new Size(198, 23);
+			this.lblScanTime.TabIndex = 10;
+			this.lblScanTime.Text = "Scan Time [s]";
+			this.lblScanTime.TextAlign = ContentAlignment.MiddleRight;
+
 			this.nudVoteHang.DecimalPlaces = 2;
 			this.nudVoteHang.Increment = new decimal(new int[4]
 			{
@@ -593,6 +697,7 @@ namespace DMR
 			this.pnlScanBasic.ResumeLayout(false);
 			this.pnlScanBasic.PerformLayout();
 			((ISupportInitialize)this.nudAnalogHang).EndInit();
+			((ISupportInitialize)this.nudScanTime).EndInit();
 			((ISupportInitialize)this.nudStartVoteRssi).EndInit();
 			((ISupportInitialize)this.nudFastVoteRssi).EndInit();
 			((ISupportInitialize)this.nudVoteHang).EndInit();

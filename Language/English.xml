@@ -6,9 +6,10 @@
 	<Language Id="Eng" Text="English" />
 	<AboutForm Text="About">
 		<Controls>
-			<Control Id="lblVersion" Text="v2.0.5" />
+			<Control Id="lblVersion" Text="" />
 			<Control Id="lblCompany" Text="Radioddity and GD-77 Community" />
 			<Control Id="btnClose" Text="OK" />
+      <Control Id="lblTranslationCredit" Text="" />
 		</Controls>
 	</AboutForm>
 	<BootItemForm Text="Boot Item">
@@ -52,7 +53,7 @@
 		<Controls>
 			<Control Id="btnCopy" Text=">>" />
 			<Control Id="lblSquelch" Text="Squelch" />
-			<Control Id="lblSql" Text="Squelch Level" />
+			<Control Id="lblSql" Text="OpenGD77 Squelch Level" />
 			<Control Id="grpDigit" Text="Digital" />
 			<Control Id="lblTimingPreference" Text="Timing Leader Prefernce" />
 			<Control Id="lblRepeaterSlot" Text="Repeater Slot" />
@@ -71,7 +72,7 @@
 			<Control Id="chkEmgConfirmed" Text="Emergency Alarm Ack" />
 			<Control Id="chkEnhancedChAccess" Text="Enhanced Channel Access" />
 			<Control Id="lblRxColor" Text="Rx Color Code" />
-			<Control Id="lblRxGroup" Text="Rx Group List" />
+			<Control Id="lblRxGroup" Text="TG List" />
 			<Control Id="chkRxOnly" Text="Rx Only" />
 			<Control Id="chkAllowTalkaround" Text="Allow Talkaround" />
 			<Control Id="grpAnalog" Text="Analog" />
@@ -89,9 +90,11 @@
 			<Control Id="lblTxTone" Text="Tx Tone [Hz]" />
 			<Control Id="chkDataPl" Text="PL for Data" />
 			<Control Id="chkLoneWoker" Text="Lone Work" />
+      <Control Id="chkOpenGD77ScanAllSkip" Text="Scan: All skip" />
 			<Control Id="chkVox" Text="Vox" />
 			<Control Id="chkAutoScan" Text="Auto Scan" />
-			<Control Id="lblChName" Text="Name" />
+      <Control Id="chkOpenGD77ScanZoneSkip" Text="Scan: Zone skip" />
+       <Control Id="lblChName" Text="Name" />
 			<Control Id="lblChMode" Text="Mode" />
 			<Control Id="lblTot" Text="TOT [s]" />
 			<Control Id="lblTotRekey" Text="TOT Rekey Delay [s]" />
@@ -136,13 +139,14 @@
 	</ChannelForm>
 	<ChannelsForm Text="Channels">
 			<Controls>
-			<Control Id="btnImport" Text="Import" />
-			<Control Id="btnExport" Text="Export" />
-			<Control Id="btnDeleteSelect" Text="Delete Select" />
-			<Control Id="btnClear" Text="Clear" />
+			<Control Id="btnImport" Text="Import Update/Append" />
+      <Control Id="btnImportClearAll" Text="Import Clear All!"/>
+      <Control Id="btnExport" Text="Export selected rows" />
+			<Control Id="btnDeleteSelect" Text="Delete selected rows" />
+			<Control Id="btnClear" Text="Clear all" />
 			<Control Id="btnDelete" Text="Delete" />
 			<Control Id="btnAdd" Text="Add" />
-			<Control Id="dgvChannels" Text="Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,Color Code,Rx Group List,Contact,Repeater Slot">
+			<Control Id="dgvChannels" Text="Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,Color Code,TG List,Contact,Repeater Slot">
 				<ControlItem Id="" Text="Number" />
 				<ControlItem Id="" Text="Name" />
 				<ControlItem Id="" Text="Rx Freq" />
@@ -152,14 +156,15 @@
 				<ControlItem Id="" Text="Rx Tone" />
 				<ControlItem Id="" Text="Tx Tone" />
 				<ControlItem Id="" Text="Color Code" />
-				<ControlItem Id="" Text="Rx Group List" />
+				<ControlItem Id="" Text="TG List" />
 				<ControlItem Id="" Text="Contact" />
 				<ControlItem Id="" Text="Repeater Slot" />
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Number,Name,Rx Freq,Tx Freq,Ch Mode,Power,Rx Tone,Tx Tone,Color Code,Rx Group List,Contact,Repeater Slot," />
-		</Commons>
+      <Item Id="DisplayHeaderText" Text="Number,Name,Ch Mode,Rx Freq,Tx Freq,Color Code,Repeater Slot,Contact,TG List,Scan List,Rx Tone,Tx Tone"/>
+      <Item Id="ExportHeaderText" Text="Data type,Name,Channel Type,Rx Frequency,Tx Frequency,Color Code,Timeslot,Contact,Contact Type, Contact Id,Rx Group,Scanlist,Zone,RX CTCSS,TX CTCSS,Power,Bandwidth,Rx Only,Squelch,Tx Admit,TOT,TOT Rekey,Tx Signaling,Rx Signaling,Privacy Group,Emergency System,Flags1,Flags2,Flags3,Flags4,RssiThreshold,VoiceEmphasis,TxSignaling,UnmuteRule,RxSignaling,ArtsInterval" />
+    </Commons>
 	</ChannelsForm>
 	<CommPrgForm Text="">
 		<Controls>
@@ -181,7 +186,7 @@
 			<Control Id="lblCallId" Text="Call ID" />
 		</Controls>
 		<Commons>
-			<Item Id="CallType" Text="Group All,Private Call,All Call" />
+			<Item Id="CallType" Text="Group Call,Private Call,All Call" />
 			<Item Id="CallRxTone" Text="Off,On" />
 		</Commons>
 	</ContactForm>
@@ -189,22 +194,23 @@
 		<Controls>
 			<Control Id="btnImport" Text="Import" />
 			<Control Id="btnExport" Text="Export" />
-			<Control Id="btnDeleteSelect" Text="Delete Select" />
+			<Control Id="btnDeleteSelect" Text="Delete Selected" />
 			<Control Id="btnClear" Text="Clear" />
 			<Control Id="btnDelete" Text="Delete" />
 			<Control Id="btnAdd" Text="Add" />
       <Control Id="btnInternetDownload" Text="Internet download" />      
-      <Control Id="dgvContacts" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone">
+      <Control Id="dgvContacts" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone,Repeater Slot override,">
 				<ControlItem Id="" Text="Number" />
 				<ControlItem Id="" Text="Name" />
 				<ControlItem Id="" Text="Call ID" />
 				<ControlItem Id="" Text="Type" />
 				<ControlItem Id="" Text="Ring Style" />
 				<ControlItem Id="" Text="Call Receive Tone" />
+        <ControlItem Id="" Text="Repeater Slot override" />
 			</Control>
 		</Controls>
 		<Commons>
-			<Item Id="HeaderText" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone," />
+			<Item Id="HeaderText" Text="Number,Name,Call ID,Type,Ring Style,Call Receive Tone,Repeater Slot override," />
 		</Commons>
 	</ContactsForm>
 	<DeviceInfoForm Text="Basic Information">
@@ -224,8 +230,8 @@
 	</DeviceInfoForm>
 	<DigitalKeyContactForm Text="Number Key Assign">
 		<Controls>
-			<Control Id="dgvContact" Text="Contact">
-				<ControlItem Id="cmbContact" Text="Contact" />
+			<Control Id="dgvContact" Text="Menu">
+				<ControlItem Id="cmbContact" Text="Menu" />
 			</Control>
 		</Controls>
 		<Commons>
@@ -357,7 +363,7 @@
 	<HelpForm Text="HelpView">
 		<Controls />
 	</HelpForm>
-	<MainForm Text="Radioddity GD-77 CPS 2.0.5 Community Edition">
+	<MainForm Text="Radioddity GD-77 CPS 3.0.6 Community Edition">
 		<TreeView>
 			<TreeNode Id="Model" Text="GD-77" />
 			<TreeNode Id="BasicInfo" Text="Basic Information" />
@@ -370,12 +376,12 @@
 			<TreeNode Id="Pivacy" Text="Privacy" />
 			<TreeNode Id="SignalingSys" Text="Signaling System" />
 			<TreeNode Id="EmergencySys" Text="Emergency System" />
-			<TreeNode Id="Contact" Text="Contact" />
+			<TreeNode Id="Contact" Text="Contacts" />
 			<TreeNode Id="DtmfContact" Text="DTMF" />
-			<TreeNode Id="DigitalContact" Text="Digital Contact" />
-			<TreeNode Id="RxGroupList" Text="Rx Group List" />
-			<TreeNode Id="Zone" Text="Zone" />
-			<TreeNode Id="Channel" Text="Channel" />
+			<TreeNode Id="DigitalContact" Text="Digital Contacts" />
+			<TreeNode Id="RxGroupList" Text="TG Lists" />
+			<TreeNode Id="Zone" Text="Zones" />
+			<TreeNode Id="Channel" Text="Channels" />
 			<TreeNode Id="Scan" Text="Scan" />
 			<TreeNode Id="DtmfSignal" Text="DTMF" />
 			<TreeNode Id="VFO" Text="VFO" />
@@ -397,18 +403,20 @@
 			<MenuItem Id="tsmiButton" Text="Buttons" />
 			<MenuItem Id="tsmiTextMsg" Text="Text Message" />
 			<MenuItem Id="tsmiEncrypt" Text="Privacy" />
-			<MenuItem Id="tsmiSignaling" Text="Signaling System" />
+			<MenuItem Id="tsmiSignaling" Text="Signaling" />
+      <MenuItem Id="tsmiSignalingSystem" Text="Signaling System" />
 			<MenuItem Id="tsmiDtmf" Text="DTMF" />
 			<MenuItem Id="tsmiEmgSystem" Text="Emergency System" />
 			<MenuItem Id="tsmiContact" Text="Contact" />
 			<MenuItem Id="tsmiDtmfContact" Text="DTMF" />
 			<MenuItem Id="tsmiDmrContact" Text="Digital Contact" />
 			<MenuItem Id="tsmiContacts" Text="Contacts" />
-			<MenuItem Id="tsmiGrpRxList" Text="Rx Group List" />
+			<MenuItem Id="tsmiGrpRxList" Text="TG Lists" />
 			<MenuItem Id="tsmiZone" Text="Zone" />
 			<MenuItem Id="tsmiZoneList" Text="ZoneList" />
-			<MenuItem Id="tsmiCh" Text="Channel" />
+			<MenuItem Id="tsmiChannels" Text="Channels" />
 			<MenuItem Id="tsmiScan" Text="Scan" />
+      <MenuItem Id="tsmiScanBasic" Text="Scan Basic" />      
 			<MenuItem Id="tsmiScanList" Text="Scan List" />
 			<MenuItem Id="tsmiProgram" Text="Program" />
 			<MenuItem Id="tsmiRead" Text="Read" />
@@ -428,7 +436,11 @@
 			<MenuItem Id="tsmiLanguage" Text="Language" />
 			<MenuItem Id="tsmiEnglish" Text="English" />
 			<MenuItem Id="tsmiChinese" Text="Chinese" />
-		</MenuStrip>
+      <MenuItem Id="tsmiExtras" Text="Extras" />
+      <MenuItem Id="tsmiContactsDownload" Text="Download contacts" />
+      <MenuItem Id="tsmiDMRID" Text="DMR ID" />
+      <MenuItem Id="tsmiCalibration" Text="Calibration" />      
+    </MenuStrip>
 		<ContextMenuStrip>
 			<MenuItem Id="tsmiAdd" Text="Add" />
 			<MenuItem Id="tsmiClear" Text="Clear" />
@@ -439,7 +451,7 @@
 			<MenuItem Id="tsmiCopy" Text="Copy" />
 			<MenuItem Id="tsmiPaste" Text="Paste" />
       <MenuItem Id="tsmiMoveUp" Text="Move up" />
-      <MenuItem Id="tsmiDownUp" Text="Move down" />
+      <MenuItem Id="tsmiMoveDown" Text="Move down" />
     </ContextMenuStrip>
 		<ContextMenuStrip>
 			<MenuItem Id="tsmiCollapseAll" Text="Collapse All" />
@@ -555,7 +567,7 @@
 			<Control Id="lblPwd" Text="Password" />
 		</Controls>
 	</PowerPwdForm>
-	<RxGroupListForm Text="Rx Group List">
+	<RxGroupListForm Text="TG List">
 		<Controls>
 			<Control Id="btnDown" Text="Down" />
 			<Control Id="btnUp" Text="Up" />
@@ -583,6 +595,7 @@
 	</SignalingBasicForm>
 	<ScanBasicForm Text="Scan Basic">
 		<Controls>
+      <Control Id="lblScanTime" Text="Scan Time [s]" />
 			<Control Id="lblDigitHang" Text="Digital Hang Time [ms]" />
 			<Control Id="lblAnalogHang" Text="Analog Hang Time [ms]" />
 			<Control Id="lblVoteHang" Text="Vote Scan Hang Time [s]" />
@@ -607,7 +620,7 @@
 		<Controls>
 			<Control Id="btnCopy" Text=">>" />
 			<Control Id="lblSquelch" Text="Squelch" />
-			<Control Id="lblSql" Text="Squelch Level" />
+			<Control Id="lblSql" Text="OpenGD77 Squelch Level" />
 			<Control Id="grpDigit" Text="Digital" />
 			<Control Id="lblTimingPreference" Text="Timing Leader Prefernce" />
 			<Control Id="lblRepeaterSlot" Text="Repeater Slot" />
@@ -626,7 +639,7 @@
 			<Control Id="chkEmgConfirmed" Text="Emergency Alarm Ack" />
 			<Control Id="chkEnhancedChAccess" Text="Enhanced Channel Access" />
 			<Control Id="lblRxColor" Text="Rx Color Code" />
-			<Control Id="lblRxGroup" Text="Rx Group List" />
+			<Control Id="lblRxGroup" Text="TG List" />
 			<Control Id="chkRxOnly" Text="Rx Only" />
 			<Control Id="chkAllowTalkaround" Text="Allow Talkaround" />
 			<Control Id="grpAnalog" Text="Analog" />
@@ -712,15 +725,14 @@
 			<Control Id="lblName" Text="Name" />
 		</Controls>
 	</ZoneForm>
-  <DownloadContactsForm Text="Download contacts from 'Last Heard'">
+  <DownloadContactsForm Text="Download contacts'">
     <Controls>
       <Control Id="lblMessage" Text="Enter the ID prefix code for your region and press Download..." />
       <Control Id="btnImport" Text="Import selected" />
-      <Control Id="btnDownload" Text="Download 'Last Heard' data" />
+      <Control Id="btnSelectAll" Text="Select all" />      
+      <Control Id="btnDownload" Text="Download from URL" />
+      <Control Id="btnDownloadDMRMARC" Text="Download from DRM MARC" />      
       <Control Id="lblIDStart" Text="Region Prefix code" />
-      <Control Id="txtIDStart" Text="505" />
-      <Control Id="lblIDStartAlert" Text="Please enter ID number starting digits. e.g. 505 for Australia." />
-      <Control Id="lblMessageAdded" Text="Added " />
       <Control Id="lblMessageDownloading" Text="Downloading" />
       <Control Id="dgvDownloadeContacts" Text="ID,Callsign,Name,Last heard">
         <ControlItem Id="" Text="ID." />
@@ -730,6 +742,98 @@
       </Control>      
     </Controls>
   </DownloadContactsForm>
+  <CalibrationForm Text="Calibration viewer'">
+    <Controls>
+      <Control Id="btnSave" Text="Save" />
+      <Control Id="btnCancel" Text="Cancel" />
+        <Control Id="tabCtlBands" Text="" >
+          <ControlItem Id="tabVHF" Text="VHF">
+            <Control Id="calibrationBandControlVHF" Text="" >
+              <ControlItem Id="calibrationPowerControlHigh" Text="High power"/>
+              <ControlItem Id="calibrationPowerControlLow" Text=""/>
+              <ControlItem Id="calibrationTXIandQ" Text=""/>
+              <ControlItem Id=" grpAnalogTxDeviation" Text=""/>
+              <ControlItem Id="lblDTMF" Text=""/>
+              <ControlItem Id="lblToneBurst" Text=""/>
+              <ControlItem Id="lblAnalogTxDeviationWide" Text=""/>
+              <ControlItem Id="lblAnalogTxDeviationNarrow" Text=""/>
+              <ControlItem Id="lblOverallGain" Text=""/>
+              <ControlItem Id="grpSquelch" Text=""/>
+              <ControlItem Id="lblSquelchOpenNormal" Text=""/>
+              <ControlItem Id="lblSquelchCloseNormal" Text=""/>
+              <ControlItem Id="lblSquelchOpenTight" Text=""/>
+              <ControlItem Id="lblSquelchCloseTight" Text=""/>
+              <ControlItem Id="lblSquelchWide" Text=""/>
+              <ControlItem Id="lblSquelchNarrow" Text=""/>
+              <ControlItem Id="grpDigitalGain" Text=""/>
+              <ControlItem Id="lblDigitalGainRx" Text=""/>
+              <ControlItem Id="lblDigitalGainTx" Text=""/>
+              <ControlItem Id="lblDigitalGainWide" Text=""/>
+              <ControlItem Id="lblDigitalGainNarrow" Text=""/>
+              <ControlItem Id="grpAnalogGain" Text=""/>
+              <ControlItem Id="lblAnalogAudioGainRx" Text=""/>
+              <ControlItem Id="lblAnalogAudioGainWide" Text=""/>
+              <ControlItem Id="lblAnalogAudioGainNarrow" Text=""/>
+
+              <ControlItem Id="grpSMeter" Text=""/>
+              <ControlItem Id="lblSMeterLowEnd" Text=""/>
+              <ControlItem Id="lblSMeterHighEnd" Text=""/>
+
+              <ControlItem Id="lblReferenceOscTuning" Text=""/>
+              <ControlItem Id="lblReceiveAGCTarget" Text=""/>
+              <ControlItem Id="lblAnalogMicGain" Text=""/>
+            </Control>
+            <ControlItem Id="tabUHF" Text="UHF"/>
+          <Control Id="calibrationBandControlUHF" Text="" >
+            <ControlItem Id="calibrationPowerControlHigh" Text="High power"/>
+            <ControlItem Id="calibrationPowerControlLow" Text=""/>
+            <ControlItem Id="calibrationTXIandQ" Text=""/>
+            <ControlItem Id=" grpAnalogTxDeviation" Text=""/>
+            <ControlItem Id="lblDTMF" Text=""/>
+            <ControlItem Id="lblToneBurst" Text=""/>
+            <ControlItem Id="lblAnalogTxDeviationWide" Text=""/>
+            <ControlItem Id="lblAnalogTxDeviationNarrow" Text=""/>
+            <ControlItem Id="lblOverallGain" Text=""/>
+            <ControlItem Id="grpSquelch" Text=""/>
+            <ControlItem Id="lblSquelchOpenNormal" Text=""/>
+            <ControlItem Id="lblSquelchCloseNormal" Text=""/>
+            <ControlItem Id="lblSquelchOpenTight" Text=""/>
+            <ControlItem Id="lblSquelchCloseTight" Text=""/>
+            <ControlItem Id="lblSquelchWide" Text=""/>
+            <ControlItem Id="lblSquelchNarrow" Text=""/>
+            <ControlItem Id="grpDigitalGain" Text=""/>
+            <ControlItem Id="lblDigitalGainRx" Text=""/>
+            <ControlItem Id="lblDigitalGainTx" Text=""/>
+            <ControlItem Id="lblDigitalGainWide" Text=""/>
+            <ControlItem Id="lblDigitalGainNarrow" Text=""/>
+            <ControlItem Id="grpAnalogGain" Text=""/>
+            <ControlItem Id="lblAnalogAudioGainRx" Text=""/>
+            <ControlItem Id="lblAnalogAudioGainWide" Text=""/>
+            <ControlItem Id="lblAnalogAudioGainNarrow" Text=""/>
+            <ControlItem Id="grpSMeter" Text=""/>
+            <ControlItem Id="lblSMeterLowEnd" Text=""/>
+            <ControlItem Id="lblSMeterHighEnd" Text=""/>
+            <ControlItem Id="lblReferenceOscTuning" Text=""/>
+            <ControlItem Id="lblReceiveAGCTarget" Text=""/>
+            <ControlItem Id="lblAnalogMicGain" Text=""/>
+            </Control>
+        </ControlItem>
+      </Control>
+      <Control Id="lblMessageDownloading" Text="Downloading" />
+    </Controls>
+  </CalibrationForm>
+  <DMRIDForm Text="DMR ID">
+    <Controls>
+      <Control Id="lblMessage" Text="Enter ID prefix code for your region and press Download, to append to the list" />
+      <Control Id="lblRegionId" Text="Region" />
+      <Control Id="lblInactivityFilter" Text="Inactivity filter (days)" />      
+      <Control Id="btnDownload" Text="Download from HamDigital - filtered by region and inactivity" />
+      <Control Id="btnImportCSV" Text="Import CSV - filtered by region code" />
+      <Control Id="btnRead" Text="Read from GD-77" />
+      <Control Id="btnWrite" Text="Write to GD-77" />
+      <Control Id="btnClear" Text="Clear" />      
+    </Controls>
+  </DMRIDForm>
 	<Commons>
 		<Item Id="None" Text="None" />
 		<Item Id="Selected" Text="Selected" />
@@ -741,7 +845,6 @@
 		<Item Id="WriteComplete" Text="Write Complete" />
 		<Item Id="NameExist" Text="Name exists" />
 		<Item Id="FirstChNotDelete" Text="The first channel in the first zone cannot be deleted" />
-		<Item Id="FirstNotDelete" Text="The first cannot be deleted" />
 		<Item Id="FileFormatError" Text="File format error" />
 		<Item Id="OpenSuccessfully" Text="Open successfully" />
 		<Item Id="SaveSuccessfully" Text="Save successfully" />
@@ -763,6 +866,31 @@
 		<Item Id="codePlugReadConfirm"  Text="Are you sure you want to read the codeplug from the GD-77?.This will overwrite the current codeplug." />
 		<Item Id="codePlugWriteConfirm"  Text="Are you sure you want to write this codeplug to the GD-77?.This will overwrite codeplug currently in the GD-77" />
 		<Item Id="pleaseConfirm"  Text="Please confirm" />
-    <Item Id="userAgreement"  Text="This software is supplied 'as is' with no warranties. You use it at your own risk to both your PC and to your DMR Radio. By pressing the  Yes   button you agree and understand." />    
-	</Commons>
+    <Item Id="userAgreement"  Text="This software is supplied 'as is' with no warranties. You use it at your own risk to both your PC and to your DMR Radio. By pressing the  Yes   button you agree and understand." />
+    <Item Id="DownloadContactsMessageAdded" Text="There are {0} new ID's which are not already in your contacts" />
+    <Item Id="DownloadContactsRegionEmpty" Text="Please enter the 3 digit Region previx code. e.g. 505 for Australia." />
+    <Item Id="DownloadContactsDownloading" Text="Downloading..." />
+    <Item Id="DownloadContactsSelectContactsToImport" Text="Please select the contacts you would like to import" />
+    <Item Id="DownloadContactsTooMany" Text="Not all contacts could be imported because the maximum number of Digital Contacts has been reached" />
+    <Item Id="Warning" Text="Warning" />
+    <Item Id="UnableDownloadFromInternet" Text="Unable to download data. Please check your Internet connection" />
+    <Item Id="DownloadContactsImportComplete" Text="Import complete" />
+    <Item Id="CodeplugUpgradeNotice" Text="This appears to be a V3.0.6 Codeplug. It will be converted to V3.1.x" />
+    <Item Id="CodeplugUpgradeWarningToManyRxGroups" Text="Version 3.1.x can only have 76 Rx Groups. Additional Rx Groups have been ignored" />
+    <Item Id="CodeplugRead" Text="Reading codeplug from GD-77" />
+    <Item Id="CodeplugWrite" Text="Writing codeplug to GD-77" />
+    <Item Id="DMRIDRead" Text="Reading DMR ID database from GD-77" />
+    <Item Id="DMRIDWrite" Text="Writing DMR ID database to GD-77" />
+    <Item Id="CalibrationRead" Text="Reading calibration data from GD-77" />
+    <Item Id="CalibrationWrite" Text="Writing calibration data to GD-77" />
+    <Item Id="IdAlreadyExists" Text="ID already exists！" />
+    <Item Id="IdOutOfRange" Text="ID out of range!" />
+    <Item Id="IdNotEmpty" Text="ID can not be empty!" />
+    <Item Id="ContactNameDuplicate" Text="Warning. Duplicate contact name." />
+    <Item Id="EnableMemoryAccessMode" Text ="The GD-77 does not seem to be in Memory Access mode.Hold keys SK2 (Blue side key), Green Menu and * when turning on the transceiver, and try again" />
+    <Item Id="dataRead" Text="Reading data from GD-77"/>
+    <Item Id="dataWrite" Text="Writing data to GD-77"/>
+    <Item Id="DMRIdContcatsTotal" Text="Total number of IDs = {0}. Max of {1} can be uploaded" />
+    <Item Id="ErrorParsingData" Text="Error while parsing data" />
+  </Commons>
 </Resource>

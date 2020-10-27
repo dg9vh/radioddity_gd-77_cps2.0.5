@@ -7,21 +7,14 @@ namespace DMR
 {
 	public class PowerPwdForm : Form
 	{
-		//private IContainer components;
-
 		private Label lblPwd;
-
 		private SGTextBox txtPwd;
-
 		private Button btnOk;
-
 		private Button btnCancel;
-
 		public PowerPwdForm()
 		{
-			
-			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

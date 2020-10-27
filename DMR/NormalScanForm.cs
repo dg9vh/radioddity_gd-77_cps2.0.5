@@ -62,7 +62,7 @@ namespace DMR
 				set
 				{
 					byte[] array = Settings.smethod_23(value);
-					this.name.smethod_0((byte)255);
+					this.name.Fill((byte)255);
 					Array.Copy(array, 0, this.name, 0, Math.Min(array.Length, this.name.Length));
 				}
 			}
@@ -139,7 +139,7 @@ namespace DMR
 				}
 				set
 				{
-					this.chList.smethod_0((ushort)0);
+					this.chList.Fill((ushort)0);
 					Array.Copy(value, 0, this.chList, 0, Math.Min(32, value.Length));
 				}
 			}
@@ -253,7 +253,7 @@ namespace DMR
 
 			public void Default()
 			{
-				this.chList.smethod_0((ushort)0);
+				this.chList.Fill((ushort)0);
 				this.chList[0] = 1;
 				this.priorityCh1 = 0;
 				this.priorityCh2 = 0;
@@ -392,11 +392,9 @@ namespace DMR
 
 			public NormalScan()
 			{
-				
-				//base._002Ector();
 				int num = 0;
 				this.scanListIndex = new byte[64];
-				this.scanListIndex.smethod_0((byte)0);
+				this.scanListIndex.Fill((byte)0);
 				this.scanList = new NormalScanOne[64];
 				for (num = 0; num < this.scanList.Length; num++)
 				{
@@ -415,7 +413,7 @@ namespace DMR
 						num2 = Array.IndexOf(this.scanList[num].ChList, (byte)(chIndex + 2));
 						if (num2 >= 0)
 						{
-							this.scanList[num].ChList.smethod_2(num2);
+							this.scanList[num].ChList.RemoveItemFromArray(num2);
 							if (!this.scanList[num].ChList.Contains((byte)this.scanList[num].PriorityCh1))
 							{
 								this.scanList[num].PriorityCh1 = 0;
@@ -659,7 +657,7 @@ namespace DMR
 				this.priorityCh1[index] = 0;
 				this.priorityCh2[index] = 0;
 				this.specifyCh[index] = 1;
-				this.scanChList.smethod_1((ushort)0, index * 32, 32);
+				this.scanChList.FillFromPositionWithLength((ushort)0, index * 32, 32);
 				this.scanChList[index * 32] = 1;
 			}
 
@@ -816,7 +814,9 @@ namespace DMR
 
 		private GroupBox grpSelected;
 
-		private Button btnDown;
+        private GroupBox grpListParam;
+
+        private Button btnDown;
 
 		private Button btnUp;
 
@@ -835,6 +835,10 @@ namespace DMR
 			try
 			{
 				num2 = Convert.ToInt32(base.Tag);
+				if (num2 == -1)
+				{
+					return;
+				}
 				if (this.txtName.Focused)
 				{
 					this.txtName_Leave(this.txtName, null);
@@ -877,6 +881,11 @@ namespace DMR
 			try
 			{
 				num2 = Convert.ToInt32(base.Tag);
+				if (num2 == -1)
+				{
+					this.Close();
+					return;
+				}
 				this.method_0();
 				this.txtName.Text = NormalScanForm.data[num2].Name;
 				this.chkChMark.Checked = NormalScanForm.data[num2].ChMark;
@@ -955,9 +964,8 @@ namespace DMR
 
 		public NormalScanForm()
 		{
-			
-			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 
@@ -1058,7 +1066,7 @@ namespace DMR
 		private void method_3()
 		{
 			this.txtName.MaxByteLength = 15;
-			this.txtName.KeyPress += Settings.smethod_54;
+			this.txtName.KeyPress += new KeyPressEventHandler(Settings.smethod_54);
 			Settings.smethod_37(this.cmbPlType, NormalScanForm.SZ_PL_TYPE);
 			Settings.smethod_36(this.nudSignalingHold, new Class13(2, 255, 1, 25m, 4));
 			Settings.smethod_36(this.nudPrioritySample, new Class13(3, 31, 1, 250m, 4));
@@ -1333,311 +1341,397 @@ namespace DMR
 
 		private void InitializeComponent()
 		{
-			this.btnDel = new Button();
-			this.btnAdd = new Button();
-			this.lstSelected = new ListBox();
-			this.lstUnselected = new ListBox();
-			this.lblSignalingHold = new Label();
-			this.lblTxDesignatedCh = new Label();
-			this.chkChMark = new CheckBox();
-			this.chkTalkback = new CheckBox();
-			this.lblPrioritySample = new Label();
-			this.label_0 = new Label();
-			this.lblName = new Label();
-			this.lblPriorityCh1 = new Label();
-			this.lblPriorityCh2 = new Label();
-			this.grpUnselected = new GroupBox();
-			this.grpSelected = new GroupBox();
 			this.panel1 = new CustomPanel();
-			this.btnDown = new Button();
-			this.btnUp = new Button();
-			this.txtName = new SGTextBox();
+			this.grpListParam = new System.Windows.Forms.GroupBox();
+			this.chkTalkback = new System.Windows.Forms.CheckBox();
+			this.chkChMark = new System.Windows.Forms.CheckBox();
 			this.cmbPriorityCh2 = new CustomCombo();
+			this.lblTxDesignatedCh = new System.Windows.Forms.Label();
 			this.cmbPriorityCh1 = new CustomCombo();
+			this.lblPriorityCh1 = new System.Windows.Forms.Label();
+			this.lblSignalingHold = new System.Windows.Forms.Label();
+			this.label_0 = new System.Windows.Forms.Label();
 			this.nudPrioritySample = new CustomNumericUpDown();
+			this.lblPriorityCh2 = new System.Windows.Forms.Label();
 			this.nudSignalingHold = new CustomNumericUpDown();
 			this.cmbTxDesignatedCh = new CustomCombo();
 			this.cmbPlType = new CustomCombo();
-			this.grpUnselected.SuspendLayout();
-			this.grpSelected.SuspendLayout();
+			this.lblPrioritySample = new System.Windows.Forms.Label();
+			this.btnDown = new System.Windows.Forms.Button();
+			this.btnUp = new System.Windows.Forms.Button();
+			this.txtName = new DMR.SGTextBox();
+			this.grpSelected = new System.Windows.Forms.GroupBox();
+			this.lstSelected = new System.Windows.Forms.ListBox();
+			this.grpUnselected = new System.Windows.Forms.GroupBox();
+			this.lstUnselected = new System.Windows.Forms.ListBox();
+			this.lblName = new System.Windows.Forms.Label();
+			this.btnDel = new System.Windows.Forms.Button();
+			this.btnAdd = new System.Windows.Forms.Button();
 			this.panel1.SuspendLayout();
-			((ISupportInitialize)this.nudPrioritySample).BeginInit();
-			((ISupportInitialize)this.nudSignalingHold).BeginInit();
-			base.SuspendLayout();
-			this.btnDel.Location = new Point(333, 223);
-			this.btnDel.Name = "btnDel";
-			this.btnDel.Size = new Size(75, 23);
-			this.btnDel.TabIndex = 4;
-			this.btnDel.Text = "Delete";
-			this.btnDel.UseVisualStyleBackColor = true;
-			this.btnDel.Click += this.btnDel_Click;
-			this.btnAdd.Location = new Point(333, 171);
-			this.btnAdd.Name = "btnAdd";
-			this.btnAdd.Size = new Size(75, 23);
-			this.btnAdd.TabIndex = 3;
-			this.btnAdd.Text = "Add";
-			this.btnAdd.UseVisualStyleBackColor = true;
-			this.btnAdd.Click += this.btnAdd_Click;
-			this.lstSelected.FormattingEnabled = true;
-			this.lstSelected.ItemHeight = 16;
-			this.lstSelected.Location = new Point(30, 31);
-			this.lstSelected.Name = "lstSelected";
-			this.lstSelected.SelectionMode = SelectionMode.MultiExtended;
-			this.lstSelected.Size = new Size(150, 212);
-			this.lstSelected.TabIndex = 5;
-			this.lstSelected.SelectedIndexChanged += this.lstSelected_SelectedIndexChanged;
-			this.lstSelected.DoubleClick += this.lstSelected_DoubleClick;
-			this.lstUnselected.FormattingEnabled = true;
-			this.lstUnselected.ItemHeight = 16;
-			this.lstUnselected.Location = new Point(32, 31);
-			this.lstUnselected.Name = "lstUnselected";
-			this.lstUnselected.SelectionMode = SelectionMode.MultiExtended;
-			this.lstUnselected.Size = new Size(150, 212);
-			this.lstUnselected.TabIndex = 0;
-			this.lblSignalingHold.Location = new Point(186, 474);
-			this.lblSignalingHold.Name = "lblSignalingHold";
-			this.lblSignalingHold.Size = new Size(167, 24);
-			this.lblSignalingHold.TabIndex = 12;
-			this.lblSignalingHold.Text = "Signaling Hold Time [ms]";
-			this.lblSignalingHold.TextAlign = ContentAlignment.MiddleRight;
-			this.lblTxDesignatedCh.Location = new Point(186, 414);
-			this.lblTxDesignatedCh.Name = "lblTxDesignatedCh";
-			this.lblTxDesignatedCh.Size = new Size(167, 24);
-			this.lblTxDesignatedCh.TabIndex = 8;
-			this.lblTxDesignatedCh.Text = "Tx Designated Channel";
-			this.lblTxDesignatedCh.TextAlign = ContentAlignment.MiddleRight;
-			this.chkChMark.AutoSize = true;
-			this.chkChMark.Location = new Point(364, 384);
-			this.chkChMark.Name = "chkChMark";
-			this.chkChMark.Size = new Size(128, 20);
-			this.chkChMark.TabIndex = 7;
-			this.chkChMark.Text = "Channel Marker";
-			this.chkChMark.UseVisualStyleBackColor = true;
-			this.chkTalkback.AutoSize = true;
-			this.chkTalkback.Location = new Point(364, 354);
-			this.chkTalkback.Name = "chkTalkback";
-			this.chkTalkback.Size = new Size(82, 20);
-			this.chkTalkback.TabIndex = 6;
-			this.chkTalkback.Text = "Talkback";
-			this.chkTalkback.UseVisualStyleBackColor = true;
-			this.lblPrioritySample.Location = new Point(186, 504);
-			this.lblPrioritySample.Name = "lblPrioritySample";
-			this.lblPrioritySample.Size = new Size(167, 24);
-			this.lblPrioritySample.TabIndex = 14;
-			this.lblPrioritySample.Text = "Priority Sample Time [ms]";
-			this.lblPrioritySample.TextAlign = ContentAlignment.MiddleRight;
-			this.label_0.Location = new Point(186, 444);
-			this.label_0.Name = "lblPLType";
-			this.label_0.Size = new Size(167, 24);
-			this.label_0.TabIndex = 10;
-			this.label_0.Text = "PL Type";
-			this.label_0.TextAlign = ContentAlignment.MiddleRight;
-			this.lblName.Location = new Point(258, 22);
-			this.lblName.Name = "lblName";
-			this.lblName.Size = new Size(60, 24);
-			this.lblName.TabIndex = 0;
-			this.lblName.Text = "Name";
-			this.lblName.TextAlign = ContentAlignment.MiddleRight;
-			this.lblPriorityCh1.Location = new Point(186, 534);
-			this.lblPriorityCh1.Name = "lblPriorityCh1";
-			this.lblPriorityCh1.Size = new Size(167, 24);
-			this.lblPriorityCh1.TabIndex = 16;
-			this.lblPriorityCh1.Text = "Priority Channel 1";
-			this.lblPriorityCh1.TextAlign = ContentAlignment.MiddleRight;
-			this.lblPriorityCh2.Location = new Point(186, 564);
-			this.lblPriorityCh2.Name = "lblPriorityCh2";
-			this.lblPriorityCh2.Size = new Size(167, 24);
-			this.lblPriorityCh2.TabIndex = 18;
-			this.lblPriorityCh2.Text = "Priority Channel 2";
-			this.lblPriorityCh2.TextAlign = ContentAlignment.MiddleRight;
-			this.grpUnselected.Controls.Add(this.lstUnselected);
-			this.grpUnselected.Location = new Point(113, 59);
-			this.grpUnselected.Name = "grpUnselected";
-			this.grpUnselected.Size = new Size(205, 281);
-			this.grpUnselected.TabIndex = 2;
-			this.grpUnselected.TabStop = false;
-			this.grpUnselected.Text = "Available";
-			this.grpSelected.Controls.Add(this.lstSelected);
-			this.grpSelected.Location = new Point(425, 59);
-			this.grpSelected.Name = "grpSelected";
-			this.grpSelected.Size = new Size(205, 281);
-			this.grpSelected.TabIndex = 21;
-			this.grpSelected.TabStop = false;
-			this.grpSelected.Text = "Member";
+			this.grpListParam.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.nudPrioritySample)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudSignalingHold)).BeginInit();
+			this.grpSelected.SuspendLayout();
+			this.grpUnselected.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// panel1
+			// 
 			this.panel1.AutoScroll = true;
 			this.panel1.AutoSize = true;
+			this.panel1.Controls.Add(this.grpListParam);
 			this.panel1.Controls.Add(this.btnDown);
 			this.panel1.Controls.Add(this.btnUp);
 			this.panel1.Controls.Add(this.txtName);
 			this.panel1.Controls.Add(this.grpSelected);
-			this.panel1.Controls.Add(this.chkTalkback);
 			this.panel1.Controls.Add(this.grpUnselected);
-			this.panel1.Controls.Add(this.chkChMark);
-			this.panel1.Controls.Add(this.cmbPriorityCh2);
-			this.panel1.Controls.Add(this.lblTxDesignatedCh);
-			this.panel1.Controls.Add(this.cmbPriorityCh1);
-			this.panel1.Controls.Add(this.lblPriorityCh1);
-			this.panel1.Controls.Add(this.lblSignalingHold);
 			this.panel1.Controls.Add(this.lblName);
-			this.panel1.Controls.Add(this.label_0);
-			this.panel1.Controls.Add(this.nudPrioritySample);
-			this.panel1.Controls.Add(this.lblPriorityCh2);
-			this.panel1.Controls.Add(this.nudSignalingHold);
-			this.panel1.Controls.Add(this.cmbTxDesignatedCh);
 			this.panel1.Controls.Add(this.btnDel);
-			this.panel1.Controls.Add(this.cmbPlType);
 			this.panel1.Controls.Add(this.btnAdd);
-			this.panel1.Controls.Add(this.lblPrioritySample);
-			this.panel1.Dock = DockStyle.Fill;
-			this.panel1.Location = new Point(0, 0);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new Size(793, 607);
+			this.panel1.Size = new System.Drawing.Size(760, 744);
 			this.panel1.TabIndex = 0;
-			this.btnDown.Location = new Point(665, 223);
+			// 
+			// grpListParam
+			// 
+			this.grpListParam.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.grpListParam.Controls.Add(this.chkTalkback);
+			this.grpListParam.Controls.Add(this.chkChMark);
+			this.grpListParam.Controls.Add(this.cmbPriorityCh2);
+			this.grpListParam.Controls.Add(this.lblTxDesignatedCh);
+			this.grpListParam.Controls.Add(this.cmbPriorityCh1);
+			this.grpListParam.Controls.Add(this.lblPriorityCh1);
+			this.grpListParam.Controls.Add(this.lblSignalingHold);
+			this.grpListParam.Controls.Add(this.label_0);
+			this.grpListParam.Controls.Add(this.nudPrioritySample);
+			this.grpListParam.Controls.Add(this.lblPriorityCh2);
+			this.grpListParam.Controls.Add(this.nudSignalingHold);
+			this.grpListParam.Controls.Add(this.cmbTxDesignatedCh);
+			this.grpListParam.Controls.Add(this.cmbPlType);
+			this.grpListParam.Controls.Add(this.lblPrioritySample);
+			this.grpListParam.Location = new System.Drawing.Point(113, 458);
+			this.grpListParam.Name = "grpListParam";
+			this.grpListParam.Size = new System.Drawing.Size(517, 269);
+			this.grpListParam.TabIndex = 24;
+			this.grpListParam.TabStop = false;
+			this.grpListParam.Text = "Scanparameter";
+			// 
+			// chkTalkback
+			// 
+			this.chkTalkback.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.chkTalkback.AutoSize = true;
+			this.chkTalkback.Location = new System.Drawing.Point(251, 13);
+			this.chkTalkback.Name = "chkTalkback";
+			this.chkTalkback.Size = new System.Drawing.Size(82, 20);
+			this.chkTalkback.TabIndex = 6;
+			this.chkTalkback.Text = "Talkback";
+			this.chkTalkback.UseVisualStyleBackColor = true;
+			// 
+			// chkChMark
+			// 
+			this.chkChMark.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.chkChMark.AutoSize = true;
+			this.chkChMark.Location = new System.Drawing.Point(251, 43);
+			this.chkChMark.Name = "chkChMark";
+			this.chkChMark.Size = new System.Drawing.Size(128, 20);
+			this.chkChMark.TabIndex = 7;
+			this.chkChMark.Text = "Channel Marker";
+			this.chkChMark.UseVisualStyleBackColor = true;
+			// 
+			// cmbPriorityCh2
+			// 
+			this.cmbPriorityCh2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cmbPriorityCh2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbPriorityCh2.FormattingEnabled = true;
+			this.cmbPriorityCh2.Location = new System.Drawing.Point(251, 224);
+			this.cmbPriorityCh2.Name = "cmbPriorityCh2";
+			this.cmbPriorityCh2.Size = new System.Drawing.Size(166, 24);
+			this.cmbPriorityCh2.TabIndex = 19;
+			this.cmbPriorityCh2.SelectedIndexChanged += new System.EventHandler(this.cmbPriorityCh2_SelectedIndexChanged);
+			// 
+			// lblTxDesignatedCh
+			// 
+			this.lblTxDesignatedCh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblTxDesignatedCh.Location = new System.Drawing.Point(73, 73);
+			this.lblTxDesignatedCh.Name = "lblTxDesignatedCh";
+			this.lblTxDesignatedCh.Size = new System.Drawing.Size(167, 24);
+			this.lblTxDesignatedCh.TabIndex = 8;
+			this.lblTxDesignatedCh.Text = "Tx Designated Channel";
+			this.lblTxDesignatedCh.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// cmbPriorityCh1
+			// 
+			this.cmbPriorityCh1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cmbPriorityCh1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbPriorityCh1.FormattingEnabled = true;
+			this.cmbPriorityCh1.Location = new System.Drawing.Point(251, 194);
+			this.cmbPriorityCh1.Name = "cmbPriorityCh1";
+			this.cmbPriorityCh1.Size = new System.Drawing.Size(166, 24);
+			this.cmbPriorityCh1.TabIndex = 17;
+			this.cmbPriorityCh1.SelectedIndexChanged += new System.EventHandler(this.cmbPriorityCh1_SelectedIndexChanged);
+			// 
+			// lblPriorityCh1
+			// 
+			this.lblPriorityCh1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblPriorityCh1.Location = new System.Drawing.Point(73, 193);
+			this.lblPriorityCh1.Name = "lblPriorityCh1";
+			this.lblPriorityCh1.Size = new System.Drawing.Size(167, 24);
+			this.lblPriorityCh1.TabIndex = 16;
+			this.lblPriorityCh1.Text = "Priority Channel 1";
+			this.lblPriorityCh1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// lblSignalingHold
+			// 
+			this.lblSignalingHold.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblSignalingHold.Location = new System.Drawing.Point(73, 133);
+			this.lblSignalingHold.Name = "lblSignalingHold";
+			this.lblSignalingHold.Size = new System.Drawing.Size(167, 24);
+			this.lblSignalingHold.TabIndex = 12;
+			this.lblSignalingHold.Text = "Signaling Hold Time [ms]";
+			this.lblSignalingHold.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// label_0
+			// 
+			this.label_0.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.label_0.Location = new System.Drawing.Point(73, 103);
+			this.label_0.Name = "label_0";
+			this.label_0.Size = new System.Drawing.Size(167, 24);
+			this.label_0.TabIndex = 10;
+			this.label_0.Text = "PL Type";
+			this.label_0.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// nudPrioritySample
+			// 
+			this.nudPrioritySample.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.nudPrioritySample.Increment = new decimal(new int[] {
+            250,
+            0,
+            0,
+            0});
+			this.nudPrioritySample.Location = new System.Drawing.Point(251, 164);
+			this.nudPrioritySample.Maximum = new decimal(new int[] {
+            7750,
+            0,
+            0,
+            0});
+			this.nudPrioritySample.Minimum = new decimal(new int[] {
+            750,
+            0,
+            0,
+            0});
+			this.nudPrioritySample.Name = "nudPrioritySample";
+			this.nudPrioritySample.Size = new System.Drawing.Size(166, 23);
+			this.nudPrioritySample.TabIndex = 15;
+			this.nudPrioritySample.Value = new decimal(new int[] {
+            750,
+            0,
+            0,
+            0});
+			// 
+			// lblPriorityCh2
+			// 
+			this.lblPriorityCh2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblPriorityCh2.Location = new System.Drawing.Point(73, 223);
+			this.lblPriorityCh2.Name = "lblPriorityCh2";
+			this.lblPriorityCh2.Size = new System.Drawing.Size(167, 24);
+			this.lblPriorityCh2.TabIndex = 18;
+			this.lblPriorityCh2.Text = "Priority Channel 2";
+			this.lblPriorityCh2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// nudSignalingHold
+			// 
+			this.nudSignalingHold.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.nudSignalingHold.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+			this.nudSignalingHold.Location = new System.Drawing.Point(251, 134);
+			this.nudSignalingHold.Maximum = new decimal(new int[] {
+            6375,
+            0,
+            0,
+            0});
+			this.nudSignalingHold.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+			this.nudSignalingHold.Name = "nudSignalingHold";
+			this.nudSignalingHold.Size = new System.Drawing.Size(166, 23);
+			this.nudSignalingHold.TabIndex = 13;
+			this.nudSignalingHold.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+			// 
+			// cmbTxDesignatedCh
+			// 
+			this.cmbTxDesignatedCh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cmbTxDesignatedCh.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbTxDesignatedCh.FormattingEnabled = true;
+			this.cmbTxDesignatedCh.Location = new System.Drawing.Point(251, 74);
+			this.cmbTxDesignatedCh.Name = "cmbTxDesignatedCh";
+			this.cmbTxDesignatedCh.Size = new System.Drawing.Size(166, 24);
+			this.cmbTxDesignatedCh.TabIndex = 9;
+			// 
+			// cmbPlType
+			// 
+			this.cmbPlType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cmbPlType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbPlType.FormattingEnabled = true;
+			this.cmbPlType.Items.AddRange(new object[] {
+            "Disabled",
+            "Priority channel",
+            "Non-priority channel",
+            "Priority channel and non-priority channel"});
+			this.cmbPlType.Location = new System.Drawing.Point(251, 104);
+			this.cmbPlType.Name = "cmbPlType";
+			this.cmbPlType.Size = new System.Drawing.Size(166, 24);
+			this.cmbPlType.TabIndex = 11;
+			// 
+			// lblPrioritySample
+			// 
+			this.lblPrioritySample.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lblPrioritySample.Location = new System.Drawing.Point(73, 163);
+			this.lblPrioritySample.Name = "lblPrioritySample";
+			this.lblPrioritySample.Size = new System.Drawing.Size(167, 24);
+			this.lblPrioritySample.TabIndex = 14;
+			this.lblPrioritySample.Text = "Priority Sample Time [ms]";
+			this.lblPrioritySample.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// btnDown
+			// 
+			this.btnDown.Location = new System.Drawing.Point(665, 223);
 			this.btnDown.Name = "btnDown";
-			this.btnDown.Size = new Size(75, 23);
+			this.btnDown.Size = new System.Drawing.Size(75, 23);
 			this.btnDown.TabIndex = 23;
 			this.btnDown.Text = "Down";
 			this.btnDown.UseVisualStyleBackColor = true;
-			this.btnDown.Click += this.btnDown_Click;
-			this.btnUp.Location = new Point(665, 171);
+			this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
+			// 
+			// btnUp
+			// 
+			this.btnUp.Location = new System.Drawing.Point(665, 171);
 			this.btnUp.Name = "btnUp";
-			this.btnUp.Size = new Size(75, 23);
+			this.btnUp.Size = new System.Drawing.Size(75, 23);
 			this.btnUp.TabIndex = 22;
 			this.btnUp.Text = "Up";
 			this.btnUp.UseVisualStyleBackColor = true;
-			this.btnUp.Click += this.btnUp_Click;
+			this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+			// 
+			// txtName
+			// 
 			this.txtName.InputString = null;
-			this.txtName.Location = new Point(322, 22);
+			this.txtName.Location = new System.Drawing.Point(322, 22);
 			this.txtName.MaxByteLength = 0;
 			this.txtName.Name = "txtName";
-			this.txtName.Size = new Size(146, 23);
+			this.txtName.Size = new System.Drawing.Size(146, 23);
 			this.txtName.TabIndex = 1;
-			this.txtName.Leave += this.txtName_Leave;
-			this.cmbPriorityCh2.DropDownStyle = ComboBoxStyle.DropDownList;
-			this.cmbPriorityCh2.FormattingEnabled = true;
-			this.cmbPriorityCh2.Location = new Point(364, 564);
-			this.cmbPriorityCh2.Name = "cmbPriorityCh2";
-			this.cmbPriorityCh2.Size = new Size(166, 24);
-			this.cmbPriorityCh2.TabIndex = 19;
-			this.cmbPriorityCh2.SelectedIndexChanged += this.cmbPriorityCh2_SelectedIndexChanged;
-			this.cmbPriorityCh1.DropDownStyle = ComboBoxStyle.DropDownList;
-			this.cmbPriorityCh1.FormattingEnabled = true;
-			this.cmbPriorityCh1.Location = new Point(364, 534);
-			this.cmbPriorityCh1.Name = "cmbPriorityCh1";
-			this.cmbPriorityCh1.Size = new Size(166, 24);
-			this.cmbPriorityCh1.TabIndex = 17;
-			this.cmbPriorityCh1.SelectedIndexChanged += this.cmbPriorityCh1_SelectedIndexChanged;
-			this.nudPrioritySample.Increment = new decimal(new int[4]
-			{
-				250,
-				0,
-				0,
-				0
-			});
-			this.nudPrioritySample.method_2(null);
-			this.nudPrioritySample.Location = new Point(364, 504);
-			this.nudPrioritySample.Maximum = new decimal(new int[4]
-			{
-				7750,
-				0,
-				0,
-				0
-			});
-			this.nudPrioritySample.Minimum = new decimal(new int[4]
-			{
-				750,
-				0,
-				0,
-				0
-			});
-			this.nudPrioritySample.Name = "nudPrioritySample";
-			this.nudPrioritySample.method_6(null);
-			CustomNumericUpDown @class = this.nudPrioritySample;
-			int[] bits = new int[4];
-			this.nudPrioritySample.method_4(new decimal(bits));
-			this.nudPrioritySample.Size = new Size(166, 23);
-			this.nudPrioritySample.TabIndex = 15;
-			this.nudPrioritySample.Value = new decimal(new int[4]
-			{
-				750,
-				0,
-				0,
-				0
-			});
-			this.nudSignalingHold.Increment = new decimal(new int[4]
-			{
-				25,
-				0,
-				0,
-				0
-			});
-			this.nudSignalingHold.method_2(null);
-			this.nudSignalingHold.Location = new Point(364, 474);
-			this.nudSignalingHold.Maximum = new decimal(new int[4]
-			{
-				6375,
-				0,
-				0,
-				0
-			});
-			this.nudSignalingHold.Minimum = new decimal(new int[4]
-			{
-				50,
-				0,
-				0,
-				0
-			});
-			this.nudSignalingHold.Name = "nudSignalingHold";
-			this.nudSignalingHold.method_6(null);
-			CustomNumericUpDown class2 = this.nudSignalingHold;
-			int[] bits2 = new int[4];
-			this.nudSignalingHold.method_4(new decimal(bits2));
-			this.nudSignalingHold.Size = new Size(166, 23);
-			this.nudSignalingHold.TabIndex = 13;
-			this.nudSignalingHold.Value = new decimal(new int[4]
-			{
-				50,
-				0,
-				0,
-				0
-			});
-			this.cmbTxDesignatedCh.DropDownStyle = ComboBoxStyle.DropDownList;
-			this.cmbTxDesignatedCh.FormattingEnabled = true;
-			this.cmbTxDesignatedCh.Location = new Point(364, 414);
-			this.cmbTxDesignatedCh.Name = "cmbTxDesignatedCh";
-			this.cmbTxDesignatedCh.Size = new Size(166, 24);
-			this.cmbTxDesignatedCh.TabIndex = 9;
-			this.cmbPlType.DropDownStyle = ComboBoxStyle.DropDownList;
-			this.cmbPlType.FormattingEnabled = true;
-			this.cmbPlType.Items.AddRange(new object[4]
-			{
-				"禁用",
-				"优先信道",
-				"非优先信道",
-				"优先信道和非优先信道"
-			});
-			this.cmbPlType.Location = new Point(364, 444);
-			this.cmbPlType.Name = "cmbPlType";
-			this.cmbPlType.Size = new Size(166, 24);
-			this.cmbPlType.TabIndex = 11;
-			base.AutoScaleDimensions = new SizeF(7f, 16f);
-//			base.AutoScaleMode = AutoScaleMode.Font;
-			base.ClientSize = new Size(793, 607);
-			base.Controls.Add(this.panel1);
-			this.Font = new Font("Arial", 10f, FontStyle.Regular);
-			base.Name = "NormalScanForm";
+			this.txtName.Leave += new System.EventHandler(this.txtName_Leave);
+			// 
+			// grpSelected
+			// 
+			this.grpSelected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+			this.grpSelected.Controls.Add(this.lstSelected);
+			this.grpSelected.Location = new System.Drawing.Point(425, 59);
+			this.grpSelected.Name = "grpSelected";
+			this.grpSelected.Size = new System.Drawing.Size(205, 412);
+			this.grpSelected.TabIndex = 21;
+			this.grpSelected.TabStop = false;
+			this.grpSelected.Text = "Member";
+			// 
+			// lstSelected
+			// 
+			this.lstSelected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+			this.lstSelected.FormattingEnabled = true;
+			this.lstSelected.ItemHeight = 16;
+			this.lstSelected.Location = new System.Drawing.Point(30, 31);
+			this.lstSelected.Name = "lstSelected";
+			this.lstSelected.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.lstSelected.Size = new System.Drawing.Size(150, 324);
+			this.lstSelected.TabIndex = 5;
+			this.lstSelected.SelectedIndexChanged += new System.EventHandler(this.lstSelected_SelectedIndexChanged);
+			this.lstSelected.DoubleClick += new System.EventHandler(this.lstSelected_DoubleClick);
+			// 
+			// grpUnselected
+			// 
+			this.grpUnselected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+			this.grpUnselected.Controls.Add(this.lstUnselected);
+			this.grpUnselected.Location = new System.Drawing.Point(113, 59);
+			this.grpUnselected.Name = "grpUnselected";
+			this.grpUnselected.Size = new System.Drawing.Size(205, 412);
+			this.grpUnselected.TabIndex = 2;
+			this.grpUnselected.TabStop = false;
+			this.grpUnselected.Text = "Available";
+			// 
+			// lstUnselected
+			// 
+			this.lstUnselected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+			this.lstUnselected.FormattingEnabled = true;
+			this.lstUnselected.ItemHeight = 16;
+			this.lstUnselected.Location = new System.Drawing.Point(32, 31);
+			this.lstUnselected.Name = "lstUnselected";
+			this.lstUnselected.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.lstUnselected.Size = new System.Drawing.Size(150, 324);
+			this.lstUnselected.TabIndex = 0;
+			// 
+			// lblName
+			// 
+			this.lblName.Location = new System.Drawing.Point(258, 22);
+			this.lblName.Name = "lblName";
+			this.lblName.Size = new System.Drawing.Size(60, 24);
+			this.lblName.TabIndex = 0;
+			this.lblName.Text = "Name";
+			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// btnDel
+			// 
+			this.btnDel.Location = new System.Drawing.Point(333, 223);
+			this.btnDel.Name = "btnDel";
+			this.btnDel.Size = new System.Drawing.Size(75, 23);
+			this.btnDel.TabIndex = 4;
+			this.btnDel.Text = "Delete";
+			this.btnDel.UseVisualStyleBackColor = true;
+			this.btnDel.Click += new System.EventHandler(this.btnDel_Click);
+			// 
+			// btnAdd
+			// 
+			this.btnAdd.Location = new System.Drawing.Point(333, 171);
+			this.btnAdd.Name = "btnAdd";
+			this.btnAdd.Size = new System.Drawing.Size(75, 23);
+			this.btnAdd.TabIndex = 3;
+			this.btnAdd.Text = "Add";
+			this.btnAdd.UseVisualStyleBackColor = true;
+			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+			// 
+			// NormalScanForm
+			// 
+			this.ClientSize = new System.Drawing.Size(760, 744);
+			this.Controls.Add(this.panel1);
+			this.Font = new System.Drawing.Font("Arial", 10F);
+			this.Name = "NormalScanForm";
 			this.Text = "Normal Scan";
-			base.Load += this.NormalScanForm_Load;
-			base.FormClosing += this.NormalScanForm_FormClosing;
-			this.grpUnselected.ResumeLayout(false);
-			this.grpSelected.ResumeLayout(false);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.NormalScanForm_FormClosing);
+			this.Load += new System.EventHandler(this.NormalScanForm_Load);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
-			((ISupportInitialize)this.nudPrioritySample).EndInit();
-			((ISupportInitialize)this.nudSignalingHold).EndInit();
-			base.ResumeLayout(false);
-			base.PerformLayout();
+			this.grpListParam.ResumeLayout(false);
+			this.grpListParam.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.nudPrioritySample)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudSignalingHold)).EndInit();
+			this.grpSelected.ResumeLayout(false);
+			this.grpUnselected.ResumeLayout(false);
+			this.ResumeLayout(false);
+			this.PerformLayout();
+
 		}
 
 		static NormalScanForm()

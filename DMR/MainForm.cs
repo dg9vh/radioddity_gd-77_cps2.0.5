@@ -13,11 +13,23 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using WeifenLuo.WinFormsUI.Docking;
+using System.Reflection;
 
 namespace DMR
 {
 	public class MainForm : Form
 	{
+
+#if OpenGD77
+		private const string DEFAULT_DATA_FILE_NAME = "DefaultOpenGD77.g77";
+#elif CP_VER_3_1_X
+		private const string DEFAULT_DATA_FILE_NAME = "Default31X.dat";
+#endif
+
+		public static byte[] CommsBuffer=null;// = new byte[0x10000];
+
+		private static string PRODUCT_NAME = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyProductAttribute), false)).Product;
+
 		private const int WM_SETFONT = 48;
 
 		private const int TVM_GETEDITCONTROL = 4367;
@@ -33,6 +45,7 @@ namespace DMR
 		private ToolStripMenuItem tsmiSetting;
 
 		private ToolStripMenuItem tsmiSignaling;
+		private ToolStripMenuItem tsmiSignalingSystem;
 
 		private ToolStripMenuItem tsmiDtmf;
 
@@ -48,13 +61,16 @@ namespace DMR
 
 		private ToolStripMenuItem tsmiGrpRxList;
 
-		private ToolStripMenuItem tsmiCh;
+		private ToolStripMenuItem tsmiChannels;
 
 		private ToolStripMenuItem tsmiZone;
 
 		private ToolStripMenuItem tsmiButton;
 
 		private ToolStripMenuItem tsmiScan;
+		private ToolStripMenuItem tsmiVfos;
+		private ToolStripMenuItem tsmiVfoA;
+		private ToolStripMenuItem tsmiVfoB;
 
 		private ToolStripMenuItem tsmiAbout;
 
@@ -110,10 +126,12 @@ namespace DMR
 
 		private ToolStripMenuItem tsmiDtmfContact;
 
-		private ToolStripMenuItem tsmiDmrContact;
+		private ToolStripMenuItem tsmiDmrContacts;
 
+		private ToolStripMenuItem tsmiScanBasic;
 		private ToolStripMenuItem tsmiScanList;
 
+		private ToolStripMenuItem tsmiZoneBasic;
 		private ToolStripMenuItem tsmiZoneList;
 
 		private ToolStripMenuItem tsmiCloseAll;
@@ -184,6 +202,15 @@ namespace DMR
 
 		private ToolStripMenuItem tsmiLanguage;
 
+		private ToolStripMenuItem tsmiExtras;
+
+		private ToolStripMenuItem tsmiContactsDownload;
+		private ToolStripMenuItem tsmiDMRID;
+		private ToolStripMenuItem tsmiCalibration;
+		private ToolStripMenuItem tsmiOpenGD77;
+		private ToolStripMenuItem tsmiFirmwareLoader;
+
+
 		private DeserializeDockContent m_deserializeDockContent;
 
 		private static IDisp PreActiveMdiChild;
@@ -206,6 +233,7 @@ namespace DMR
 
 		//private static readonly string[] TREENODE_KEY;
 
+		/*
 		public static int CurCbr
 		{
 			get;
@@ -217,12 +245,13 @@ namespace DMR
 			get;
 			set;
 		}
-
+		*/
+		/*
 		public static string CurModel
 		{
 			get;
 			set;
-		}
+		}*/
 
 		public static string CurFileName
 		{
@@ -276,17 +305,24 @@ namespace DMR
 			this.tsmiTextMsg = new ToolStripMenuItem();
 			this.tsmiEncrypt = new ToolStripMenuItem();
 			this.tsmiSignaling = new ToolStripMenuItem();
+			this.tsmiSignalingSystem = new ToolStripMenuItem();
 			this.tsmiDtmf = new ToolStripMenuItem();
 			this.tsmiEmgSystem = new ToolStripMenuItem();
 			this.tsmiContact = new ToolStripMenuItem();
 			this.tsmiDtmfContact = new ToolStripMenuItem();
-			this.tsmiDmrContact = new ToolStripMenuItem();
+			this.tsmiDmrContacts = new ToolStripMenuItem();
 			this.tsmiGrpRxList = new ToolStripMenuItem();
 			this.tsmiZone = new ToolStripMenuItem();
+			this.tsmiZoneBasic = new ToolStripMenuItem();
 			this.tsmiZoneList = new ToolStripMenuItem();
-			this.tsmiCh = new ToolStripMenuItem();
+			this.tsmiChannels = new ToolStripMenuItem();
 			this.tsmiScan = new ToolStripMenuItem();
+			this.tsmiScanBasic = new ToolStripMenuItem();
 			this.tsmiScanList = new ToolStripMenuItem();
+			this.tsmiVfos = new ToolStripMenuItem();
+			this.tsmiVfoA = new ToolStripMenuItem();
+			this.tsmiVfoB = new ToolStripMenuItem();
+
 			this.tsmiProgram = new ToolStripMenuItem();
 			this.tsmiRead = new ToolStripMenuItem();
 			this.tsmiWrite = new ToolStripMenuItem();
@@ -297,6 +333,15 @@ namespace DMR
 			this.tsmiToolBar = new ToolStripMenuItem();
 			this.tsmiStatusBar = new ToolStripMenuItem();
 			this.tsmiLanguage = new ToolStripMenuItem();
+			this.tsmiExtras = new ToolStripMenuItem();
+			this.tsmiContactsDownload = new ToolStripMenuItem();
+			this.tsmiDMRID = new ToolStripMenuItem();
+			this.tsmiCalibration = new ToolStripMenuItem();
+			this.tsmiOpenGD77 = new ToolStripMenuItem();
+			this.tsmiFirmwareLoader = new ToolStripMenuItem();
+			
+			
+			
 			this.tsmiWindow = new ToolStripMenuItem();
 			this.tsmiCascade = new ToolStripMenuItem();
 			this.tsmiTileHor = new ToolStripMenuItem();
@@ -355,14 +400,15 @@ namespace DMR
 			this.imgMain.Images.SetKeyName(0, "46.png");
 			this.imgMain.Images.SetKeyName(1, "47.png");
 			this.imgMain.Images.SetKeyName(2, "21.png");
-            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 
-            this.mnsMain.Items.AddRange(new ToolStripItem[7]
+
+            this.mnsMain.Items.AddRange(new ToolStripItem[8]
 			{
 				this.tsmiFile,
 				this.tsmiSetting,
 				this.tsmiProgram,
 				this.tsmiView,
+				this.tsmiExtras,
 				this.tsmiLanguage,
 				this.tsmiWindow,
 				this.tsmiAbout
@@ -388,21 +434,27 @@ namespace DMR
 			this.tsmiNew.Size = new Size(108, 22);
 			this.tsmiNew.Text = "New";
 			this.tsmiNew.Click += this.tsbtnNew_Click;
+			this.tsmiNew.ShortcutKeys = Keys.Control | Keys.N;
+
 			this.tsmiSave.Name = "tsmiSave";
 			this.tsmiSave.Size = new Size(108, 22);
 			this.tsmiSave.Text = "Save";
 			this.tsmiSave.Click += this.tsbtnSave_Click;
+			this.tsmiSave.ShortcutKeys = Keys.Control | Keys.S;
+			
 			this.tsmiOpen.Name = "tsmiOpen";
 			this.tsmiOpen.Size = new Size(108, 22);
 			this.tsmiOpen.Text = "Open";
 			this.tsmiOpen.Click += this.tsbtnOpen_Click;
+			this.tsmiOpen.ShortcutKeys = Keys.Control | Keys.O;
+
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new Size(105, 6);
 			this.tsmiExit.Name = "tsmiExit";
 			this.tsmiExit.Size = new Size(108, 22);
 			this.tsmiExit.Text = "Exit";
 			this.tsmiExit.Click += this.tsmiExit_Click;
-			this.tsmiSetting.DropDownItems.AddRange(new ToolStripItem[14]
+			this.tsmiSetting.DropDownItems.AddRange(new ToolStripItem[15]
 			{
 				this.tsmiDeviceInfo,
 				this.tsmiBootItem,
@@ -416,8 +468,9 @@ namespace DMR
 				this.tsmiContact,
 				this.tsmiGrpRxList,
 				this.tsmiZone,
-				this.tsmiCh,
-				this.tsmiScan
+				this.tsmiChannels,
+				this.tsmiScan,
+				this.tsmiVfos
 			});
 			this.tsmiSetting.Name = "tsmiSetting";
 			this.tsmiSetting.Size = new Size(60, 21);
@@ -455,15 +508,22 @@ namespace DMR
 			this.tsmiEncrypt.Size = new Size(191, 22);
 			this.tsmiEncrypt.Text = "Privacy";
 			this.tsmiEncrypt.Click += this.tsmiEncrypt_Click;
-			this.tsmiSignaling.DropDownItems.AddRange(new ToolStripItem[2]
+
+			this.tsmiSignaling.Name = "tsmiSignaling";
+			this.tsmiSignaling.Size = new Size(191, 22);
+			this.tsmiSignaling.Text = "Signaling";
+			this.tsmiSignaling.DropDownItems.AddRange(new ToolStripItem[3]
 			{
+				this.tsmiSignalingSystem,
 				this.tsmiDtmf,
 				this.tsmiEmgSystem
 			});
-			this.tsmiSignaling.Name = "tsmiSignaling";
-			this.tsmiSignaling.Size = new Size(191, 22);
-			this.tsmiSignaling.Text = "Signaling System";
-			this.tsmiSignaling.Click += this.tsmiSignaling_Click;
+
+			this.tsmiSignalingSystem.Name = "tsmiSignalingSystem";
+			this.tsmiSignalingSystem.Size = new Size(191, 22);
+			this.tsmiSignalingSystem.Text = "Signaling System";
+			this.tsmiSignalingSystem.Click += this.tsmiSignalingSystem_Click;
+
 			this.tsmiDtmf.Name = "tsmiDtmf";
 			this.tsmiDtmf.Size = new Size(185, 22);
 			this.tsmiDtmf.Text = "DTMF";
@@ -475,19 +535,19 @@ namespace DMR
 			this.tsmiContact.DropDownItems.AddRange(new ToolStripItem[2]
 			{
 				this.tsmiDtmfContact,
-				this.tsmiDmrContact
+				this.tsmiDmrContacts
 			});
 			this.tsmiContact.Name = "tsmiContact";
 			this.tsmiContact.Size = new Size(191, 22);
-			this.tsmiContact.Text = "Contact";
+			this.tsmiContact.Text = "Contacts";
 			this.tsmiDtmfContact.Name = "tsmiDtmfContact";
 			this.tsmiDtmfContact.Size = new Size(161, 22);
 			this.tsmiDtmfContact.Text = "DTMF";
 			this.tsmiDtmfContact.Click += this.tsmiDtmfContact_Click;
-			this.tsmiDmrContact.Name = "tsmiDmrContact";
-			this.tsmiDmrContact.Size = new Size(161, 22);
-			this.tsmiDmrContact.Text = "Digital Contact";
-			this.tsmiDmrContact.Click += this.tsmiDmrContact_Click;
+			this.tsmiDmrContacts.Name = "tsmiDmrContacts";
+			this.tsmiDmrContacts.Size = new Size(161, 22);
+			this.tsmiDmrContacts.Text = "Digital Contacts";
+			this.tsmiDmrContacts.Click += this.tsmiDmrContacts_Click;
 			this.tsmiGrpRxList.Name = "tsmiGrpRxList";
 			this.tsmiGrpRxList.Size = new Size(191, 22);
 			this.tsmiGrpRxList.Text = "Rx Group List";
@@ -499,27 +559,70 @@ namespace DMR
 			this.tsmiZone.Name = "tsmiZone";
 			this.tsmiZone.Size = new Size(191, 22);
 			this.tsmiZone.Text = "Zone";
-			this.tsmiZone.Click += this.tsmiZone_Click;
+			this.tsmiZone.DropDownItems.AddRange(new ToolStripItem[2]
+			{
+				this.tsmiZoneBasic,
+				this.tsmiZoneList
+			});
+
+			this.tsmiZoneBasic.Name = "tsmiZoneBasic";
+			this.tsmiZoneBasic.Size = new Size(124, 22);
+			this.tsmiZoneBasic.Text = "Zone Basic";
+			this.tsmiZoneBasic.Click += this.tsmiZoneBasic_Click;
+
 			this.tsmiZoneList.Name = "tsmiZoneList";
 			this.tsmiZoneList.Size = new Size(124, 22);
 			this.tsmiZoneList.Text = "ZoneList";
 			this.tsmiZoneList.Click += this.tsmiZoneList_Click;
-			this.tsmiCh.Name = "tsmiCh";
-			this.tsmiCh.Size = new Size(191, 22);
-			this.tsmiCh.Text = "Channel";
-			this.tsmiCh.Click += this.tsmiCh_Click;
-			this.tsmiScan.DropDownItems.AddRange(new ToolStripItem[1]
-			{
-				this.tsmiScanList
-			});
+
+			this.tsmiChannels.Name = "tsmiChannels";
+			this.tsmiChannels.Size = new Size(191, 22);
+			this.tsmiChannels.Text = "Channels";
+			this.tsmiChannels.Click += this.tsmiChannels_Click;
+
+
 			this.tsmiScan.Name = "tsmiScan";
 			this.tsmiScan.Size = new Size(191, 22);
 			this.tsmiScan.Text = "Scan";
-			this.tsmiScan.Click += this.tsmiScan_Click;
+			this.tsmiScan.DropDownItems.AddRange(new ToolStripItem[2]
+			{
+				this.tsmiScanBasic,
+				this.tsmiScanList
+			});
+
+			this.tsmiScanBasic.Name = "tsmiScanBasic";
+			this.tsmiScanBasic.Size = new Size(191, 22);
+			this.tsmiScanBasic.Text = "Scan Basic";
+			this.tsmiScanBasic.Click += this.tsmiScanBasic_Click;
+
 			this.tsmiScanList.Name = "tsmiScanList";
 			this.tsmiScanList.Size = new Size(126, 22);
 			this.tsmiScanList.Text = "Scan List";
 			this.tsmiScanList.Click += this.tsmiScanList_Click;
+
+			this.tsmiVfos.Name = "tsmiVfos";
+			this.tsmiVfos.Size = new Size(191, 22);
+			this.tsmiVfos.Text = "VFOs";
+
+			this.tsmiVfoA.Name = "tsmiVfoA";
+			this.tsmiVfoA.Size = new Size(191, 22);
+			this.tsmiVfoA.Text = "VFO A";
+			this.tsmiVfoA.Click += this.tsmiVfoA_Click;
+
+
+			this.tsmiVfoB.Name = "tsmiVfoB";
+			this.tsmiVfoB.Size = new Size(191, 22);
+			this.tsmiVfoB.Text = "VFO B";
+			this.tsmiVfoB.Click += this.tsmiVfoB_Click;
+
+			this.tsmiVfos.DropDownItems.AddRange(new ToolStripItem[2]
+			{
+				this.tsmiVfoA,
+				this.tsmiVfoB
+			});
+
+
+
 			this.tsmiProgram.DropDownItems.AddRange(new ToolStripItem[2]// was 3
 			{
 				this.tsmiRead,
@@ -581,6 +684,53 @@ namespace DMR
 			this.tsmiLanguage.Name = "tsmiLanguage";
 			this.tsmiLanguage.Size = new Size(77, 21);
 			this.tsmiLanguage.Text = "Language";
+			this.tsmiExtras.Name = "tsmiExtras";
+			this.tsmiExtras.Size = new Size(77, 21);
+			this.tsmiExtras.Text = "Extras";
+			this.tsmiExtras.DropDownItems.AddRange(new ToolStripItem[]
+			{
+				this.tsmiContactsDownload,
+				this.tsmiCalibration,
+				this.tsmiDMRID,
+				tsmiOpenGD77,
+				tsmiFirmwareLoader
+			});
+
+			this.tsmiContactsDownload.Name = "tsmiContactsDownload";
+			//this.tsmiContactsDownload.ShortcutKeys = (Keys)131154;
+			this.tsmiContactsDownload.Size = new Size(156, 22);
+			this.tsmiContactsDownload.Text = "Download contacts";
+			this.tsmiContactsDownload.Click += this.tsbtnContactsDownload_Click;
+
+			this.tsmiDMRID.Name = "tsmiDMRID";
+			//this.tsmiContactsDownload.ShortcutKeys = (Keys)131154;
+			this.tsmiDMRID.Size = new Size(156, 22);
+			this.tsmiDMRID.Text = "DMR ID";
+			this.tsmiDMRID.Enabled = true;
+			this.tsmiDMRID.Click += this.tsbtnDMRID_Click;
+
+			this.tsmiCalibration.Name = "tsmiCalibration";
+			//this.tsmiCalibration.ShortcutKeys = (Keys)131154;
+			this.tsmiCalibration.Size = new Size(156, 22);
+			this.tsmiCalibration.Text = "Calibration editor";
+			this.tsmiCalibration.Enabled = true;
+			this.tsmiCalibration.Click += new EventHandler(this.tsbtnCalibration_Click);
+
+			this.tsmiOpenGD77.Name = "tsmiOpenGD77";
+			//this.tsmiCalibration.ShortcutKeys = (Keys)131154;
+			this.tsmiOpenGD77.Size = new Size(156, 22);
+			this.tsmiOpenGD77.Text = "OpenGD77 support";
+			this.tsmiOpenGD77.Enabled = true;
+			this.tsmiOpenGD77.Click += new EventHandler(this.tsmiOpenGD77_Click);
+
+
+			this.tsmiFirmwareLoader.Name = "tsmiFirmwareLoader";
+			//this.tsmiCalibration.ShortcutKeys = (Keys)131154;
+			this.tsmiFirmwareLoader.Size = new Size(156, 22);
+			this.tsmiFirmwareLoader.Text = "Firmware loader";
+			this.tsmiFirmwareLoader.Enabled = true;
+			this.tsmiFirmwareLoader.Click += new EventHandler(this.tsmiFirmwareLoader_Click);
+
 			this.tsmiWindow.DropDownItems.AddRange(new ToolStripItem[4]
 			{
 				this.tsmiCascade,
@@ -711,8 +861,9 @@ namespace DMR
 			this.tsmiAllCall.Size = new Size(231, 22);
 			this.tsmiAllCall.Text = "All Call";
 			this.tsmiAllCall.Click += this.tsmiAllCall_Click;
-			this.ofdMain.Filter = "GD-77 codeplug (*.dat,*.g77)|*.dat;*.g77";
-			this.sfdMain.Filter = "GD-77 codeplug (*.dat,*.g77)|*.dat;*.g77";
+			//this.ofdMain.Filter = "GD-77 codeplug (*.dat,*.g77)|*.dat;*.g77";
+			this.ofdMain.Filter = "OpenGD77 (*.g77)|*.g77|GD-77 (*.dat,*.g77)|*.dat;*.g77";
+			this.sfdMain.Filter = "OpenGD77 (*.g77)|*.g77|GD-77 (*.dat,*.g77)|*.dat;*.g77";
 			this.cmsTree.Items.AddRange(new ToolStripItem[2]
 			{
 				this.tsmiCollapseAll,
@@ -881,7 +1032,7 @@ namespace DMR
 			this.tsbtnAbout.Text = "About";
 			this.tsbtnAbout.Click += this.tsbtnAbout_Click;
 			base.AutoScaleDimensions = new SizeF(7f, 16f);
-			base.AutoScaleMode = AutoScaleMode.Font;
+
 			base.ClientSize = new Size(1099, 709);
 			base.Controls.Add(this.dockPanel);
 			base.Controls.Add(this.tsrMain);
@@ -894,7 +1045,9 @@ namespace DMR
 			base.MainMenuStrip = this.mnsMain;
 			base.Margin = new Padding(3, 4, 3, 4);
 			base.Name = "MainForm";
-			this.Text = "Radioddity GD-77 CPS - Community Edition";
+			string 	version = AssemblyName.GetAssemblyName(System.Reflection.Assembly.GetExecutingAssembly().Location).Version.ToString();
+
+			this.Text = MainForm.PRODUCT_NAME;
 			base.WindowState = FormWindowState.Maximized;
 			base.Load += this.MainForm_Load;
 			base.MdiChildActivate += this.MainForm_MdiChildActivate;
@@ -942,6 +1095,7 @@ namespace DMR
 			this.lstTreeNodeItem = new List<TreeNodeItem>();
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			this._TextBox = new TextBox();
 			this._TextBox.Visible = false;
 			this._TextBox.LostFocus += this._TextBox_LostFocus;
@@ -971,6 +1125,8 @@ namespace DMR
 			Settings.dicCommon.Add("NotSelectItemNotCopyItem", Settings.SZ_NOT_SELECT_ITEM_NOT_COPYITEM);
 			Settings.dicCommon.Add("PromptKey1", Settings.SZ_PROMPT_KEY1);
 			Settings.dicCommon.Add("PromptKey2", Settings.SZ_PROMPT_KEY2);
+			Settings.dicCommon.Add("DataFormatError","Data format error");
+			Settings.dicCommon.Add("FirstNotDelete","The first row cannot be deleted");
 			Settings.dicCommon.Add("KeyPressDtmf", "");
 			Settings.dicCommon.Add("KeyPressDigit", "");
 			Settings.dicCommon.Add("KeyPressPrint", "");
@@ -981,6 +1137,33 @@ namespace DMR
             Settings.dicCommon.Add("pleaseConfirm", Settings.SZ_PLEASE_CONFIRM);
 
 			Settings.dicCommon.Add("userAgreement", Settings.SZ_USER_AGREEMENT);
+			Settings.dicCommon.Add("DownloadContactsMessageAdded", Settings.SZ_DOWNLOADCONTACTS_REGION_EMPTY);
+			Settings.dicCommon.Add("DownloadContactsRegionEmpty", Settings.SZ_DOWNLOADCONTACTS_MESSAGE_ADDED);
+			Settings.dicCommon.Add("DownloadContactsDownloading", Settings.SZ_DOWNLOADCONTACTS_DOWNLOADING);
+			Settings.dicCommon.Add("DownloadContactsSelectContactsToImport", Settings.SZ_DOWNLOADCONTACTS_SELECT_CONTACTS_TO_IMPORT);
+			Settings.dicCommon.Add("DownloadContactsTooMany", Settings.SZ_DOWNLOADCONTACTS_TOO_MANY);
+			Settings.dicCommon.Add("Warning", Settings.SZ_WARNING);
+			Settings.dicCommon.Add("UnableDownloadFromInternet", Settings.SZ_UNABLEDOWNLOADFROMINTERNET);
+			Settings.dicCommon.Add("DownloadContactsImportComplete", Settings.SZ_IMPORT_COMPLETE);
+			Settings.dicCommon.Add("CodeplugUpgradeNotice", Settings.SZ_CODEPLUG_UPGRADE_NOTICE);
+			Settings.dicCommon.Add("CodeplugUpgradeWarningToManyRxGroups", Settings.SZ_CODEPLUG_UPGRADE_WARNING_TO_MANY_RX_GROUPS);
+
+			Settings.dicCommon.Add("CodeplugRead", Settings.SZ_CODEPLUG_READ);
+			Settings.dicCommon.Add("CodeplugWrite", Settings.SZ_CODEPLUG_WRITE);
+			Settings.dicCommon.Add("DMRIDRead", Settings.SZ_DMRID_READ);
+			Settings.dicCommon.Add("DMRIDWrite", Settings.SZ_DMRID_WRITE);
+			Settings.dicCommon.Add("CalibrationRead", Settings.SZ_CALIBRATION_READ);
+			Settings.dicCommon.Add("CalibrationWrite", Settings.SZ_CALIBRATION_WRITE);
+			Settings.dicCommon.Add("IdAlreadyExists", Settings.SZ_ID_ALREADY_EXISTS);
+			Settings.dicCommon.Add("ContactNameDuplicate", Settings.SZ_CONTACT_DUPLICATE_NAME);
+
+
+			Settings.dicCommon.Add("EnableMemoryAccessMode", Settings.SZ_EnableMemoryAccessMode);
+			Settings.dicCommon.Add("dataRead", Settings.SZ_dataRead);
+			Settings.dicCommon.Add("dataWrite", Settings.SZ_dataWrite);
+			Settings.dicCommon.Add("DMRIdContcatsTotal", Settings.SZ_DMRIdContcatsTotal);
+			Settings.dicCommon.Add("ErrorParsingData", Settings.SZ_ErrorParsingData);
+			Settings.dicCommon.Add("DMRIdIntroMessage", Settings.SZ_DMRIdIntroMessage);
 
 			string text = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
 			if (File.Exists(text))
@@ -991,9 +1174,9 @@ namespace DMR
 			{
 				Settings.smethod_7(new SizeF(graphics.DpiX / 96f, graphics.DpiY / 96f));
 			}
-			MainForm.CurCom = IniFileUtils.smethod_4("Setup", "Com", "Com1");
-			MainForm.CurCbr = IniFileUtils.smethod_2("Setup", "Baudrate", 9600);
-			MainForm.CurModel = IniFileUtils.smethod_4("Setup", "Model", "SG");
+			//MainForm.CurCom = IniFileUtils.smethod_4("Setup", "Com", "Com1");
+			//MainForm.CurCbr = IniFileUtils.smethod_2("Setup", "Baudrate", 9600);
+			//MainForm.CurModel = IniFileUtils.smethod_4("Setup", "Model", "SG");
 			//
 
 	/* Roger Clark
@@ -1035,14 +1218,43 @@ namespace DMR
 
 			ChannelForm.CurCntCh = 1024;
 			this.method_15();
+			string lastFileName = String.Empty;
 
 			if (MainForm.StartupArgs.Length > 0)
 			{
-				this.loadDefaultOrInitialFile(StartupArgs[0]);
+				if (File.Exists(StartupArgs[0]))
+				{
+					openCodeplugFile(StartupArgs[0]);
+					lastFileName = StartupArgs[0];
+				}
+				else
+				{
+					this.loadDefaultOrInitialFile();
+					lastFileName = "";
+					IniFileUtils.WriteProfileString("Setup", "LastFilePath", "");
+				}
 			}
 			else
-			{	
-				this.loadDefaultOrInitialFile();
+			{
+				string tmp = IniFileUtils.getProfileStringWithDefault("Setup", "LastFilePath", "");
+				if ("" == tmp)
+				{
+					this.loadDefaultOrInitialFile();
+				}
+				else
+				{
+					lastFileName = IniFileUtils.getProfileStringWithDefault("Setup", "LastFilePath", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+					if (lastFileName!=null && lastFileName != "" && File.Exists(lastFileName))
+					{
+						openCodeplugFile(lastFileName);
+					}
+					else
+					{
+						this.loadDefaultOrInitialFile();
+						lastFileName = "";
+						IniFileUtils.WriteProfileString("Setup", "LastFilePath", "");
+					}
+				}
 			}
 
 			this.frmHelp.Show(this.dockPanel);
@@ -1070,7 +1282,7 @@ namespace DMR
 			this.GetAllLang();
 
 
-			string b = IniFileUtils.smethod_4("Setup", "Language", "Chinese.xml");
+			string b = IniFileUtils.getProfileStringWithDefault("Setup", "Language", "English.xml");
 			foreach (ToolStripMenuItem dropDownItem in this.tsmiLanguage.DropDownItems)
 			{
 				string fileName = Path.GetFileName(dropDownItem.Tag.ToString());
@@ -1081,28 +1293,45 @@ namespace DMR
 				dropDownItem.PerformClick();
 				break;
 			}
-			this.Text += " [Build "+DateTime.Today.ToString("yyyy:MM:dd")+"]";
 
-			if (DialogResult.Yes != MessageBox.Show(Settings.dicCommon["userAgreement"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo))
+
+			this.Text = getMainTitleStub() + " " + lastFileName;
+
+			if (IniFileUtils.getProfileStringWithDefault("Setup", "agreedToTerms", "no") == "no")
 			{
-				if (System.Windows.Forms.Application.MessageLoop)
+				if (DialogResult.Yes !=  MessageBox.Show(Settings.dicCommon["userAgreement"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo))
 				{
-					// Use this since we are a WinForms app
-					System.Windows.Forms.Application.Exit();
+					if (System.Windows.Forms.Application.MessageLoop)
+					{
+						// Use this since we are a WinForms app
+						System.Windows.Forms.Application.Exit();
+					}
+					else
+					{
+						// Use this since we are a console app
+						System.Environment.Exit(1);
+					}
 				}
 				else
 				{
-					// Use this since we are a console app
-					System.Environment.Exit(1);
+					IniFileUtils.WriteProfileString("Setup", "agreedToTerms", "yes");
+					base.FormClosing += this.MainForm_FormClosing;
 				}
 			}
 			else
 			{
 				base.FormClosing += this.MainForm_FormClosing;
 			}
-
-
 		}
+
+		private string getMainTitleStub()
+		{
+			Version ver = AssemblyName.GetAssemblyName(System.Reflection.Assembly.GetExecutingAssembly().Location).Version;//.ToString();
+			DateTime dt = new DateTime(2000, 1, 1, 0, 0, 0).AddDays(ver.Build).AddSeconds(ver.Revision * 2);
+
+			return MainForm.PRODUCT_NAME + " (Build date " + dt.ToString("yyyyMMdd")+ ")";
+		}
+
 
 		private void MainForm_MdiChildActivate(object sender, EventArgs e)
 		{
@@ -1133,11 +1362,13 @@ namespace DMR
 				this.tsmiSave.PerformClick();
 				break;
 			}
+			/* Roger Clark. This function never seems to actually save this value to the ini file, so I'm commenting it out as it doesnt do as advertised
 			if (IniFileUtils.smethod_2("Setup", "SaveDockPanel", 0) != 0)
 			{
 				string fileName = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
 				this.dockPanel.SaveAsXml(fileName);
 			}
+			 */
 		}
 
 		private void method_1(Form form_0)
@@ -1462,11 +1693,11 @@ namespace DMR
 		public void InitRxGroupLists(TreeNode parentNode)
 		{
 			int num = 0;
-			for (num = 0; num < 128; num++)
+			for (num = 0; num < RxListData.CNT_RX_LIST; num++)
 			{
 				if (RxGroupListForm.data.DataIsValid(num))
 				{
-					this.AddTreeViewNode(parentNode.Nodes, RxGroupListForm.data[num].Name, new TreeNodeItem(this.cmsSub, typeof(RxGroupListForm), null, 128, num, 19, RxGroupListForm.data));
+					this.AddTreeViewNode(parentNode.Nodes, RxGroupListForm.data[num].Name, new TreeNodeItem(this.cmsSub, typeof(RxGroupListForm), null, RxListData.CNT_RX_LIST, num, 19, RxGroupListForm.data));
 				}
 			}
 		}
@@ -1488,11 +1719,11 @@ namespace DMR
 			int num = 0;
 			try
 			{
-				for (num = 0; num < 250; num++)
+				for (num = 0; num < ZoneForm.NUM_ZONES; num++)
 				{
 					if (ZoneForm.data.DataIsValid(num))
 					{
-						this.AddTreeViewNode(parentNode.Nodes, ZoneForm.data.GetName(num), new TreeNodeItem(this.cmsSub, typeof(ZoneForm), null, 250, num, 25, ZoneForm.data));
+						this.AddTreeViewNode(parentNode.Nodes, ZoneForm.data.GetName(num), new TreeNodeItem(this.cmsSub, typeof(ZoneForm), null, ZoneForm.NUM_ZONES, num, 25, ZoneForm.data));
 					}
 				}
 			}
@@ -1831,6 +2062,7 @@ namespace DMR
 				if (selectedNode != null)
 				{
 					TreeNodeItem treeNodeItem = selectedNode.Tag as TreeNodeItem;
+					
 					if (treeNodeItem != null && treeNodeItem.Cms != null)
 					{
 						Keys keys = e.KeyData;
@@ -1841,31 +2073,34 @@ namespace DMR
 						ToolStripMenuItem toolStripMenuItem = this.method_10(treeNodeItem.Cms.Items, keys);
 						if (toolStripMenuItem != null)
 						{
-							switch (treeNodeItem.Type.Name)
+							if (treeNodeItem.Type != null)
 							{
-								case "ZoneForm":
-									if (selectedNode.Index == selectedNode.Parent.Nodes.Count - 1)
-									{
+								switch (treeNodeItem.Type.Name)
+								{
+									case "ZoneForm":
+										if (selectedNode.Index == selectedNode.Parent.Nodes.Count - 1)
+										{
+											this.tsmiMoveDown.Visible = false;
+										}
+										else
+										{
+											this.tsmiMoveDown.Visible = true;
+										}
+										if (selectedNode.Index == 0)
+										{
+											this.tsmiMoveUp.Visible = false;
+										}
+										else
+										{
+											this.tsmiMoveUp.Visible = true;
+										}
+										break;
+									case "ChannelForm":
+									default:
 										this.tsmiMoveDown.Visible = false;
-									}
-									else
-									{
-										this.tsmiMoveDown.Visible = true;
-									}
-									if (selectedNode.Index == 0)
-									{
 										this.tsmiMoveUp.Visible = false;
-									}
-									else
-									{
-										this.tsmiMoveUp.Visible = true;
-									}
-									break;
-								case "ChannelForm":
-								default:
-									this.tsmiMoveDown.Visible = false;
-									this.tsmiMoveUp.Visible = false;
-									break;
+										break;
+								}
 							}
 							toolStripMenuItem.PerformClick();
 						}
@@ -2061,16 +2296,19 @@ namespace DMR
 					{
 						if (treeNodeItem.Index + 1 == ZoneForm.data.FstZoneFstCh)
 						{
-							this.tsmiDel.Visible = false;
+							this.tsmiDel.Visible = true;
+							//this.tsmiDel.Visible = false;
 						}
 						else
 						{
-							this.tsmiDel.Visible = (selectedNode.Parent.Nodes.Count != 1 && selectedNode.Index != 0);
+							this.tsmiDel.Visible = true;
+							//this.tsmiDel.Visible = (selectedNode.Parent.Nodes.Count != 1 && selectedNode.Index != 0);
 						}
 					}
 					else
 					{
-						this.tsmiDel.Visible = (selectedNode.Parent.Nodes.Count != 1 && selectedNode.Index != 0);
+						this.tsmiDel.Visible = true;
+						//this.tsmiDel.Visible = (selectedNode.Parent.Nodes.Count != 1 && selectedNode.Index != 0);
 					}
 					this.tsmiPaste.Visible = (this.CopyItem != null && this.CopyItem != treeNodeItem && this.CopyItem.Type == treeNodeItem.Type);
 				}
@@ -2094,9 +2332,9 @@ namespace DMR
 				treeNode = selectedNode.Parent;
 				treeNodeItem = (selectedNode.Tag as TreeNodeItem);
 				this.method_2();
-				if (treeNodeItem != null && treeNode.Nodes.Count > 1 && treeNodeItem.Cms == this.cmsSub && selectedNode.Index != 0)
+				if (treeNodeItem != null && treeNode.Nodes.Count > 0 && treeNodeItem.Cms == this.cmsSub)// && selectedNode.Index != 0)
 				{
-					if (treeNodeItem.Type == typeof(ChannelForm) && treeNodeItem.Index + 1 == ZoneForm.data.FstZoneFstCh)
+					if (false && treeNodeItem.Type == typeof(ChannelForm) && treeNodeItem.Index + 1 == ZoneForm.data.FstZoneFstCh)
 					{
 						MessageBox.Show(Settings.dicCommon["FirstChNotDelete"]);
 					}
@@ -2146,8 +2384,8 @@ namespace DMR
                         if (treeNodeItem.Type == typeof(ZoneForm))
                         {
                             ZoneForm.CompactZones();
-                            parentNode.Nodes.Clear();
-                            this.InitZones(parentNode);
+                        //    parentNode.Nodes.Clear();
+                        //    this.InitZones(parentNode);
                         }
                     }
 				}
@@ -2402,17 +2640,17 @@ namespace DMR
 
 		private void tsmiSetting_DropDownOpening(object sender, EventArgs e)
 		{
-			this.tsmiDmrContact.Visible = !ContactForm.data.ListIsEmpty;
+			this.tsmiDmrContacts.Visible = !ContactForm.data.ListIsEmpty;
 			this.tsmiZone.Visible = !ZoneForm.data.ListIsEmpty;
 			this.tsmiScanList.Visible = !NormalScanForm.data.ListIsEmpty;
 			this.tsmiEmgSystem.Visible = !EmergencyForm.data.ListIsEmpty;
 			this.tsmiGrpRxList.Visible = !RxGroupListForm.data.ListIsEmpty;
-			this.tsmiCh.Visible = !ChannelForm.data.ListIsEmpty;
+			this.tsmiChannels.Visible = !ChannelForm.data.ListIsEmpty;
 		}
 
 		private void loadDefaultOrInitialFile(string overRideWithFile=null)
 		{
-			string text = Application.StartupPath + "\\Default.dat";
+			string text = Application.StartupPath + "\\" + DEFAULT_DATA_FILE_NAME;
 			if (overRideWithFile != null)
 			{
 				text = overRideWithFile;
@@ -2423,7 +2661,9 @@ namespace DMR
 				byte[] eerom = File.ReadAllBytes(text);
 				this.closeAllForms();
 				MainForm.ByteToData(eerom);
+
 				this.InitTree();
+				this.Text = getMainTitleStub();
 			}
 		}
 
@@ -2433,28 +2673,50 @@ namespace DMR
 			{
 				this.loadDefaultOrInitialFile();
 				MainForm.CurFileName = "";
+				IniFileUtils.WriteProfileString("Setup", "LastFilePath", "");
 			}
 		}
 
 		private void tsbtnSave_Click(object sender, EventArgs e)
 		{
-			string text = Application.StartupPath + "\\Data";
-			if (!Directory.Exists(text))
+			string initialDirectory;
+			//string text = Application.StartupPath + "\\Data";
+		
+			string lastFileName = IniFileUtils.getProfileStringWithDefault("Setup", "LastFilePath", "");
+			try
 			{
-				Directory.CreateDirectory(text);
+				if (lastFileName == "")
+				{
+					initialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+				}
+				else
+				{
+					initialDirectory = Path.GetDirectoryName(lastFileName);//Application.StartupPath + "\\Data"); 
+				}
 			}
+			catch (Exception)
+			{
+				initialDirectory = "";
+			}
+
+
 			try
 			{
 				if (string.IsNullOrEmpty(MainForm.CurFileName))
 				{
 					//Console.WriteLine(GeneralSetForm.data.RadioName);
+#if OpenGD77
+					this.sfdMain.FileName = GeneralSetForm.data.RadioName + "_" + DateTime.Now.ToString("MMdd_HHmmss") + ".g77";
+#elif CP_VER_3_1_X
 					this.sfdMain.FileName = GeneralSetForm.data.RadioName + "_" +  DateTime.Now.ToString("MMdd_HHmmss") + ".dat";
-					this.sfdMain.InitialDirectory = text;
+#endif
+
+					this.sfdMain.InitialDirectory = initialDirectory;
 				}
 				else
 				{
 					this.sfdMain.InitialDirectory = Path.GetDirectoryName(MainForm.CurFileName);
-					this.sfdMain.FileName = Path.GetFileName(MainForm.CurFileName);
+					this.sfdMain.FileName = Path.GetFileNameWithoutExtension(MainForm.CurFileName)+".g77";
 				}
 				this.method_3();
 				DialogResult dialogResult = this.sfdMain.ShowDialog();
@@ -2464,8 +2726,10 @@ namespace DMR
 					Buffer.BlockCopy(Settings.CUR_MODEL, 0, array, 0, 8);
 					File.WriteAllBytes(this.sfdMain.FileName, array);
 					MainForm.CurFileName = this.sfdMain.FileName;
+
 					MessageBox.Show(Settings.dicCommon["SaveSuccessfully"]);
 					IniFileUtils.WriteProfileString("Setup", "LastFilePath", this.sfdMain.FileName);
+					this.Text = getMainTitleStub() + " " + MainForm.CurFileName;
 				}
 			}
 			catch (Exception ex)
@@ -2474,33 +2738,61 @@ namespace DMR
 			}
 		}
 
+		private void openCodeplugFile(string fileName)
+		{
+			int index = 0;
+			byte[] array = File.ReadAllBytes(fileName);
+			bool test1 = !array.Take(8).All(MainForm.smethod_1);
+			bool test2 = !array.Take(8).All((byte x) => x == Settings.CUR_MODEL[index++]);// RC. Note. Had to change preincrement to post increment
+
+			if (test1 && test2)
+			{
+				MessageBox.Show(Settings.dicCommon["Model does not match"]);
+				IniFileUtils.WriteProfileString("Setup", "LastFilePath", "");
+			}
+			else
+			{
+				//MessageBox.Show(Settings.dicCommon["OpenSuccessfully"]);
+				MainForm.CurFileName = fileName;
+				IniFileUtils.WriteProfileString("Setup", "LastFilePath", fileName);
+				this.closeAllForms();
+
+#if OpenGD77
+				if (!checkZonesFor80Channels(array))
+				{
+					convertTo80ChannelZoneCodeplug(array);	
+				}
+#endif    
+				MainForm.ByteToData(array,true);
+				this.InitTree();
+				this.Text = getMainTitleStub() + " " + fileName;
+			}
+		}
+
 		private void tsbtnOpen_Click(object sender, EventArgs e)
 		{
 			try
 			{
-				this.ofdMain.InitialDirectory = Path.GetDirectoryName(IniFileUtils.smethod_4("Setup", "LastFilePath", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)));//Application.StartupPath + "\\Data"); 
-
-				DialogResult dialogResult = this.ofdMain.ShowDialog();
-				if (dialogResult == DialogResult.OK && !string.IsNullOrEmpty(this.ofdMain.FileName))
+				string lastFileName = IniFileUtils.getProfileStringWithDefault("Setup", "LastFilePath", "");
+				try
 				{
-					int index = 0;
-					byte[] array = File.ReadAllBytes(this.ofdMain.FileName);
-                    bool test1 = !array.Take(8).All(MainForm.smethod_1);
-                    bool test2 = !array.Take(8).All((byte x) => x == Settings.CUR_MODEL[index++]);// RC. Note. Had to change preincrement to post increment
-                    
-                    if (test1 && test2 )
+					if (null == lastFileName || "" == lastFileName)
 					{
-						MessageBox.Show(Settings.dicCommon["Model does not match"]);
+						this.ofdMain.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 					}
 					else
 					{
-						//MessageBox.Show(Settings.dicCommon["OpenSuccessfully"]);
-						MainForm.CurFileName = this.ofdMain.FileName;
-						IniFileUtils.WriteProfileString("Setup", "LastFilePath", this.ofdMain.FileName);
-						this.closeAllForms();
-						MainForm.ByteToData(array);
-						this.InitTree();
+						this.ofdMain.InitialDirectory = Path.GetDirectoryName(lastFileName);//Application.StartupPath + "\\Data"); 
 					}
+				}
+				catch (Exception)
+				{
+					this.ofdMain.InitialDirectory = "";
+				}
+				DialogResult dialogResult = this.ofdMain.ShowDialog();
+				if (dialogResult == DialogResult.OK && !string.IsNullOrEmpty(this.ofdMain.FileName))
+				{
+					openCodeplugFile(this.ofdMain.FileName);
 				}
 			}
 			catch (Exception ex)
@@ -2586,7 +2878,7 @@ namespace DMR
 			}
 		}
 
-		private void tsmiSignaling_Click(object sender, EventArgs e)
+		private void tsmiSignalingSystem_Click(object sender, EventArgs e)
 		{
 			TreeNode treeNode = this.method_9(typeof(SignalingBasicForm), this.tvwMain.Nodes);
 			if (treeNode != null)
@@ -2631,9 +2923,9 @@ namespace DMR
 			}
 		}
 
-		private void tsmiDmrContact_Click(object sender, EventArgs e)
+		private void tsmiDmrContacts_Click(object sender, EventArgs e)
 		{
-			TreeNode treeNode = this.method_9(typeof(ContactForm), this.tvwMain.Nodes);
+			TreeNode treeNode = this.method_9(typeof(ContactsForm), this.tvwMain.Nodes);
 			if (treeNode != null)
 			{
 				this.method_7(treeNode, true);
@@ -2649,7 +2941,7 @@ namespace DMR
 			}
 		}
 
-		private void tsmiZone_Click(object sender, EventArgs e)
+		private void tsmiZoneBasic_Click(object sender, EventArgs e)
 		{
 			TreeNode treeNode = this.method_9(typeof(ZoneBasicForm), this.tvwMain.Nodes);
 			if (treeNode != null)
@@ -2667,16 +2959,16 @@ namespace DMR
 			}
 		}
 
-		private void tsmiCh_Click(object sender, EventArgs e)
+		private void tsmiChannels_Click(object sender, EventArgs e)
 		{
-			TreeNode treeNode = this.method_9(typeof(ChannelForm), this.tvwMain.Nodes);
+			TreeNode treeNode = this.method_9(typeof(ChannelsForm), this.tvwMain.Nodes);
 			if (treeNode != null)
 			{
 				this.method_7(treeNode, true);
 			}
 		}
 
-		private void tsmiScan_Click(object sender, EventArgs e)
+		private void tsmiScanBasic_Click(object sender, EventArgs e)
 		{
 			TreeNode treeNode = this.method_9(typeof(ScanBasicForm), this.tvwMain.Nodes);
 			if (treeNode != null)
@@ -2694,39 +2986,170 @@ namespace DMR
 			}
 		}
 
+		private void tsmiVfoA_Click(object sender, EventArgs e)
+		{
+			TreeNode treeNode = this.GetTreeNodeByTypeAndIndex(typeof(VfoForm), 0,this.tvwMain.Nodes);
+			if (treeNode != null)
+			{
+				this.method_7(treeNode, true);
+			}
+		}
+
+		private void tsmiVfoB_Click(object sender, EventArgs e)
+		{
+			TreeNode treeNode = this.GetTreeNodeByTypeAndIndex(typeof(VfoForm), 1,this.tvwMain.Nodes);
+			if (treeNode != null)
+			{
+				this.method_7(treeNode, true);
+			}
+		}
+
+
+
+		private void tsbtnContactsDownload_Click(object sender, EventArgs e)
+		{
+			this.closeAllForms();
+			DownloadContactsForm dlf = new DownloadContactsForm();
+			dlf.mainForm = this;
+			TreeNode treeNode = this.method_9(typeof(ContactsForm), this.tvwMain.Nodes);
+			dlf.treeNode = treeNode;
+			try
+			{
+				dlf.ShowDialog();
+			}
+			catch (Exception)
+			{
+				Cursor.Current = Cursors.Default;
+				MessageBox.Show(Settings.dicCommon["UnableDownloadFromInternet"]);
+				return;
+			}
+		}
+
+		private void tsbtnDMRID_Click(object sender, EventArgs e)
+		{
+			this.closeAllForms();
+
+			DMRIDForm dmrIdForm = new DMRIDForm();
+			dmrIdForm.Show();
+			return;
+		}
+
+
+		private void tsbtnCalibration_Click(object sender, EventArgs e)
+		{
+			this.closeAllForms();
+
+			CalibrationForm cf = new CalibrationForm();
+			cf.StartPosition = FormStartPosition.CenterParent;
+			cf.ShowDialog();
+		}
+
+		private void openGD77Form(OpenGD77Form.CommsAction buttonAction)
+		{
+			/*
+			String gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77");
+
+			// If ths standrd port name can't be found so see if we have as saved one
+			if (gd77CommPort == null)
+			{
+				string lastCommPort = IniFileUtils.getProfileStringWithDefault("Setup", "LastCommPort", "");
+				if (lastCommPort != "")
+				{
+					gd77CommPort = SetupDiWrap.ComPortNameFromFriendlyNamePrefix(lastCommPort);
+				}
+			}
+
+			// if no port found so far, open the dialog to let the user select the port
+			if (gd77CommPort == null)
+			{
+				CommPortSelector cps = new CommPortSelector();
+				if (DialogResult.OK == cps.ShowDialog())
+				{
+					gd77CommPort = cps.SelectedPort;
+					IniFileUtils.WriteProfileString("Setup", "LastCommPort", gd77CommPort);// assume they selected something useful !
+				}
+
+				//MessageBox.Show("Please connect the GD-77 running OpenGD77 firmware, and try again.", "OpenGD77 radio not detected.");
+			}
+			*/
+			//if (gd77CommPort != null)
+			{
+				this.closeAllForms();
+				OpenGD77Form cf = new OpenGD77Form(buttonAction);
+				cf.StartPosition = FormStartPosition.CenterParent;
+				cf.ShowDialog();
+				InitTree();
+			}
+		}
+		private void tsmiOpenGD77_Click(object sender, EventArgs e)
+		{
+			openGD77Form(OpenGD77Form.CommsAction.NONE);
+		}
+
+		private void tsmiFirmwareLoader_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog openFileDialog = new OpenFileDialog();
+			openFileDialog.Filter = "firmware files|*.sgl";
+			openFileDialog.InitialDirectory = IniFileUtils.getProfileStringWithDefault("Setup", "LastFirmwareLocation", null);
+			if (openFileDialog.ShowDialog() == DialogResult.OK && openFileDialog.FileName != null)
+			{
+				IniFileUtils.WriteProfileString("Setup", "LastFirmwareLocation", Path.GetDirectoryName(openFileDialog.FileName)); 
+				FirmwareLoaderUI firmwareLoaderUI = new FirmwareLoaderUI(openFileDialog.FileName);
+				firmwareLoaderUI.ShowDialog();
+			}
+		}
+		
 		private void tsbtnRead_Click(object sender, EventArgs e)
 		{
-            DialogResult result = MessageBox.Show(Settings.dicCommon["codePlugReadConfirm"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo);
-            if (result == DialogResult.Yes)
-            {
-                this.closeAllForms();
-                CommPrgForm commPrgForm = new CommPrgForm();
-                commPrgForm.StartPosition = FormStartPosition.CenterParent;
-                commPrgForm.IsRead = true;
-                commPrgForm.ShowDialog();
-                if (commPrgForm.IsSucess)
-                {
-                    this.InitTree();
-                }
-            }
+
+			if (SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77") != null)
+			{
+				openGD77Form(OpenGD77Form.CommsAction.READ_CODEPLUG);
+			}
+			else
+			{
+				DialogResult result = MessageBox.Show(Settings.dicCommon["codePlugReadConfirm"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo);
+				if (result == DialogResult.Yes)
+				{
+					this.closeAllForms();
+					CommPrgForm commPrgForm = new CommPrgForm(false);
+					commPrgForm.StartPosition = FormStartPosition.CenterParent;
+					//commPrgForm.IsRead = true;
+					CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.codeplugRead;
+					commPrgForm.ShowDialog();
+					if (commPrgForm.IsSucess)
+					{
+						this.InitTree();
+					}
+				}
+			}
 		}
 
 		private void tsbtnWrite_Click(object sender, EventArgs e)
 		{
-            DialogResult result = MessageBox.Show(Settings.dicCommon["codePlugWriteConfirm"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo);
-            if (result == DialogResult.Yes)
-            {
-                if (base.ActiveMdiChild != null)
-                {
-                    base.ActiveMdiChild.ValidateChildren();
-                }
-                GeneralSetForm.data.KillState = 0;
-                this.method_3();
-                CommPrgForm commPrgForm = new CommPrgForm();
-                commPrgForm.StartPosition = FormStartPosition.CenterParent;
-                commPrgForm.IsRead = false;
-                commPrgForm.ShowDialog();
-            }
+			if (SetupDiWrap.ComPortNameFromFriendlyNamePrefix("OpenGD77") != null)
+			{
+				openGD77Form(OpenGD77Form.CommsAction.WRITE_CODEPLUG);
+			}
+			else
+			{
+				DialogResult result = MessageBox.Show(Settings.dicCommon["codePlugWriteConfirm"], Settings.dicCommon["pleaseConfirm"], MessageBoxButtons.YesNo);
+				if (result == DialogResult.Yes)
+				{
+					if (base.ActiveMdiChild != null)
+					{
+						base.ActiveMdiChild.ValidateChildren();
+					}
+					GeneralSetForm.data.KillState = 0;
+					this.method_3();
+					CodeplugComms.CommunicationMode = CodeplugComms.CommunicationType.codeplugWrite;
+					CommPrgForm commPrgForm = new CommPrgForm(false);
+					commPrgForm.StartPosition = FormStartPosition.CenterParent;
+					//commPrgForm.IsRead = false;
+
+					commPrgForm.ShowDialog();
+				}
+			}
 		}
 
 		/* Roger Clark. 
@@ -2821,7 +3244,8 @@ namespace DMR
 			ToolStripMenuItem toolStripMenuItem = sender as ToolStripMenuItem;
 			string text = toolStripMenuItem.Tag.ToString();
 			IniFileUtils.WriteProfileString("Setup", "Language", Path.GetFileName(text));
-			Settings.smethod_1(text);
+			//Settings.smethod_1(text);
+			Settings.setLanguageXMLFile(text);
 			Settings.smethod_3(Path.ChangeExtension(text, "chm"));
 			Settings.smethod_76("Read", ref Settings.SZ_READ);
 			Settings.smethod_68(this);
@@ -2839,11 +3263,14 @@ namespace DMR
 			{
 				"Read"
 			});
+			/*
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.Load(Settings.smethod_0());
+			*/
+
 			MainForm.dicTree.Clear();
 			string xpath = "/Resource/MainForm/TreeView/TreeNode";
-			XmlNodeList xmlNodeList = xmlDocument.SelectNodes(xpath);
+			XmlNodeList xmlNodeList = Settings.languageXML.SelectNodes(xpath);
 			foreach (XmlNode item in xmlNodeList)
 			{
 				string value = item.Attributes["Id"].Value;
@@ -2854,7 +3281,7 @@ namespace DMR
 			List<ToolStripMenuItem> list2 = this.mnsMain.smethod_7();
 			Dictionary<string, string> dicMenuItem = new Dictionary<string, string>();
 			xpath = "/Resource/MainForm/MenuStrip/MenuItem";
-			xmlNodeList = xmlDocument.SelectNodes(xpath);
+			xmlNodeList = Settings.languageXML.SelectNodes(xpath);
 			foreach (XmlNode item2 in xmlNodeList)
 			{
 				string value3 = item2.Attributes["Id"].Value;
@@ -2871,7 +3298,7 @@ namespace DMR
 			List<ToolStripItem> list3 = this.tsrMain.smethod_10();
 			Dictionary<string, string> dicToolItem = new Dictionary<string, string>();
 			xpath = "/Resource/MainForm/ToolStrip/ToolItem";
-			xmlNodeList = xmlDocument.SelectNodes(xpath);
+			xmlNodeList = Settings.languageXML.SelectNodes(xpath);
 			foreach (XmlNode item3 in xmlNodeList)
 			{
 				string value5 = item3.Attributes["Id"].Value;
@@ -2891,31 +3318,31 @@ namespace DMR
 		public static byte[] DataToByte()
 		{
 			byte[] array = new byte[Settings.EEROM_SPACE];
-			array.smethod_0((byte)255);
+			array.Fill((byte)255);
 			MainForm.DataVerify();
-			byte[] array2 = Settings.smethod_61(GeneralSetForm.data, Marshal.SizeOf(GeneralSetForm.data.GetType()));
+			byte[] array2 = Settings.objectToByteArray(GeneralSetForm.data, Marshal.SizeOf(GeneralSetForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_GENERAL_SET, array2.Length);
-			array2 = Settings.smethod_61(DeviceInfoForm.data, Marshal.SizeOf(DeviceInfoForm.data.GetType()));
+			array2 = Settings.objectToByteArray(DeviceInfoForm.data, Marshal.SizeOf(DeviceInfoForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_DEVICE_INFO, array2.Length);
-			array2 = Settings.smethod_61(ButtonForm.data, Marshal.SizeOf(ButtonForm.data.GetType()));
+			array2 = Settings.objectToByteArray(ButtonForm.data, Marshal.SizeOf(ButtonForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_BUTTON, array2.Length);
-			array2 = Settings.smethod_61(ButtonForm.data1, Marshal.SizeOf(ButtonForm.data1.GetType()));
+			array2 = Settings.objectToByteArray(ButtonForm.data1, Marshal.SizeOf(ButtonForm.data1.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_ONE_TOUCH, array2.Length);
-			array2 = Settings.smethod_61(TextMsgForm.data, Marshal.SizeOf(TextMsgForm.data.GetType()));
+			array2 = Settings.objectToByteArray(TextMsgForm.data, Marshal.SizeOf(TextMsgForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_TEXT_MSG, array2.Length);
-			array2 = Settings.smethod_61(EncryptForm.data, Marshal.SizeOf(EmergencyForm.data.GetType()));
+			array2 = Settings.objectToByteArray(EncryptForm.data, Marshal.SizeOf(EncryptForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_ENCRYPT, array2.Length);
-			array2 = Settings.smethod_61(SignalingBasicForm.data, Marshal.SizeOf(SignalingBasicForm.data.GetType()));
+			array2 = Settings.objectToByteArray(SignalingBasicForm.data, Marshal.SizeOf(SignalingBasicForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_SIGNALING_BASIC, array2.Length);
-			array2 = Settings.smethod_61(DtmfForm.data, Marshal.SizeOf(DtmfForm.data.GetType()));
+			array2 = Settings.objectToByteArray(DtmfForm.data, Marshal.SizeOf(DtmfForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_DTMF_BASIC, array2.Length);
-			array2 = Settings.smethod_61(EmergencyForm.data, Marshal.SizeOf(EmergencyForm.data.GetType()));
+			array2 = Settings.objectToByteArray(EmergencyForm.data, Marshal.SizeOf(EmergencyForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_EMG_SYSTEM, array2.Length);
-			array2 = Settings.smethod_61(ContactForm.data, Marshal.SizeOf(ContactForm.data.GetType()));
+			array2 = Settings.objectToByteArray(ContactForm.data, Marshal.SizeOf(ContactForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_DMR_CONTACT_EX, array2.Length);
-			array2 = Settings.smethod_61(DtmfContactForm.data, Marshal.SizeOf(DtmfContactForm.data.GetType()));
+			array2 = Settings.objectToByteArray(DtmfContactForm.data, Marshal.SizeOf(DtmfContactForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_DTMF_CONTACT, array2.Length);
-			array2 = Settings.smethod_61(RxGroupListForm.data, Marshal.SizeOf(RxGroupListForm.data.GetType()));
+			array2 = Settings.objectToByteArray(RxGroupListForm.data, Marshal.SizeOf(RxGroupListForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_RX_GRP_LIST_EX, array2.Length);
 			ZoneForm.basicData.Verify();
 			array[Settings.ADDR_ZONE_BASIC] = ZoneForm.data.ZoneIndex[0];
@@ -2925,29 +3352,29 @@ namespace DMR
 			Array.Copy(array2, 0, array, Settings.ADDR_ZONE_LIST, array2.Length);
 			array2 = ChannelForm.data.ToEerom(0);
 			Array.Copy(array2, 0, array, Settings.ADDR_CHANNEL, array2.Length);
-			array2 = Settings.smethod_61(ScanBasicForm.data, Marshal.SizeOf(ScanBasicForm.data.GetType()));
+			array2 = Settings.objectToByteArray(ScanBasicForm.data, Marshal.SizeOf(ScanBasicForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_SCAN, array2.Length);
-			array2 = Settings.smethod_61(NormalScanForm.data, Marshal.SizeOf(NormalScanForm.data.GetType()));
+			array2 = Settings.objectToByteArray(NormalScanForm.data, Marshal.SizeOf(NormalScanForm.data.GetType()));
 			Array.Copy(array2, 0, array, Settings.ADDR_SCAN_LIST, array2.Length);
-			array2 = Settings.smethod_61(BootItemForm.data, Settings.SPACE_BOOT_ITEM);
+			array2 = Settings.objectToByteArray(BootItemForm.data, Settings.SPACE_BOOT_ITEM);
 			Array.Copy(array2, 0, array, Settings.ADDR_BOOT_ITEM, array2.Length);
-			array2 = Settings.smethod_61(DigitalKeyContactForm.data, Settings.SPACE_DIGITAL_KEY_CONTACT);
+			array2 = Settings.objectToByteArray(DigitalKeyContactForm.data, Settings.SPACE_DIGITAL_KEY_CONTACT);
 			Array.Copy(array2, 0, array, Settings.ADDR_DIGITAL_KEY_CONTACT, Settings.SPACE_DIGITAL_KEY_CONTACT);
-			array2 = Settings.smethod_61(MenuForm.data, Settings.SPACE_MENU_CONFIG);
+			array2 = Settings.objectToByteArray(MenuForm.data, Settings.SPACE_MENU_CONFIG);
 			Array.Copy(array2, 0, array, Settings.ADDR_MENU_CONFIG, Settings.SPACE_MENU_CONFIG);
-			array2 = Settings.smethod_61(BootItemForm.dataContent, Settings.SPACE_BOOT_CONTENT);
+			array2 = Settings.objectToByteArray(BootItemForm.dataContent, Settings.SPACE_BOOT_CONTENT);
 			Array.Copy(array2, 0, array, Settings.ADDR_BOOT_CONTENT, Settings.SPACE_BOOT_CONTENT);
-			array2 = Settings.smethod_61(AttachmentForm.data, Settings.SPACE_ATTACHMENT);
+			array2 = Settings.objectToByteArray(AttachmentForm.data, Settings.SPACE_ATTACHMENT);
 			Array.Copy(array2, 0, array, Settings.ADDR_ATTACHMENT, Settings.SPACE_ATTACHMENT);
 			array2 = VfoForm.data.ToEerom();
 			Array.Copy(array2, 0, array, Settings.ADDR_VFO, array2.Length);
 			if (ChannelForm.CurCntCh > 128)
 			{
-				array2 = Settings.smethod_61(ZoneForm.basicData, Marshal.SizeOf(ZoneForm.basicData));
+				array2 = Settings.objectToByteArray(ZoneForm.basicData, Marshal.SizeOf(ZoneForm.basicData));
 				Array.Copy(array2, 0, array, Settings.ADDR_EX_ZONE_BASIC, array2.Length);
-				array2 = Settings.smethod_61(ZoneForm.data, Settings.SPACE_EX_ZONE);
+				array2 = Settings.objectToByteArray(ZoneForm.data, Settings.SPACE_EX_ZONE);
 				Array.Copy(array2, 0, array, Settings.ADDR_EX_ZONE_LIST, array2.Length);
-				array2 = Settings.smethod_61(EmergencyForm.dataEx, Marshal.SizeOf(EmergencyForm.dataEx));
+				array2 = Settings.objectToByteArray(EmergencyForm.dataEx, Marshal.SizeOf(EmergencyForm.dataEx));
 				Array.Copy(array2, 0, array, Settings.ADDR_EX_EMERGENCY, array2.Length);
 				for (int i = 1; i < 8; i++)
 				{
@@ -2955,11 +3382,135 @@ namespace DMR
 					Array.Copy(array2, 0, array, Settings.ADDR_EX_CH + (i - 1) * ChannelForm.SPACE_CH_GROUP, ChannelForm.SPACE_CH_GROUP);
 				}
 			}
+
+			Array.Copy(OpenGD77Form.CustomData, 0, array, 0x1EE60, OpenGD77Form.CustomData.Length);
+
+		//	Array.Copy(DMRIDFormNew.DMRIDBuffer, 0, array, 0x20000, 0x20000);// Save the CurrentDMRID to the codeplug.
+
 			return array;
 		}
 
+
+
+		//CJD  Check Codeplug and try to determine if it is a V3.1.1 type by looking at the Rx Group Entries. 
+
+		public static bool checkCodeplugVersion311(byte[] cplg)
+		{
+			const UInt16 RxGroupLength306 = 48;				//there are 48 bytes in each Rx Group for V3.0.6
+			byte c;
+
+			for(c=0;c<76;c++)
+			{
+				if (cplg[Settings.ADDR_RX_GRP_LIST_EX + c] > 16)         //if any of the Rx Groups has >15 members it must be V3.1.1
+				{
+					return true;
+				}
+			}
+
+
+			if (cplg[Settings.ADDR_RX_GRP_LIST_EX + 1] > 0)				//if there is a second Rx Group then check where its name is
+			{
+				c = cplg[Settings.ADDR_RX_GRP_LIST_EX + RxListData.CNT_RX_LIST_INDEX + RxGroupLength306 + 1];   //Get the second character of the second Rx Group Name (Assuming it is 3.0.6) 
+				if (c>3)                                        //If it is 3.0.6 it will be an ascii character. If it is 3.1.x then it will be the high byte of a channel number which must be <4. 
+				{
+					return false;								//If it is >3 then it must be 3.0.6
+				}
+			}
+
+			return true;							//if it was neither of the above then we can't tell what version it is so we must assume it is 3.1.x
+		}
+
+		public static bool checkZonesFor80Channels(byte[] codeplug)
+		{
+			// Offset 0x51 into the Zones is the second character in the second zone's name
+			// If this value is non-ascii then this address must contain a channel number, hence this is a 80 channel zone
+
+			if (codeplug[Settings.ADDR_EX_ZONE_LIST + 0x51] <= 0x04)
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public static void convertTo80ChannelZoneCodeplug(byte[] cplg)
+		{
+			MessageBox.Show("Your codeplug uses 16 channel zones.\n\nIt will be automatically updated to 80 channel zones.\n\nPlease check the Zones to ensure the update worked correctly before saving or uploading the codeplug","Codeplug update warning");
+			byte[,] oldZones = new byte[68,48];
+			const int OLD_ZONE_LEN_BYTES = 16 + (16*2);
+			const int NEW_ZONE_LEN_BYTES = 16 + (80*2);
+			int ZONES_START_ADDRESS = Settings.ADDR_EX_ZONE_LIST + 32;
+
+			for (int zone = 0; zone < 68; zone++)
+			{
+				for (int i = 0; i < 48; i++)
+				{
+					oldZones[zone, i] = cplg[ZONES_START_ADDRESS + (zone * OLD_ZONE_LEN_BYTES) + i];			
+				}
+			}
+			for (int zone = 0; zone < 68; zone++)
+			{
+				for (int i = 0; i < OLD_ZONE_LEN_BYTES; i++)
+				{
+					cplg[ZONES_START_ADDRESS + (zone * NEW_ZONE_LEN_BYTES) + i] = oldZones[zone, i];			
+				}
+				// fill all other channel bytes with zeros
+				for (int i = OLD_ZONE_LEN_BYTES; i < NEW_ZONE_LEN_BYTES; i++)
+				{
+					cplg[ZONES_START_ADDRESS + (zone * NEW_ZONE_LEN_BYTES) + i] = 0x00;
+				}
+			}
+		}
+
+
+		//CJD New function to convert from V3.1.1 to 3.0.6 format
+		public static void convertCodeplug(byte[] cplg)
+		{
+			MessageBox.Show(Settings.dicCommon["CodeplugUpgradeNotice"]);
+			byte[,] rxgroups= new byte[128,48];
+			int p;
+			int i;
+			const UInt32 RxGroupAddOffset = 0x80;
+
+			for (p=0;p<128;p++)
+			{
+				for(i=0;i<48;i++)
+				{
+					rxgroups[p, i] = cplg[Settings.ADDR_RX_GRP_LIST_EX + RxGroupAddOffset + p * 48 + i];			//copy each 3.0.6 Rx group into temporary array
+				}
+
+			}
+
+			for (p = 0; p < 76; p++)
+			{
+				for (i = 0; i < 48; i++)
+				{
+					cplg[Settings.ADDR_RX_GRP_LIST_EX + RxGroupAddOffset + p * 80 + i] = rxgroups[p, i];         //copy each Rx group back into 3.1.x location
+				}
+
+				for(i=48;i<80;i++)
+				{
+					cplg[Settings.ADDR_RX_GRP_LIST_EX + RxGroupAddOffset + p * 80 + i] = 0;						//zero any entries above first 16
+				}
+			}
+
+			i = 0;
+			for(p=76;p<128;p++)
+			{
+				if (cplg[Settings.ADDR_RX_GRP_LIST_EX + p] > 0) i++;					//Count any rxgroups above 76
+				cplg[Settings.ADDR_RX_GRP_LIST_EX + p] = 0;							//Remove any indexes above 76 
+			}
+
+			if(i>0)
+			{
+				MessageBox.Show(Settings.dicCommon["CodeplugUpgradeWarningToManyRxGroups"]);
+			}
+
+		}
+
+
+
 		// This function reads the binary data e.g codeplug file and stores the data into the internal storage structures
-		public static void ByteToData(byte[] eerom)
+		public static void ByteToData(byte[] eerom, bool isFromFile = false)
 		{
 			byte[] array = new byte[Settings.SPACE_DEVICE_INFO];
 			Array.Copy(eerom, Settings.ADDR_DEVICE_INFO, array, 0, array.Length);
@@ -3000,7 +3551,7 @@ namespace DMR
 			DtmfContactForm.data = (DtmfContactForm.DtmfContact)Settings.smethod_62(array, DtmfContactForm.data.GetType());
 			array = new byte[Settings.SPACE_RX_GRP_LIST];
 			Array.Copy(eerom, Settings.ADDR_RX_GRP_LIST_EX, array, 0, array.Length);
-			RxGroupListForm.data = (RxGroupListForm.RxList)Settings.smethod_62(array, RxGroupListForm.data.GetType());
+			RxGroupListForm.data = (RxListData)Settings.smethod_62(array, RxGroupListForm.data.GetType());
 			ZoneForm.data.ZoneIndex[0] = eerom[Settings.ADDR_ZONE_BASIC];
 			ZoneForm.basicData.CurZone = eerom[Settings.ADDR_ZONE_BASIC + 1];
 			ZoneForm.basicData.MainCh = eerom[Settings.ADDR_ZONE_BASIC + 2];
@@ -3059,6 +3610,20 @@ namespace DMR
 			{
 				MessageBox.Show(ex.Message);
 			}
+
+			OpenGD77Form.LoadCustomData(eerom);
+
+
+/*
+			if (isFromFile && eerom.Length == 0x40000)
+			{
+				Array.Copy(eerom, 0x20000, DMRIDFormNew.DMRIDBuffer, 0, 0x20000);
+			}
+			else
+			{
+				DMRIDFormNew.ClearStaticData();
+			}
+ */
 		}
 
 		public static void DataVerify()
@@ -3251,8 +3816,8 @@ namespace DMR
 			this.lstTreeNodeItem.Add(new TreeNodeItem(null, null, null, 0, -1, 17, null));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(null, typeof(DtmfContactForm), null, 0, -1, 49, null));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroupContact, typeof(ContactsForm), typeof(ContactForm), 1024, -1, 17, ContactForm.data));
-			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, null, typeof(RxGroupListForm), 128, -1, 17, RxGroupListForm.data));
-			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, typeof(ZoneBasicForm), typeof(ZoneForm), 250, -1, 16, ZoneForm.data));
+			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, null, typeof(RxGroupListForm), RxListData.CNT_RX_LIST, -1, 17, RxGroupListForm.data));
+			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, typeof(ZoneBasicForm), typeof(ZoneForm), ZoneForm.NUM_ZONES, -1, 16, ZoneForm.data));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, typeof(ChannelsForm), typeof(ChannelForm), ChannelForm.CurCntCh, -1, 17, ChannelForm.data));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(this.cmsGroup, typeof(ScanBasicForm), typeof(NormalScanForm), 64, -1, 16, NormalScanForm.data));
 			this.lstTreeNodeItem.Add(new TreeNodeItem(null, null, null, 0, -1, 17, null));
@@ -3273,6 +3838,8 @@ namespace DMR
 				}
 				this.lstTreeNodeItem.Add(new TreeNodeItem(null, typeof(VfoForm), null, 2, i, num, VfoForm.data));
 			}
+			// Add new DMR-ID section
+//			this.lstTreeNodeItem.Add(new TreeNodeItem(null, typeof(DMRIDForm), null, 0, -1, 19, null));// 19 is the icon number
 		}
 
 		private DataTable method_19()
@@ -3303,6 +3870,7 @@ namespace DMR
 			dataTable.Rows.Add("0016", "VFO", "00");
 			dataTable.Rows.Add("001600", "VFOA", "0016");
 			dataTable.Rows.Add("001601", "VFOB", "0016");
+//			dataTable.Rows.Add("0017", "DMR-ID", "00");// DMRID
 			return dataTable;
 		}
 
@@ -3355,6 +3923,20 @@ namespace DMR
 			this.InitChannels(parentNode);
 			parentNode = this.method_9(typeof(ScanBasicForm), this.tvwMain.Nodes);
 			this.InitScans(parentNode);
+		}
+
+		public void InitChannelsImportNodes()
+		{
+			TreeNode parentNode = this.method_9(typeof(ContactsForm), this.tvwMain.Nodes);
+			this.InitDigitContacts(parentNode);
+			parentNode = this.method_8(typeof(RxGroupListForm), this.tvwMain.Nodes);
+			this.InitRxGroupLists(parentNode);
+			parentNode = this.method_9(typeof(ChannelsForm), this.tvwMain.Nodes);
+			this.InitChannels(parentNode);
+			parentNode = this.method_9(typeof(ScanBasicForm), this.tvwMain.Nodes);
+			this.InitScans(parentNode);
+			parentNode = this.method_9(typeof(ZoneBasicForm), this.tvwMain.Nodes);
+			this.InitZones(parentNode);
 		}
 
 		public void WriteXml(List<ToolStripItem> lstMenuItem)

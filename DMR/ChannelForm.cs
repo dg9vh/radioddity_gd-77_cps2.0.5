@@ -128,66 +128,79 @@ namespace DMR
 		{
 			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
 			private byte[] name;
-
 			private uint rxFreq;
-
 			private uint txFreq;
-
 			private byte chMode;
-
 			private byte rxRefFreq;
-
 			private byte txRefFreq;
-
 			private byte tot;
-
 			private byte totRekey;
-
 			private byte admitCriteria;
-
 			private byte rssiThreshold;
-
 			private byte scanList;
-
 			private ushort rxTone;
-
 			private ushort txTone;
-
 			private byte voiceEmphasis;
-
 			private byte txSignaling;
-
 			private byte unmuteRule;
-
 			private byte rxSignaling;
-
 			private byte artsInterval;
-
 			private byte encrypt;
-
 			private byte rxColor;
-
 			private byte rxGroupList;
-
 			private byte txColor;
-
 			private byte emgSystem;
-
 			private ushort contact;
-
 			private byte flag1;
-
 			private byte flag2;
-
 			private byte flag3;
-
 			private byte flag4;
-
 			private ushort reserve2;
-
 			private byte reserve;
-
 			private byte sql;
+
+
+			public string ToCSVString(bool includeLabel = false,string delimiter = ",")
+			{
+				string s = String.Empty;
+				if (includeLabel)
+				{
+					s += "Channel" + delimiter;
+				}
+				s += this.Name + delimiter;
+				s += this.RxFreq + delimiter;
+				s += this.TxFreq + delimiter;
+				s += this.ChMode + delimiter;
+				s += this.RxRefFreq + delimiter;
+				s += this.TxRefFreq + delimiter;
+				s += this.Tot + delimiter;
+				s += this.TotRekey + delimiter;
+				s += this.AdmitCriteria + delimiter;
+				s += this.RssiThreshold + delimiter;
+				s += this.ScanList + delimiter;
+				s += this.RxTone + delimiter;
+				s += this.TxTone + delimiter;
+				s += this.VoiceEmphasis + delimiter;
+				s += this.TxSignaling + delimiter;
+				s += this.UnmuteRule + delimiter;
+				s += this.RxSignaling + delimiter;
+				s += this.ArtsInterval + delimiter;
+				s += this.encrypt + delimiter;
+				s += this.RxColor + delimiter;
+				s += this.RxGroupList + delimiter;
+				s += this.TxColor + delimiter;
+				s += this.EmgSystem + delimiter;
+				s += this.Contact + delimiter;
+				s += this.Flag1 + delimiter;
+				s += this.Flag2 + delimiter;
+				s += this.Flag3 + delimiter;
+				s += this.Flag4 + delimiter;
+				s += this.reserve2 + delimiter;
+				s += this.reserve + delimiter;
+				s += this.Sql + delimiter;
+
+				return s;
+			}
 
 			public string Name
 			{
@@ -198,7 +211,7 @@ namespace DMR
 				set
 				{
 					byte[] array = Settings.smethod_23(value);
-					this.name.smethod_0((byte)255);
+					this.name.Fill((byte)255);
 					Array.Copy(array, 0, this.name, 0, Math.Min(array.Length, this.name.Length));
 				}
 			}
@@ -503,6 +516,67 @@ namespace DMR
 				}
 			}
 
+			public String ScanListString
+			{
+				get
+				{
+					if (this.scanList != 0)
+					{
+						return NormalScanForm.data[this.scanList - 1].Name;
+					}
+					else
+					{
+						return Settings.SZ_NONE;
+					}
+				}
+				set
+				{
+					if (value != Settings.SZ_NONE)
+					{
+						for (int i = 0; i < NormalScanForm.data.Count; i++)
+						{
+							if (NormalScanForm.data[i].Name == value)
+							{
+								this.scanList = (byte)(i + 1);
+								return;
+							}
+						}
+						int newScanIndex = NormalScanForm.data.GetMinIndex();
+						if (newScanIndex != -1)
+						{
+							// Scanlist name is not None but no such a scan list exists, so we need to create it
+							NormalScanForm.data.SetName(newScanIndex,value);
+#warning ScanListString NEED TO CHECK WHETHER THIS WORKS
+						}
+						else
+						{
+							MessageBox.Show("Unable to make new scan list (" + value + ")");
+						}
+
+					}
+					else
+					{
+						
+						this.scanList = 0;
+					}
+				}
+			}
+
+			public string GetZoneStringForChannelIndex(int index)
+			{
+				index = index + 1; // first channal is index 1 not zero
+				foreach(ZoneForm.ZoneOne zone in ZoneForm.data.ZoneList)
+				{
+					ushort[] zoneArr = Array.FindAll(zone.ChList, ch => ch == index);
+					if (zoneArr.Length > 0 )
+					{
+						return zone.Name;
+					}
+				}
+				return Settings.SZ_NONE; 
+			}
+
+
 			public string RxTone
 			{
 				get
@@ -772,7 +846,7 @@ namespace DMR
 				}
 			}
 
-			public string RxGroupListS
+			public string RxGroupListString
 			{
 				get
 				{
@@ -780,11 +854,29 @@ namespace DMR
 					{
 						return Settings.SZ_NONE;
 					}
-					if (this.RxGroupList <= 128)
+					if (this.RxGroupList <= RxListData.CNT_RX_LIST)
 					{
 						return RxGroupListForm.data.GetName(this.RxGroupList - 1);
 					}
 					return Settings.SZ_NONE;
+				}
+				set
+				{
+					if (value == Settings.SZ_NONE)
+					{
+						this.RxGroupList = 0;
+					}
+					else
+					{
+						for (int i = 0; i < RxGroupListForm.data.Count; i++)
+						{
+							if (value == RxGroupListForm.data.GetName(i))
+							{
+								this.RxGroupList = i;
+								break;
+							}
+						}
+					}
 				}
 			}
 
@@ -846,7 +938,40 @@ namespace DMR
 				}
 			}
 
-			public string ContactS
+
+			public int ContactType
+			{
+				get
+				{
+					if (this.Contact == 0)
+					{
+						return 0;
+					}
+					if (this.contact <= ContactForm.data.Count)
+					{
+						return ContactForm.data[this.contact-1].CallType;
+					}
+					return 0;
+				}
+			}
+
+			public string ContactIdString
+			{
+				get
+				{
+					if (this.Contact == 0)
+					{
+						return Settings.SZ_NONE;
+					}
+					if (this.contact <= ContactForm.data.Count)
+					{
+						return ContactForm.data[this.contact-1].CallId;
+					}
+					return Settings.SZ_NONE;
+				}
+			}
+
+			public string ContactString
 			{
 				get
 				{
@@ -859,6 +984,25 @@ namespace DMR
 						return ContactForm.data.GetName(this.Contact - 1);
 					}
 					return Settings.SZ_NONE;
+				}
+				set
+				{
+					if (value == Settings.SZ_NONE)
+					{
+						this.Contact = 0;
+					}
+					else
+					{
+						int foundIndex = ContactForm.data.GetIndexForName(value);
+						if (foundIndex != -1)
+						{
+							this.Contact = foundIndex + 1;
+						}
+						else
+						{
+							this.Contact = 0;// No such contact. So all we can do is set to the None contact
+						}
+					}
 				}
 			}
 
@@ -924,7 +1068,7 @@ namespace DMR
 				}
 			}
 
-			public string PowerS
+			public string PowerString
 			{
 				get
 				{
@@ -1040,6 +1184,18 @@ namespace DMR
 				}
 			}
 
+			public string OnlyRxString
+			{
+				get
+				{
+					return OnlyRx ? "Yes":"No";
+				}
+				set
+				{
+					OnlyRx = (value == "Yes") ? true : false;
+				}
+			}
+
 			public int Bandwidth
 			{
 				get
@@ -1054,6 +1210,26 @@ namespace DMR
 				}
 			}
 
+			public String BandwidthString
+			{
+				get
+				{
+					return SZ_BANDWIDTH[Bandwidth];
+				}
+				set
+				{
+					for (int i = 0; i < SZ_BANDWIDTH.Length;i++ )
+					{
+						if (SZ_BANDWIDTH[i] == value)
+						{
+							Bandwidth = i;
+							break;
+						}
+					}
+
+				}
+			}
+
 			public int Squelch
 			{
 				get
@@ -1064,6 +1240,24 @@ namespace DMR
 				{
 					this.flag4 &= 254;
 					this.flag4 |= (byte)(value & 1);
+				}
+			}
+
+			public string SquelchString
+			{
+				get
+				{
+					return SZ_SQUELCH[Squelch];
+				}
+				set
+				{
+					for(int i=0;i<SZ_SQUELCH.Length;i++)
+					{
+						if (value == SZ_SQUELCH[i])
+						{
+							Squelch = i;
+						}
+					}
 				}
 			}
 
@@ -1371,15 +1565,15 @@ namespace DMR
 			{
 				get
 				{
-					if (this.sql >= 0 && this.sql <= 9)
+					if (this.sql >= 0 && this.sql <= 21)
 					{
 						return this.sql;
 					}
-					return 5;
+					return 0;
 				}
 				set
 				{
-					if (value >= 0 && this.sql <= 9)
+					if (value >= 0 && this.sql <= 21)
 					{
 						this.sql = (byte)value;
 					}
@@ -1480,7 +1674,7 @@ namespace DMR
 				}
 				Settings.smethod_11(ref this.rxColor, (byte)0, (byte)15, def.txColor);
 				this.rxColor = this.txColor;
-				if (this.rxGroupList != 0 && this.rxGroupList <= 128)
+				if (this.rxGroupList != 0 && this.rxGroupList <= RxListData.CNT_RX_LIST)
 				{
 					if (!RxGroupListForm.data.DataIsValid(this.rxGroupList - 1))
 					{
@@ -1602,8 +1796,6 @@ namespace DMR
 
 			public Channel()
 			{
-				
-				//base._002Ector();
 				int num = 0;
 				this.chIndex = new byte[128];
 				this.chList = new ChannelOne[1024];
@@ -1651,7 +1843,7 @@ namespace DMR
 
 			public bool DataIsValid(int index)
 			{
-				if (index < 1024)
+				if (index > -1 && index < 1024)
 				{
 					BitArray bitArray = new BitArray(this.chIndex);
 					return bitArray[index];
@@ -1661,7 +1853,7 @@ namespace DMR
 
 			public bool IsGroupCall(int index)
 			{
-				if (index < 1024 && ChannelForm.data.DataIsValid(index) && this.chList[index].ChMode == 1)
+				if (index > -1 && index < 1024 && ChannelForm.data.DataIsValid(index) && this.chList[index].ChMode == 1)
 				{
 					int contact = this.chList[index].Contact;
 					if (contact >= 1 && contact <= ContactForm.data.Count)
@@ -1687,6 +1879,18 @@ namespace DMR
 				EmergencyForm.data.ClearByData(index);
 				EmergencyForm.dataEx.ClearByData(index);
 				NormalScanForm.data.ClearByData(index);
+			}
+			
+			public void ClearIndexAndReset(int index)
+			{
+				/*
+				 * The slot index bit is cleared,
+				 * the Channel's name is set to blank,
+				 * and the channel is populated with the default state.
+				 */
+				this.ClearIndex(index);
+				this.SetName(index, "");
+				this.Default(index);
 			}
 
 			public void ClearByContact(int contactIndex)
@@ -1781,6 +1985,18 @@ namespace DMR
 			public bool NameExist(string name)
 			{
 				return this.chList.Any((ChannelOne x) => x.Name == name);
+			}
+
+			public int FindIndexForName(string name)
+			{
+				for (int i = 0; i < chList.Length; i++)
+				{
+					if (chList[i].Name == name)
+					{
+						return i;
+					}
+				}
+				return -1;
 			}
 
 			public void SetName(int index, string text)
@@ -1899,7 +2115,7 @@ namespace DMR
 
 			public void SetPower(int index, string power)
 			{
-				this.chList[index].PowerS = power;
+				this.chList[index].PowerString = power;
 			}
 
 			public void SetRepeaterSlot(int index, string repeaterSlot)
@@ -1982,7 +2198,7 @@ namespace DMR
 				for (num = 0; num < 128; num++)
 				{
 					num3 = chGroupIndex * 128 + num;
-					byte[] array2 = Settings.smethod_61(this.chList[num3], Marshal.SizeOf(this.chList[num3]));
+					byte[] array2 = Settings.objectToByteArray(this.chList[num3], Marshal.SizeOf(this.chList[num3]));
 					Array.Copy(array2, 0, array, num2, array2.Length);
 					num2 += array2.Length;
 				}
@@ -2071,7 +2287,7 @@ namespace DMR
 		private const int MAX_SQL = 9;
 
 		public const string SZ_SQUELCH_NAME = "Squelch";
-
+		public const string SZ_SQUELCH_LEVEL_NAME = "SquelchLevel";
 		public const string SZ_VOICE_EMPHASIS_NAME = "VoiceEmphasis";
 
 		public const string SZ_STE_NAME = "Ste";
@@ -2131,6 +2347,8 @@ namespace DMR
 		private static readonly string[] SZ_BANDWIDTH;
 
 		private static readonly string[] SZ_SQUELCH;
+
+		private static readonly string[] SZ_SQUELCH_LEVEL;
 
 		private static readonly string[] SZ_VOICE_EMPHASIS;
 
@@ -2393,7 +2611,12 @@ namespace DMR
 		public void SaveData()
 		{
 			int num = Convert.ToInt32(base.Tag);
+			if (num == -1)
+			{
+				return;
+			}
 			int index = num % 1024;
+
 			this.ValidateChildren();
 			ChannelOne value = new ChannelOne(num);
 			if (this.txtName.Focused)
@@ -2456,6 +2679,11 @@ namespace DMR
 		public void DispData()
 		{
 			int num = Convert.ToInt32(base.Tag);
+			if (num == -1)
+			{
+				this.Close();
+				return;
+			}
 			if (!ChannelForm.data.DataIsValid(num))
 			{
 				num = ChannelForm.data.FindNextValidIndex(num);
@@ -2524,7 +2752,7 @@ namespace DMR
 			this.method_13();
 			this.method_14();
 			this.method_15();
-			this.method_16();
+			this.configureNavigationButtons();
 			this.RefreshByUserMode();
             this.ValidateChildren();
 		}
@@ -2538,8 +2766,13 @@ namespace DMR
 			this.nudTotRekey.Enabled &= flag;
 			this.lblArts.Enabled &= flag;
 			this.cmbArts.Enabled &= flag;
+#if OpenGD77
+			this.chkAutoScan.Enabled = true;
+			this.chkLoneWoker.Enabled = true;
+#elif CP_VER_3_1_X
 			this.chkAutoScan.Enabled &= flag;
 			this.chkLoneWoker.Enabled &= flag;
+#endif
 			this.lblAdmitCriteria.Enabled &= flag;
 			this.cmbAdmitCriteria.Enabled &= flag;
 			this.lblKeySwitch.Enabled &= flag;
@@ -2562,6 +2795,7 @@ namespace DMR
 			
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 			ChannelForm.CurCntCh = 1024;
 		}
@@ -2575,6 +2809,7 @@ namespace DMR
 			Settings.smethod_78("AdmitCriterica", ChannelForm.SZ_ADMIT_CRITERICA, name);
 			Settings.smethod_78("AdmitCritericaD", ChannelForm.SZ_ADMIT_CRITERICA_D, name);
 			Settings.smethod_78("Squelch", ChannelForm.SZ_SQUELCH, name);
+			Settings.smethod_78("SquelchLevel", ChannelForm.SZ_SQUELCH_LEVEL, name);
 			Settings.smethod_78("VoiceEmphasis", ChannelForm.SZ_VOICE_EMPHASIS, name);
 			Settings.smethod_78("Ste", ChannelForm.SZ_STE, name);
 			Settings.smethod_78("NonSte", ChannelForm.SZ_NON_STE, name);
@@ -2629,7 +2864,7 @@ namespace DMR
 			Settings.smethod_36(this.nudRssiThreshold, new Class13(80, 124, 1, -1m, 4));
 			Settings.smethod_37(this.cmbChBandwidth, ChannelForm.SZ_BANDWIDTH);
 			Settings.smethod_37(this.cmbSquelch, ChannelForm.SZ_SQUELCH);
-			Settings.smethod_41(this.cmbSql, 0, 9);
+			Settings.smethod_37(this.cmbSql, ChannelForm.SZ_SQUELCH_LEVEL);
 			Settings.smethod_37(this.cmbVoiceEmphasis, ChannelForm.SZ_VOICE_EMPHASIS);
 			Settings.smethod_37(this.cmbSte, ChannelForm.SZ_STE);
 			Settings.smethod_37(this.cmbNonSte, ChannelForm.SZ_NON_STE);
@@ -2871,7 +3106,12 @@ namespace DMR
 
 		private void method_4()
 		{
+
+#if OpenGD77
+			this.chkLoneWoker.Enabled = true;
+#elif CP_VER_3_1_X
 			this.chkLoneWoker.Enabled = (this.cmbEmgSystem.SelectedIndex != 0 && this.cmbChMode.SelectedIndex == 1);
+#endif
 			if (!this.chkLoneWoker.Enabled)
 			{
 				this.chkLoneWoker.Checked = false;
@@ -2933,7 +3173,12 @@ namespace DMR
 
 		private void cmbScanList_SelectedIndexChanged(object sender, EventArgs e)
 		{
+#if OpenGD77
+			this.chkAutoScan.Enabled = true;
+#elif CP_VER_3_1_X
 			this.chkAutoScan.Enabled = (this.cmbScanList.SelectedIndex > 0);
+#endif
+
 		}
 
 		private void BbRiogasSx()
@@ -3202,7 +3447,10 @@ namespace DMR
 		{
 			if (this.cmbChMode.SelectedIndex == 0)
 			{
-				if (this.cmbTxTone.Text == Settings.SZ_NONE)
+				ChannelOne channelOne = ChannelForm.data[(Convert.ToInt32(base.Tag) % 1024)];
+				//Roger Clark cmbToneText is not setup when this funcytion is called				if (this.cmbTxTone.Text == Settings.SZ_NONE)
+				// Also Item [2] should not be removed if the selected value of AdmitCriteria is 2 
+				if (channelOne.TxTone == Settings.SZ_NONE && channelOne.AdmitCriteria!=2)
 				{
 					if (this.cmbAdmitCriteria.Text == ChannelForm.SZ_ADMIT_CRITERICA[2])
 					{
@@ -3344,7 +3592,7 @@ namespace DMR
 			}
 		}
 
-		private void method_16()
+		private void configureNavigationButtons()
 		{
 			this.tsbtnAdd.Enabled = (this.Node.Parent.Nodes.Count != ChannelForm.CurCntCh);
 			this.tsbtnDel.Enabled = (this.Node.Parent.Nodes.Count != 1 && this.Node.Index != 0 && !this.method_17());
@@ -3722,7 +3970,7 @@ namespace DMR
 			this.cmbSql.Name = "cmbSql";
 			this.cmbSql.Size = new Size(119, 24);
 			this.cmbSql.TabIndex = 3;
-			this.cmbSql.Visible = false;
+			this.cmbSql.Visible = true;
 			this.cmbAdmitCriteria.DropDownStyle = ComboBoxStyle.DropDownList;
 			this.cmbAdmitCriteria.FormattingEnabled = true;
 			this.cmbAdmitCriteria.Location = new Point(909, 26);
@@ -3745,13 +3993,13 @@ namespace DMR
 			this.nudRssiThreshold.Size = new Size(120, 23);
 			this.nudRssiThreshold.TabIndex = 22;
 			this.nudRssiThreshold.Visible = false;
-			this.lblSql.Location = new Point(220, 113);
+			this.lblSql.Location = new Point(180, 113);
 			this.lblSql.Name = "lblSql";
-			this.lblSql.Size = new Size(134, 24);
+			this.lblSql.Size = new Size(174, 24);
 			this.lblSql.TabIndex = 2;
-			this.lblSql.Text = "Squelch Level";
+			this.lblSql.Text = "OpenGD77 Squelch Level";
 			this.lblSql.TextAlign = ContentAlignment.MiddleRight;
-			this.lblSql.Visible = false;
+			this.lblSql.Visible = true;
 			this.grpDigit.method_3(true);
 			this.grpDigit.Controls.Add(this.nudTxColor);
 			this.grpDigit.Controls.Add(this.nudRxColor);
@@ -4212,11 +4460,18 @@ namespace DMR
 			this.chkDataPl.UseVisualStyleBackColor = true;
 			this.chkLoneWoker.AutoSize = true;
 			this.chkLoneWoker.Location = new Point(909, 111);
+
+#if OpenGD77
+			this.chkLoneWoker.Name = "chkOpenGD77ScanAllSkip";
+			this.chkLoneWoker.Text = "Scan: All skip";
+#elif CP_VER_3_1_X
 			this.chkLoneWoker.Name = "chkLoneWoker";
+			this.chkLoneWoker.Text = "Lone Worker";
+#endif
 			this.chkLoneWoker.Size = new Size(109, 20);
 			this.chkLoneWoker.TabIndex = 26;
-			this.chkLoneWoker.Text = "Lone Worker";
 			this.chkLoneWoker.UseVisualStyleBackColor = true;
+
 			this.chkVox.AutoSize = true;
 			this.chkVox.Location = new Point(659, 146);
 			this.chkVox.Name = "chkVox";
@@ -4226,10 +4481,19 @@ namespace DMR
 			this.chkVox.UseVisualStyleBackColor = true;
 			this.chkAutoScan.AutoSize = true;
 			this.chkAutoScan.Location = new Point(909, 87);
+#if OpenGD77
+			this.chkAutoScan.Name = "chkOpenGD77ScanZoneSkip";
+#elif CP_VER_3_1_X
 			this.chkAutoScan.Name = "chkAutoScan";
+#endif
+
 			this.chkAutoScan.Size = new Size(92, 20);
 			this.chkAutoScan.TabIndex = 25;
+#if OpenGD77
+			this.chkAutoScan.Text = "Zone skip";
+#elif CP_VER_3_1_X
 			this.chkAutoScan.Text = "Auto Scan";
+#endif
 			this.chkAutoScan.UseVisualStyleBackColor = true;
 			this.cmbChMode.DropDownStyle = ComboBoxStyle.DropDownList;
 			this.cmbChMode.FormattingEnabled = true;
@@ -4447,6 +4711,35 @@ namespace DMR
 				"Tight",
 				"Normal"
 			};
+
+			ChannelForm.SZ_SQUELCH_LEVEL = new string[]
+			{
+				"Disabled",
+				"Open",
+				"5%",
+				"10%",
+				"15%",
+				"20%",
+				"25%",
+				"30%",
+				"35%",
+				"40%",
+				"45%",
+				"50%",
+				"55%",
+				"60%",
+				"65%",
+				"70%",
+				"75%",
+				"80%",
+				"85%",
+				"90%",
+				"95%",
+				"Closed"
+			};
+
+
+
 			ChannelForm.SZ_VOICE_EMPHASIS = new string[4]
 			{
 				"None",

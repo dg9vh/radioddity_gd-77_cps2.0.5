@@ -364,7 +364,7 @@ namespace DMR
 				set
 				{
 					int num = 0;
-					this.pttidUpCode.smethod_0((byte)255);
+					this.pttidUpCode.Fill((byte)255);
 					for (num = 0; num < value.Length; num++)
 					{
 						int num2 = "0123456789ABCD*#\b".IndexOf(value[num]);
@@ -900,6 +900,7 @@ namespace DMR
 			
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

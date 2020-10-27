@@ -92,12 +92,11 @@ namespace DMR
 		private Dictionary<string, string> dicCom;
 
 		public static NumKeyContact data;
+		private DataGridViewComboBoxColumn cmbContact;
 
 		//private IContainer components;
 
 		private DataGridView dgvContact;
-
-		private DataGridViewComboBoxColumn cmbContact;
 
 		public TreeNode Node
 		{
@@ -153,6 +152,7 @@ namespace DMR
 			this.dicCom = new Dictionary<string, string>();
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 
@@ -239,44 +239,51 @@ namespace DMR
 
 		private void InitializeComponent()
 		{
-			DataGridViewCellStyle dataGridViewCellStyle = new DataGridViewCellStyle();
-			this.dgvContact = new DataGridView();
-			this.cmbContact = new DataGridViewComboBoxColumn();
-			((ISupportInitialize)this.dgvContact).BeginInit();
-			base.SuspendLayout();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+			this.dgvContact = new System.Windows.Forms.DataGridView();
+			this.cmbContact = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			((System.ComponentModel.ISupportInitialize)(this.dgvContact)).BeginInit();
+			this.SuspendLayout();
+			// 
+			// dgvContact
+			// 
 			this.dgvContact.AllowUserToAddRows = false;
-			dataGridViewCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-			dataGridViewCellStyle.BackColor = SystemColors.Control;
-			dataGridViewCellStyle.Font = new Font("Arial", 10f, FontStyle.Regular);
-			dataGridViewCellStyle.ForeColor = SystemColors.WindowText;
-			dataGridViewCellStyle.SelectionBackColor = SystemColors.Highlight;
-			dataGridViewCellStyle.SelectionForeColor = SystemColors.HighlightText;
-			dataGridViewCellStyle.WrapMode = DataGridViewTriState.True;
-			this.dgvContact.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle;
-			this.dgvContact.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.dgvContact.Columns.AddRange(this.cmbContact);
-			this.dgvContact.EditMode = DataGridViewEditMode.EditOnEnter;
-			this.dgvContact.Location = new Point(38, 12);
+			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+			dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+			dataGridViewCellStyle1.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+			dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+			dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+			dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+			this.dgvContact.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+			this.dgvContact.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.dgvContact.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cmbContact});
+			this.dgvContact.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+			this.dgvContact.Location = new System.Drawing.Point(38, 12);
 			this.dgvContact.Name = "dgvContact";
 			this.dgvContact.RowHeadersWidth = 150;
 			this.dgvContact.RowTemplate.Height = 23;
-			this.dgvContact.Size = new Size(402, 289);
+			this.dgvContact.Size = new System.Drawing.Size(456, 289);
 			this.dgvContact.TabIndex = 16;
-			this.dgvContact.DataError += this.dgvContact_DataError;
-			this.cmbContact.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
-			this.cmbContact.HeaderText = "Contact";
+			// 
+			// cmbContact
+			// 
+			this.cmbContact.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
+			this.cmbContact.HeaderText = "Menu";
 			this.cmbContact.Name = "cmbContact";
-			base.AutoScaleDimensions = new SizeF(7f, 16f);
-//			base.AutoScaleMode = AutoScaleMode.Font;
-			base.ClientSize = new Size(475, 345);
-			base.Controls.Add(this.dgvContact);
-			this.Font = new Font("Arial", 10f, FontStyle.Regular, GraphicsUnit.Point, 0);
-			base.Name = "DigitalKeyContactForm";
+			this.cmbContact.Width = 300;
+			// 
+			// DigitalKeyContactForm
+			// 
+			this.ClientSize = new System.Drawing.Size(570, 345);
+			this.Controls.Add(this.dgvContact);
+			this.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.Name = "DigitalKeyContactForm";
 			this.Text = "Number Key Quick Contact Access";
-			base.Load += this.DigitalKeyContactForm_Load;
-			base.FormClosing += this.DigitalKeyContactForm_FormClosing;
-			((ISupportInitialize)this.dgvContact).EndInit();
-			base.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.dgvContact)).EndInit();
+			this.ResumeLayout(false);
+
 		}
 
 		static DigitalKeyContactForm()

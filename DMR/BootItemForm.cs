@@ -94,7 +94,7 @@ namespace DMR
 				set
 				{
 					int num = 0;
-					this.bootPwd.smethod_0((byte)255);
+					this.bootPwd.Fill((byte)255);
 					string text = value.PadRight(6, 'F');
 					for (num = 0; num < 3; num++)
 					{
@@ -136,7 +136,7 @@ namespace DMR
 				set
 				{
 					byte[] array = Settings.smethod_23(value);
-					this.booLine1.smethod_0((byte)255);
+					this.booLine1.Fill((byte)255);
 					Array.Copy(array, 0, this.booLine1, 0, Math.Min(array.Length, this.booLine1.Length));
 				}
 			}
@@ -150,7 +150,7 @@ namespace DMR
 				set
 				{
 					byte[] array = Settings.smethod_23(value);
-					this.booLine2.smethod_0((byte)255);
+					this.booLine2.Fill((byte)255);
 					Array.Copy(array, 0, this.booLine2, 0, Math.Min(array.Length, this.booLine2.Length));
 				}
 			}
@@ -398,6 +398,7 @@ namespace DMR
 			
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

@@ -12,339 +12,6 @@ namespace DMR
 {
 	public class RxGroupListForm : DockContent, IDisp
 	{
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		public struct RxListOne
-		{
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-			private byte[] name;
-
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 15)]
-			private ushort[] contactList;
-
-			private ushort reserve;
-
-			public string Name
-			{
-				get
-				{
-					return Settings.smethod_25(this.name);
-				}
-				set
-				{
-					byte[] array = Settings.smethod_23(value);
-					this.name.smethod_0((byte)255);
-					Array.Copy(array, 0, this.name, 0, Math.Min(array.Length, this.name.Length));
-				}
-			}
-
-			public ushort[] ContactList
-			{
-				get
-				{
-					return this.contactList;
-				}
-				set
-				{
-					this.contactList.smethod_0((ushort)0);
-					Array.Copy(value, 0, this.contactList, 0, value.Length);
-				}
-			}
-
-			public byte ValidCount
-			{
-				get
-				{
-					List<ushort> list = new List<ushort>(this.contactList);
-					List<ushort> list2 = list.FindAll(RxListOne.smethod_0);
-					return (byte)list2.Count;
-				}
-			}
-
-			public RxListOne(int index)
-			{
-				
-				this = default(RxListOne);
-				this.name = new byte[16];
-				this.contactList = new ushort[15];
-			}
-
-			public void Verify()
-			{
-				List<ushort> list = new List<ushort>(this.contactList);
-				List<ushort> list2 = list.FindAll(RxListOne.smethod_1);
-				while (list2.Count < this.contactList.Length)
-				{
-					list2.Add(0);
-				}
-				this.contactList = list2.ToArray();
-			}
-
-			[CompilerGenerated]
-			private static bool smethod_0(ushort ushort_0)
-			{
-				if (ushort_0 != 0 && ContactForm.data.DataIsValid(ushort_0 - 1))
-				{
-					return ContactForm.data.IsGroupCall(ushort_0 - 1);
-				}
-				return false;
-			}
-
-			[CompilerGenerated]
-			private static bool smethod_1(ushort ushort_0)
-			{
-				if (ushort_0 != 0 && ContactForm.data.DataIsValid(ushort_0 - 1))
-				{
-					return ContactForm.data.IsGroupCall(ushort_0 - 1);
-				}
-				return false;
-			}
-		}
-
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		public class RxList : IData
-		{
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-			private byte[] rxListIndex;
-
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-			private RxListOne[] rxList;
-
-			public RxListOne this[int index]
-			{
-				get
-				{
-					if (index >= this.Count)
-					{
-						throw new ArgumentOutOfRangeException();
-					}
-					return this.rxList[index];
-				}
-				set
-				{
-					if (index >= this.Count)
-					{
-						throw new ArgumentOutOfRangeException();
-					}
-					this.rxList[index] = value;
-				}
-			}
-
-			public int Count
-			{
-				get
-				{
-					return 128;
-				}
-			}
-
-			public string Format
-			{
-				get
-				{
-					return "GroupList{0}";
-				}
-			}
-
-			public bool ListIsEmpty
-			{
-				get
-				{
-					int num = 0;
-					while (true)
-					{
-						if (num < this.Count)
-						{
-							if (this.DataIsValid(num))
-							{
-								break;
-							}
-							num++;
-							continue;
-						}
-						return true;
-					}
-					return false;
-				}
-			}
-
-			public RxList()
-			{
-				
-				//base._002Ector();
-				int num = 0;
-				this.rxListIndex = new byte[128];
-				this.rxList = new RxListOne[128];
-				for (num = 0; num < this.Count; num++)
-				{
-					this.rxList[num] = new RxListOne(num);
-				}
-			}
-
-			public void Clear()
-			{
-			}
-
-			public int GetContactCntByIndex(int index)
-			{
-				if (index < 128)
-				{
-					if (this.rxListIndex[index] >= 2 && this.rxListIndex[index] <= 16)
-					{
-						return this.rxListIndex[index] - 1;
-					}
-					return 0;
-				}
-				return 0;
-			}
-
-			public void SetRxListIndex(int index, bool add)
-			{
-				if (add)
-				{
-					this.rxListIndex[index] = 1;
-				}
-				else
-				{
-					this.rxListIndex[index] = 0;
-				}
-			}
-
-			public int GetMinIndex()
-			{
-				int num = 0;
-				num = 0;
-				while (true)
-				{
-					if (num < this.Count)
-					{
-						if (this.rxListIndex[num] == 0)
-						{
-							break;
-						}
-						if (this.rxListIndex[num] > 16)
-						{
-							break;
-						}
-						num++;
-						continue;
-					}
-					return -1;
-				}
-				return num;
-			}
-
-			public bool DataIsValid(int index)
-			{
-				if (this.rxListIndex[index] != 0)
-				{
-					return this.rxListIndex[index] <= 16;
-				}
-				return false;
-			}
-
-			public void SetIndex(int index, int value)
-			{
-				this.rxListIndex[index] = (byte)value;
-			}
-
-			public void ClearIndex(int index)
-			{
-				this.rxListIndex[index] = 0;
-				ChannelForm.data.ClearByRxGroup(index);
-			}
-
-			public void ClearByData(int contactIndex)
-			{
-				int num = 0;
-				int num2 = 0;
-				for (num = 0; num < this.Count; num++)
-				{
-					if (this.DataIsValid(num))
-					{
-						num2 = Array.IndexOf(this.rxList[num].ContactList, (ushort)(contactIndex + 1));
-						if (num2 >= 0)
-						{
-							this.rxList[num].ContactList.smethod_2(num2);
-							this.rxListIndex[num]--;
-						}
-					}
-				}
-			}
-
-			public string GetMinName(TreeNode node)
-			{
-				int num = 0;
-				int num2 = 0;
-				string text = "";
-				num2 = this.GetMinIndex();
-				text = string.Format(this.Format, num2 + 1);
-				if (!Settings.smethod_51(node, text))
-				{
-					return text;
-				}
-				num = 0;
-				while (true)
-				{
-					if (num < this.Count)
-					{
-						text = string.Format(this.Format, num + 1);
-						if (!Settings.smethod_51(node, text))
-						{
-							break;
-						}
-						num++;
-						continue;
-					}
-					return "";
-				}
-				return text;
-			}
-
-			public void SetName(int index, string text)
-			{
-				this.rxList[index].Name = text;
-			}
-
-			public string GetName(int index)
-			{
-				return this.rxList[index].Name;
-			}
-
-			public void Default(int index)
-			{
-				this.rxList[index].ContactList.smethod_0((ushort)0);
-			}
-
-			public void Paste(int from, int to)
-			{
-				this.rxListIndex[to] = this.rxListIndex[from];
-				Array.Copy(this.rxList[from].ContactList, this.rxList[to].ContactList, this.rxList[from].ContactList.Length);
-			}
-
-			public void Verify()
-			{
-				int num = 0;
-				for (num = 0; num < this.Count; num++)
-				{
-					if (this.DataIsValid(num))
-					{
-						this.rxList[num].Verify();
-						this.rxListIndex[num] = (byte)(this.rxList[num].ValidCount + 1);
-					}
-					else
-					{
-						this.rxListIndex[num] = 0;
-					}
-				}
-			}
-		}
-
-		public const int CNT_RX_LIST = 128;
-
-		public const int LEN_RX_LIST_NAME = 16;
-
-		private const int CNT_CONTACT_PER_RX_LIST = 15;
-
 		//private IContainer components;
 
 		private Button btnDel;
@@ -369,7 +36,7 @@ namespace DMR
 
 		private CustomPanel pnlRxGrpList;
 
-		public static RxList data;
+		public static RxListData data;
 
 		public TreeNode Node
 		{
@@ -389,71 +56,24 @@ namespace DMR
 
 		private void InitializeComponent()
 		{
-			this.btnDel = new Button();
-			this.btnAdd = new Button();
-			this.lstSelected = new ListBox();
-			this.lstUnselected = new ListBox();
-			this.lblName = new Label();
-			this.grpUnselected = new GroupBox();
-			this.grpSelected = new GroupBox();
 			this.pnlRxGrpList = new CustomPanel();
-			this.btnDown = new Button();
-			this.btnUp = new Button();
-			this.txtName = new SGTextBox();
-			this.grpUnselected.SuspendLayout();
-			this.grpSelected.SuspendLayout();
+			this.btnDown = new System.Windows.Forms.Button();
+			this.btnUp = new System.Windows.Forms.Button();
+			this.txtName = new DMR.SGTextBox();
+			this.grpSelected = new System.Windows.Forms.GroupBox();
+			this.lstSelected = new System.Windows.Forms.ListBox();
+			this.btnAdd = new System.Windows.Forms.Button();
+			this.grpUnselected = new System.Windows.Forms.GroupBox();
+			this.lstUnselected = new System.Windows.Forms.ListBox();
+			this.btnDel = new System.Windows.Forms.Button();
+			this.lblName = new System.Windows.Forms.Label();
 			this.pnlRxGrpList.SuspendLayout();
-			base.SuspendLayout();
-			this.btnDel.Location = new Point(295, 276);
-			this.btnDel.Name = "btnDel";
-			this.btnDel.Size = new Size(75, 23);
-			this.btnDel.TabIndex = 4;
-			this.btnDel.Text = "Delete";
-			this.btnDel.UseVisualStyleBackColor = true;
-			this.btnDel.Click += this.btnDel_Click;
-			this.btnAdd.Location = new Point(295, 224);
-			this.btnAdd.Name = "btnAdd";
-			this.btnAdd.Size = new Size(75, 23);
-			this.btnAdd.TabIndex = 3;
-			this.btnAdd.Text = "Add";
-			this.btnAdd.UseVisualStyleBackColor = true;
-			this.btnAdd.Click += this.btnAdd_Click;
-			this.lstSelected.FormattingEnabled = true;
-			this.lstSelected.ItemHeight = 16;
-			this.lstSelected.Location = new Point(39, 28);
-			this.lstSelected.Name = "lstSelected";
-			this.lstSelected.SelectionMode = SelectionMode.MultiExtended;
-			this.lstSelected.Size = new Size(120, 356);
-			this.lstSelected.TabIndex = 5;
-			this.lstSelected.SelectedIndexChanged += this.lstSelected_SelectedIndexChanged;
-			this.lstSelected.DoubleClick += this.lstSelected_DoubleClick;
-			this.lstUnselected.FormattingEnabled = true;
-			this.lstUnselected.ItemHeight = 16;
-			this.lstUnselected.Location = new Point(44, 28);
-			this.lstUnselected.Name = "lstUnselected";
-			this.lstUnselected.SelectionMode = SelectionMode.MultiExtended;
-			this.lstUnselected.Size = new Size(120, 356);
-			this.lstUnselected.TabIndex = 2;
-			this.lblName.Location = new Point(226, 50);
-			this.lblName.Name = "lblName";
-			this.lblName.Size = new Size(64, 23);
-			this.lblName.TabIndex = 0;
-			this.lblName.Text = "Name";
-			this.lblName.TextAlign = ContentAlignment.MiddleRight;
-			this.grpUnselected.Controls.Add(this.lstUnselected);
-			this.grpUnselected.Location = new Point(73, 99);
-			this.grpUnselected.Name = "grpUnselected";
-			this.grpUnselected.Size = new Size(201, 414);
-			this.grpUnselected.TabIndex = 6;
-			this.grpUnselected.TabStop = false;
-			this.grpUnselected.Text = "Available";
-			this.grpSelected.Controls.Add(this.lstSelected);
-			this.grpSelected.Location = new Point(392, 97);
-			this.grpSelected.Name = "grpSelected";
-			this.grpSelected.Size = new Size(201, 415);
-			this.grpSelected.TabIndex = 7;
-			this.grpSelected.TabStop = false;
-			this.grpSelected.Text = "Member";
+			this.grpSelected.SuspendLayout();
+			this.grpUnselected.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// pnlRxGrpList
+			// 
 			this.pnlRxGrpList.AutoScroll = true;
 			this.pnlRxGrpList.AutoSize = true;
 			this.pnlRxGrpList.Controls.Add(this.btnDown);
@@ -464,47 +84,133 @@ namespace DMR
 			this.pnlRxGrpList.Controls.Add(this.grpUnselected);
 			this.pnlRxGrpList.Controls.Add(this.btnDel);
 			this.pnlRxGrpList.Controls.Add(this.lblName);
-			this.pnlRxGrpList.Dock = DockStyle.Fill;
-			this.pnlRxGrpList.Location = new Point(0, 0);
+			this.pnlRxGrpList.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pnlRxGrpList.Location = new System.Drawing.Point(0, 0);
 			this.pnlRxGrpList.Name = "pnlRxGrpList";
-			this.pnlRxGrpList.Size = new Size(724, 562);
+			this.pnlRxGrpList.Size = new System.Drawing.Size(693, 514);
 			this.pnlRxGrpList.TabIndex = 8;
-			this.btnDown.Location = new Point(624, 276);
+			// 
+			// btnDown
+			// 
+			this.btnDown.Location = new System.Drawing.Point(598, 276);
 			this.btnDown.Name = "btnDown";
-			this.btnDown.Size = new Size(75, 23);
+			this.btnDown.Size = new System.Drawing.Size(75, 23);
 			this.btnDown.TabIndex = 9;
 			this.btnDown.Text = "Down";
 			this.btnDown.UseVisualStyleBackColor = true;
-			this.btnDown.Click += this.btnDown_Click;
-			this.btnUp.Location = new Point(624, 224);
+			this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
+			// 
+			// btnUp
+			// 
+			this.btnUp.Location = new System.Drawing.Point(598, 224);
 			this.btnUp.Name = "btnUp";
-			this.btnUp.Size = new Size(75, 23);
+			this.btnUp.Size = new System.Drawing.Size(75, 23);
 			this.btnUp.TabIndex = 8;
 			this.btnUp.Text = "Up";
 			this.btnUp.UseVisualStyleBackColor = true;
-			this.btnUp.Click += this.btnUp_Click;
+			this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+			// 
+			// txtName
+			// 
 			this.txtName.InputString = null;
-			this.txtName.Location = new Point(299, 50);
+			this.txtName.Location = new System.Drawing.Point(100, 12);
 			this.txtName.MaxByteLength = 0;
 			this.txtName.Name = "txtName";
-			this.txtName.Size = new Size(115, 23);
+			this.txtName.Size = new System.Drawing.Size(115, 23);
 			this.txtName.TabIndex = 1;
-			this.txtName.Leave += this.txtName_Leave;
-			base.AutoScaleDimensions = new SizeF(7f, 16f);
-//			base.AutoScaleMode = AutoScaleMode.Font;
-			base.ClientSize = new Size(724, 562);
-			base.Controls.Add(this.pnlRxGrpList);
-			this.Font = new Font("Arial", 10f, FontStyle.Regular);
-			base.Name = "RxGroupListForm";
+			this.txtName.Leave += new System.EventHandler(this.txtName_Leave);
+			// 
+			// grpSelected
+			// 
+			this.grpSelected.Controls.Add(this.lstSelected);
+			this.grpSelected.Location = new System.Drawing.Point(353, 50);
+			this.grpSelected.Name = "grpSelected";
+			this.grpSelected.Size = new System.Drawing.Size(230, 440);
+			this.grpSelected.TabIndex = 7;
+			this.grpSelected.TabStop = false;
+			this.grpSelected.Text = "Member";
+			// 
+			// lstSelected
+			// 
+			this.lstSelected.FormattingEnabled = true;
+			this.lstSelected.ItemHeight = 16;
+			this.lstSelected.Location = new System.Drawing.Point(25, 25);
+			this.lstSelected.Name = "lstSelected";
+			this.lstSelected.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.lstSelected.Size = new System.Drawing.Size(180, 388);
+			this.lstSelected.TabIndex = 5;
+			this.lstSelected.SelectedIndexChanged += new System.EventHandler(this.lstSelected_SelectedIndexChanged);
+			this.lstSelected.DoubleClick += new System.EventHandler(this.lstSelected_DoubleClick);
+			// 
+			// btnAdd
+			// 
+			this.btnAdd.Location = new System.Drawing.Point(258, 224);
+			this.btnAdd.Name = "btnAdd";
+			this.btnAdd.Size = new System.Drawing.Size(75, 23);
+			this.btnAdd.TabIndex = 3;
+			this.btnAdd.Text = "Add";
+			this.btnAdd.UseVisualStyleBackColor = true;
+			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+			// 
+			// grpUnselected
+			// 
+			this.grpUnselected.Controls.Add(this.lstUnselected);
+			this.grpUnselected.Location = new System.Drawing.Point(10, 50);
+            this.grpUnselected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+| System.Windows.Forms.AnchorStyles.Left)));
+            this.grpUnselected.Name = "grpUnselected";
+			this.grpUnselected.Size = new System.Drawing.Size(230, 440);
+			this.grpUnselected.TabIndex = 6;
+			this.grpUnselected.TabStop = false;
+			this.grpUnselected.Text = "Available";
+            // 
+            // lstUnselected
+            // 
+            this.lstUnselected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lstUnselected.FormattingEnabled = true;
+			this.lstUnselected.ItemHeight = 16;
+			this.lstUnselected.Location = new System.Drawing.Point(25, 25);
+			this.lstUnselected.Name = "lstUnselected";
+			this.lstUnselected.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.lstUnselected.Size = new System.Drawing.Size(180, 388);
+			this.lstUnselected.TabIndex = 2;
+			// 
+			// btnDel
+			// 
+			this.btnDel.Location = new System.Drawing.Point(258, 276);
+			this.btnDel.Name = "btnDel";
+			this.btnDel.Size = new System.Drawing.Size(75, 23);
+			this.btnDel.TabIndex = 4;
+			this.btnDel.Text = "Delete";
+			this.btnDel.UseVisualStyleBackColor = true;
+			this.btnDel.Click += new System.EventHandler(this.btnDel_Click);
+			// 
+			// lblName
+			// 
+			this.lblName.Location = new System.Drawing.Point(7, 12);
+			this.lblName.Name = "lblName";
+			this.lblName.Size = new System.Drawing.Size(86, 23);
+			this.lblName.TabIndex = 0;
+			this.lblName.Text = "Name";
+			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// RxGroupListForm
+			// 
+			this.ClientSize = new System.Drawing.Size(693, 514);
+			this.Controls.Add(this.pnlRxGrpList);
+			this.Font = new System.Drawing.Font("Arial", 10F);
+			this.Name = "RxGroupListForm";
 			this.Text = "Rx Group List";
-			base.Load += this.RxGroupListForm_Load;
-			base.FormClosing += this.RxGroupListForm_FormClosing;
-			this.grpUnselected.ResumeLayout(false);
-			this.grpSelected.ResumeLayout(false);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.RxGroupListForm_FormClosing);
+			this.Load += new System.EventHandler(this.RxGroupListForm_Load);
 			this.pnlRxGrpList.ResumeLayout(false);
 			this.pnlRxGrpList.PerformLayout();
-			base.ResumeLayout(false);
-			base.PerformLayout();
+			this.grpSelected.ResumeLayout(false);
+			this.grpUnselected.ResumeLayout(false);
+			this.ResumeLayout(false);
+			this.PerformLayout();
+
 		}
 
 		public void SaveData()
@@ -515,11 +221,15 @@ namespace DMR
 			try
 			{
 				num3 = Convert.ToInt32(base.Tag);
+				if (num3 == -1)
+				{
+					return;
+				}
 				if (this.txtName.Focused)
 				{
 					this.txtName_Leave(this.txtName, null);
 				}
-				RxListOne value = new RxListOne(num3);
+				RxListOneData value = new RxListOneData(num3);
 				value.Name = this.txtName.Text;
 				num2 = this.lstSelected.Items.Count;
 				ushort[] array = new ushort[num2];
@@ -548,6 +258,11 @@ namespace DMR
 			try
 			{
 				num2 = Convert.ToInt32(base.Tag);
+				if (num2 == -1)
+				{
+					this.Close();
+					return;
+				}
 				this.txtName.Text = RxGroupListForm.data[num2].Name;
 				this.lstSelected.Items.Clear();
 				num4 = RxGroupListForm.data.GetContactCntByIndex(num2);
@@ -600,16 +315,15 @@ namespace DMR
 
 		public RxGroupListForm()
 		{
-			
-			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 
 		private void method_1()
 		{
 			this.txtName.MaxByteLength = 15;
-			this.txtName.KeyPress += Settings.smethod_54;
+			this.txtName.KeyPress += new KeyPressEventHandler(Settings.smethod_54);
 		}
 
 		private void RxGroupListForm_Load(object sender, EventArgs e)
@@ -632,7 +346,7 @@ namespace DMR
 			int num2 = this.lstUnselected.SelectedIndices[count - 1];
 			int num3 = 0;
 			this.lstSelected.SelectedItems.Clear();
-			while (this.lstUnselected.SelectedItems.Count > 0 && this.lstSelected.Items.Count < 15)
+			while (this.lstUnselected.SelectedItems.Count > 0 && this.lstSelected.Items.Count < RxListOneData.CNT_CONTACT_PER_RX_LIST)
 			{
 				num = this.lstSelected.Items.Count;
 				SelectedItemUtils @class = (SelectedItemUtils)this.lstUnselected.SelectedItems[0];
@@ -775,7 +489,7 @@ namespace DMR
 
 		private void method_4()
 		{
-			this.btnAdd.Enabled = (this.lstUnselected.Items.Count > 0 && this.lstSelected.Items.Count < 15);
+			this.btnAdd.Enabled = (this.lstUnselected.Items.Count > 0 && this.lstSelected.Items.Count < RxListOneData.CNT_CONTACT_PER_RX_LIST);
 			this.btnDel.Enabled = (this.lstSelected.Items.Count > 0);
 			int count = this.lstSelected.Items.Count;
 			int count2 = this.lstSelected.SelectedIndices.Count;
@@ -820,7 +534,7 @@ namespace DMR
 		static RxGroupListForm()
 		{
 			
-			RxGroupListForm.data = new RxList();
+			RxGroupListForm.data = new RxListData();
 		}
 	}
 }

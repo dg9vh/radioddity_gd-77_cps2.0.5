@@ -15,9 +15,9 @@ namespace DMR
 
 		public HelpForm()
 		{
-			
-			//base._002Ector();
+
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 			base.AllowEndUserDocking = true;
 		}
@@ -29,11 +29,6 @@ namespace DMR
 
 		protected override void Dispose(bool disposing)
 		{
-            /*
-			if (disposing && this.components != null)
-			{
-				this.components.Dispose();
-			}*/
 			base.Dispose(disposing);
 		}
 

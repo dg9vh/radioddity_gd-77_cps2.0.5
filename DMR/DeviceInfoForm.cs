@@ -129,7 +129,7 @@ namespace DMR
 				set
 				{
 					int num = 0;
-					this.model.smethod_0((byte)255);
+					this.model.Fill((byte)255);
 					for (num = 0; num < value.Length; num++)
 					{
 						this.model[num] = Convert.ToByte(value[num]);
@@ -152,7 +152,7 @@ namespace DMR
 				set
 				{
 					int num = 0;
-					this.sn.smethod_0((byte)255);
+					this.sn.Fill((byte)255);
 					for (num = 0; num < value.Length; num++)
 					{
 						this.sn[num] = Convert.ToByte(value[num]);
@@ -175,7 +175,7 @@ namespace DMR
 				set
 				{
 					int num = 0;
-					this.cpsSwVer.smethod_0((byte)255);
+					this.cpsSwVer.Fill((byte)255);
 					for (num = 0; num < value.Length; num++)
 					{
 						this.cpsSwVer[num] = Convert.ToByte(value[num]);
@@ -198,7 +198,7 @@ namespace DMR
 				set
 				{
 					int num = 0;
-					this.hardwareVer.smethod_0((byte)255);
+					this.hardwareVer.Fill((byte)255);
 					for (num = 0; num < value.Length; num++)
 					{
 						this.hardwareVer[num] = Convert.ToByte(value[num]);
@@ -609,6 +609,7 @@ namespace DMR
 			
 			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

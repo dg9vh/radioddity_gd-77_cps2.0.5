@@ -11,26 +11,27 @@ namespace DMR
 		//private IContainer components;
 
 		private CustomCombo cmbMainZone;
-
 		private Label lblCurZone;
-
 		private CustomCombo cmbSubCh;
-
 		private Label lblSubCh;
-
 		private CustomCombo cmbMainCh;
-
 		private Label lblMainCh;
-
 		private CustomCombo cmbSubZone;
-
 		private Label lblSubZone;
-
 		private CustomPanel pnlZoneBasic;
-
 		private GroupBox grpSub;
-
 		private GroupBox grpMain;
+
+		const int ZONE_NAME_LENGTH = 16;
+		const int ZONES_IN_USE_DATA_LENGTH = 32;
+#if OpenGD77
+		const int NUM_CHANNELS_PER_ZONE	= 80;
+		const int NUM_ZONES = 68;
+#elif CP_VER_3_1_X
+		const int NUM_CHANNELS_PER_ZONE	= 16;
+		const int NUM_ZONES				= 250;
+#endif
+		const int UNKNOWN_VAR_OF_32 = NUM_CHANNELS_PER_ZONE + ZONE_NAME_LENGTH;
 
 		public int MainZoneLastSelectedIndex
 		{
@@ -91,6 +92,7 @@ namespace DMR
 		public ZoneBasicForm()
 		{
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 
@@ -132,7 +134,7 @@ namespace DMR
 			int num = 0;
 			int num2 = 0;
 			class4_0.method_0();
-			for (num = 0; num < 16; num++)
+			for (num = 0; num < NUM_CHANNELS_PER_ZONE; num++)
 			{
 				num2 = ZoneForm.data[int_0].ChList[num] - 1;
 				if (num2 >= 0 && num2 < ChannelForm.CurCntCh && ChannelForm.data.DataIsValid(num2))

@@ -19,11 +19,6 @@ namespace DMR
 
 		protected override void Dispose(bool disposing)
 		{
-            /*
-			if (disposing && this.components != null)
-			{
-				this.components.Dispose();
-			}*/
 			base.Dispose(disposing);
 		}
 
@@ -40,7 +35,7 @@ namespace DMR
 			this.lblPwd.Size = new Size(69, 16);
 			this.lblPwd.TabIndex = 0;
 			this.lblPwd.Text = "Password";
-			this.btnOk.DialogResult = DialogResult.OK;
+//			this.btnOk.DialogResult = DialogResult.OK;
 			this.btnOk.Location = new Point(45, 102);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new Size(75, 23);
@@ -48,7 +43,7 @@ namespace DMR
 			this.btnOk.Text = "OK";
 			this.btnOk.UseVisualStyleBackColor = true;
 			this.btnOk.Click += this.btnOk_Click;
-			this.btnCancel.DialogResult = DialogResult.Cancel;
+//			this.btnCancel.DialogResult = DialogResult.Cancel;
 			this.btnCancel.Location = new Point(159, 102);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new Size(75, 23);
@@ -82,9 +77,8 @@ namespace DMR
 
 		public PasswordForm()
 		{
-			
-			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 

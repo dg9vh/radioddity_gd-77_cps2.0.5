@@ -17,14 +17,26 @@ namespace DMR
 {
 	public class ZoneForm : DockContent, IDisp
 	{
+		const int ZONE_NAME_LENGTH = 16;
+		const int ZONES_IN_USE_DATA_LENGTH = 32;
+#if OpenGD77
+		public const int NUM_CHANNELS_PER_ZONE = 80;
+		public const int NUM_ZONES = 68;
+#elif CP_VER_3_1_X
+		public const int NUM_CHANNELS_PER_ZONE	= 16;
+		public const int NUM_ZONES				= 250;
+#endif
+		const int UNKNOWN_VAR_OF_32 = NUM_CHANNELS_PER_ZONE + ZONE_NAME_LENGTH;
+
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct ZoneOne
 		{
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = ZONE_NAME_LENGTH)]
 			private byte[] name;
 
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = NUM_CHANNELS_PER_ZONE)]
 			private ushort[] chList;
+
 
 			public string Name
 			{
@@ -35,7 +47,7 @@ namespace DMR
 				set
 				{
 					byte[] array = Settings.smethod_23(value);
-					this.name.smethod_0((byte)255);
+					this.name.Fill((byte)255);
 					Array.Copy(array, 0, this.name, 0, Math.Min(array.Length, this.name.Length));
 				}
 			}
@@ -48,7 +60,7 @@ namespace DMR
 				}
 				set
 				{
-					this.chList.smethod_0((ushort)65535);
+					this.chList.Fill((ushort)65535);
 					Array.Copy(value, 0, this.chList, 0, value.Length);
 				}
 			}
@@ -57,8 +69,8 @@ namespace DMR
 			{
 				
 				this = default(ZoneOne);
-				this.name = new byte[16];
-				this.chList = new ushort[16];
+				this.name = new byte[ZONE_NAME_LENGTH];
+				this.chList = new ushort[NUM_CHANNELS_PER_ZONE];
 			}
 
 			// Roger Clark. Added copy constructor
@@ -66,22 +78,22 @@ namespace DMR
 			{
 
 				this = default(ZoneOne);
-				this.name = new byte[16];
-				this.chList = new ushort[16];
-				Array.Copy(zone.name, this.name, 16);
-				Array.Copy(zone.chList, this.chList, 16);
+				this.name = new byte[ZONE_NAME_LENGTH];
+				this.chList = new ushort[NUM_CHANNELS_PER_ZONE];
+				Array.Copy(zone.name, this.name, ZONE_NAME_LENGTH);
+				Array.Copy(zone.chList, this.chList, NUM_CHANNELS_PER_ZONE);
 			}
 
 			public byte[] ToEerom()
 			{
 				int num = 0;
-				byte[] array = new byte[32];
-				array.smethod_0((byte)0);
-				Array.Copy(this.name, array, 16);
+				byte[] array = new byte[UNKNOWN_VAR_OF_32];// Was 32 for the offical CPS, but I don't know why its 32 really
+				array.Fill((byte)0);
+				Array.Copy(this.name, array, ZONE_NAME_LENGTH);
 				ushort[] array2 = this.chList;
 				for (int i = 0; i < array2.Length; i++)
 				{
-					array[16 + num] = (byte)this.chList[num];
+					array[ZONE_NAME_LENGTH + num] = (byte)this.chList[num];
 				}
 				return array;
 			}
@@ -97,6 +109,26 @@ namespace DMR
 				this.chList = list2.ToArray();
 			}
 
+			public bool AddChannelToZone(ushort channel)
+			{
+				channel++;// 
+				// check if channel is already in the Zone
+				if (Array.FindIndex(chList, item => item == channel) != -1)
+				{
+					return true;// Channel is already in the zone, so we'll return as if we've added it.
+				}
+	
+				// channel is not in this Zone.
+				int foundIndex = Array.FindIndex(chList, item => (item == 0 || item == (ushort)65535));
+				if (foundIndex == -1)
+				{
+					return false;
+				}
+
+				chList[foundIndex] = channel;// put the channel into the zone
+				return true;
+			}			
+
 			[CompilerGenerated]
 			private static bool smethod_0(ushort ushort_0)
 			{
@@ -111,10 +143,10 @@ namespace DMR
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public class Zone : IData
 		{
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = ZONES_IN_USE_DATA_LENGTH)]
 			private byte[] zoneIndex;
 
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 250)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = NUM_ZONES)]
 			private ZoneOne[] zoneList;
 
 			public byte[] ZoneIndex
@@ -157,7 +189,7 @@ namespace DMR
 			{
 				get
 				{
-					return 250;
+					return NUM_ZONES;
 				}
 			}
 
@@ -219,11 +251,9 @@ namespace DMR
 
 			public Zone()
 			{
-				
-				//base._002Ector();
 				int num = 0;
-				this.zoneIndex = new byte[32];
-				this.zoneList = new ZoneOne[250];
+				this.zoneIndex = new byte[ZONES_IN_USE_DATA_LENGTH];
+				this.zoneList = new ZoneOne[NUM_ZONES];
 				for (num = 0; num < this.zoneList.Length; num++)
 				{
 					this.zoneList[num] = new ZoneOne(num);
@@ -309,7 +339,7 @@ namespace DMR
 
 			public bool DataIsValid(int index)
 			{
-				if (index < 250)
+				if (index < NUM_ZONES)
 				{
 					BitArray bitArray = new BitArray(this.zoneIndex);
 					return bitArray[index];
@@ -319,7 +349,7 @@ namespace DMR
 
 			public bool ZoneChIsValid(int index)
 			{
-				if (index < 250)
+				if (index < NUM_ZONES)
 				{
 					BitArray bitArray = new BitArray(this.zoneIndex);
 					if (bitArray[index] && this.zoneList[index].ChList[0] != 0)
@@ -363,7 +393,7 @@ namespace DMR
 						num2 = Array.IndexOf(this.zoneList[num].ChList, (ushort)(chIndex + 1));
 						if (num2 >= 0)
 						{
-							this.zoneList[num].ChList.smethod_2(num2);
+							this.zoneList[num].ChList.RemoveItemFromArray(num2);
 						}
 					}
 				}
@@ -410,7 +440,7 @@ namespace DMR
 
 			public void Default(int index)
 			{
-				this.zoneList[index].ChList.smethod_0((ushort)0);
+				this.zoneList[index].ChList.Fill((ushort)0);
 			}
 
 			public void Paste(int from, int to)
@@ -421,7 +451,7 @@ namespace DMR
 			public byte[] ToEerom(int index, int length)
 			{
 				int num = 0;
-				byte[] array = new byte[32 * length];
+				byte[] array = new byte[UNKNOWN_VAR_OF_32 * length];// I'm not sure why this is 32 
 				for (num = 0; num < length; num++)
 				{
 					byte[] array2 = this.ZoneList[index + num].ToEerom();
@@ -514,7 +544,7 @@ namespace DMR
 			{
 				zn = ZoneForm.data.ZoneList[i];
 				srcIsValid = ZoneForm.data.DataIsValid(i);
-				ZoneForm.data.ZoneList[destZoneNum] = zn;// new ZoneOne(zn);
+				ZoneForm.data.ZoneList[destZoneNum] =  new ZoneOne(zn);// Roger Clark. Had to reinstate using the copy constructor, because just assigning objects could cause all Zones to point to (use) the same zone object.
 				if (srcIsValid)
 				{
 					ZoneForm.data.SetIndex(destZoneNum, 1);
@@ -533,10 +563,10 @@ namespace DMR
 		public static void CompactZones()
 		{
 			int nextFreeIndex = -1;
-			ZoneOne zn;
+			//ZoneOne zn;
 			for (int i = 0; i < ZoneForm.data.ZoneList.Length;i++)
 			{
-				zn = ZoneForm.data.ZoneList[i];
+				//zn = ZoneForm.data.ZoneList[i];
 
 				if (nextFreeIndex == -1 && !ZoneForm.data.DataIsValid(i))
 				{
@@ -557,6 +587,7 @@ namespace DMR
 			}
 		}
 
+
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public class BasicZone
 		{
@@ -572,7 +603,7 @@ namespace DMR
 			{
 				get
 				{
-					if (this.curZone < 250)
+					if (this.curZone < NUM_ZONES)
 					{
 						if (ZoneForm.data.ZoneChIsValid(this.curZone))
 						{
@@ -584,7 +615,7 @@ namespace DMR
 				}
 				set
 				{
-					if (value < 250)
+					if (value < NUM_ZONES)
 					{
 						this.curZone = (ushort)value;
 					}
@@ -633,7 +664,7 @@ namespace DMR
 			{
 				get
 				{
-					if (this.subZone < 250)
+					if (this.subZone < NUM_ZONES)
 					{
 						if (ZoneForm.data.ZoneChIsValid(this.subZone))
 						{
@@ -645,7 +676,7 @@ namespace DMR
 				}
 				set
 				{
-					if (value < 250)
+					if (value < NUM_ZONES)
 					{
 						this.subZone = (ushort)value;
 					}
@@ -903,6 +934,7 @@ namespace DMR
 			base.SuspendLayout();
 			this.pnlZone.AutoScroll = true;
 			this.pnlZone.AutoSize = true;
+			
 			this.pnlZone.Controls.Add(this.tsrZone);
 			this.pnlZone.Controls.Add(this.mnsZone);
 			this.pnlZone.Controls.Add(this.btnDown);
@@ -937,7 +969,7 @@ namespace DMR
 			this.tsrZone.Text = "toolStrip1";
 			this.tslblInfo.AutoSize = false;
 			this.tslblInfo.Name = "tslblInfo";
-			this.tslblInfo.Size = new Size(100, 22);
+			this.tslblInfo.Size = new Size(100, 52);
 			this.tslblInfo.Text = " 0 / 0";
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new Size(6, 25);
@@ -947,28 +979,28 @@ namespace DMR
 			this.tsbtnFirst.Name = "tsbtnFirst";
 			this.tsbtnFirst.Size = new Size(23, 22);
 			this.tsbtnFirst.Text = "First";
-			this.tsbtnFirst.Click += this.tsmiFirst_Click;
+			this.tsbtnFirst.Click += new EventHandler(this.tsmiFirst_Click);
 			this.tsbtnPrev.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.tsbtnPrev.Image = (Image)componentResourceManager.GetObject("tsbtnPrev.Image");
 			this.tsbtnPrev.ImageTransparentColor = Color.Magenta;
 			this.tsbtnPrev.Name = "tsbtnPrev";
 			this.tsbtnPrev.Size = new Size(23, 22);
 			this.tsbtnPrev.Text = "Previous";
-			this.tsbtnPrev.Click += this.tsmiPrev_Click;
+			this.tsbtnPrev.Click += new EventHandler(this.tsmiPrev_Click);
 			this.tsbtnNext.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.tsbtnNext.Image = (Image)componentResourceManager.GetObject("tsbtnNext.Image");
 			this.tsbtnNext.ImageTransparentColor = Color.Magenta;
 			this.tsbtnNext.Name = "tsbtnNext";
 			this.tsbtnNext.Size = new Size(23, 22);
 			this.tsbtnNext.Text = "Next";
-			this.tsbtnNext.Click += this.tsmiNext_Click;
+			this.tsbtnNext.Click += new EventHandler(this.tsmiNext_Click);
 			this.tsbtnLast.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.tsbtnLast.Image = (Image)componentResourceManager.GetObject("tsbtnLast.Image");
 			this.tsbtnLast.ImageTransparentColor = Color.Magenta;
 			this.tsbtnLast.Name = "tsbtnLast";
 			this.tsbtnLast.Size = new Size(23, 22);
 			this.tsbtnLast.Text = "Last";
-			this.tsbtnLast.Click += this.tsmiLast_Click;
+			this.tsbtnLast.Click += new EventHandler(this.tsmiLast_Click);
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new Size(6, 25);
 			this.tsbtnAdd.DisplayStyle = ToolStripItemDisplayStyle.Image;
@@ -977,14 +1009,14 @@ namespace DMR
 			this.tsbtnAdd.Name = "tsbtnAdd";
 			this.tsbtnAdd.Size = new Size(23, 22);
 			this.tsbtnAdd.Text = "Add..";
-			this.tsbtnAdd.Click += this.tsmiAdd_Click;
+			this.tsbtnAdd.Click += new EventHandler(this.tsmiAdd_Click);
 			this.tsbtnDel.DisplayStyle = ToolStripItemDisplayStyle.Image;
 			this.tsbtnDel.Image = (Image)componentResourceManager.GetObject("tsbtnDel.Image");
 			this.tsbtnDel.ImageTransparentColor = Color.Magenta;
 			this.tsbtnDel.Name = "tsbtnDel";
 			this.tsbtnDel.Size = new Size(23, 22);
 			this.tsbtnDel.Text = "Delete";
-			this.tsbtnDel.Click += this.tsmiDel_Click;
+			this.tsbtnDel.Click += new EventHandler(this.tsmiDel_Click);
 			this.mnsZone.AllowMerge = false;
 			this.mnsZone.Items.AddRange(new ToolStripItem[1]
 			{
@@ -1011,79 +1043,85 @@ namespace DMR
 			this.tsmiFirst.Name = "tsmiFirst";
 			this.tsmiFirst.Size = new Size(159, 22);
 			this.tsmiFirst.Text = "Fist";
-			this.tsmiFirst.Click += this.tsmiFirst_Click;
+			this.tsmiFirst.Click += new EventHandler(this.tsmiFirst_Click);
 			this.tsmiPrev.Name = "tsmiPrev";
 			this.tsmiPrev.Size = new Size(159, 22);
 			this.tsmiPrev.Text = "Previous";
-			this.tsmiPrev.Click += this.tsmiPrev_Click;
+			this.tsmiPrev.Click += new EventHandler(this.tsmiPrev_Click);
 			this.tsmiNext.Name = "tsmiNext";
 			this.tsmiNext.Size = new Size(159, 22);
 			this.tsmiNext.Text = "Next";
-			this.tsmiNext.Click += this.tsmiNext_Click;
+			this.tsmiNext.Click += new EventHandler(this.tsmiNext_Click);
 			this.tsmiLast.Name = "tsmiLast";
 			this.tsmiLast.Size = new Size(159, 22);
 			this.tsmiLast.Text = "Last";
-			this.tsmiLast.Click += this.tsmiLast_Click;
+			this.tsmiLast.Click += new EventHandler(this.tsmiLast_Click);
 			this.tsmiAdd.Name = "tsmiAdd";
 			this.tsmiAdd.Size = new Size(159, 22);
 			this.tsmiAdd.Text = "Add";
-			this.tsmiAdd.Click += this.tsmiAdd_Click;
+			this.tsmiAdd.Click += new EventHandler(this.tsmiAdd_Click);
 			this.tsmiDel.Name = "tsmiDel";
 			this.tsmiDel.Size = new Size(159, 22);
 			this.tsmiDel.Text = "Delete";
-			this.tsmiDel.Click += this.tsmiDel_Click;
+			this.tsmiDel.Click += new EventHandler(this.tsmiDel_Click);
 			this.btnDown.Location = new Point(676, 310);
 			this.btnDown.Name = "btnDown";
 			this.btnDown.Size = new Size(75, 23);
 			this.btnDown.TabIndex = 11;
 			this.btnDown.Text = "Down";
 			this.btnDown.UseVisualStyleBackColor = true;
-			this.btnDown.Click += this.btnDown_Click;
+			this.btnDown.Click += new EventHandler(this.btnDown_Click);
 			this.btnUp.Location = new Point(676, 258);
 			this.btnUp.Name = "btnUp";
 			this.btnUp.Size = new Size(75, 23);
 			this.btnUp.TabIndex = 10;
 			this.btnUp.Text = "Up";
 			this.btnUp.UseVisualStyleBackColor = true;
-			this.btnUp.Click += this.btnUp_Click;
+			this.btnUp.Click += new EventHandler(this.btnUp_Click);
 			this.txtName.InputString = null;
 			this.txtName.Location = new Point(316, 62);
 			this.txtName.MaxByteLength = 0;
 			this.txtName.Name = "txtName";
 			this.txtName.Size = new Size(115, 23);
 			this.txtName.TabIndex = 1;
-			this.txtName.Leave += this.txtName_Leave;
+			this.txtName.Leave += new EventHandler(this.txtName_Leave);
 			this.grpSelected.Controls.Add(this.lstSelected);
 			this.grpSelected.Location = new Point(419, 110);
 			this.grpSelected.Name = "grpSelected";
 			this.grpSelected.Size = new Size(215, 388);
 			this.grpSelected.TabIndex = 7;
 			this.grpSelected.TabStop = false;
-			this.grpSelected.Text = "Member";
-			this.lstSelected.FormattingEnabled = true;
+            this.grpSelected.Text = "Member";
+            this.lstSelected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lstSelected.FormattingEnabled = true;
 			this.lstSelected.ItemHeight = 16;
 			this.lstSelected.Location = new Point(47, 37);
 			this.lstSelected.Name = "lstSelected";
 			this.lstSelected.SelectionMode = SelectionMode.MultiExtended;
 			this.lstSelected.Size = new Size(120, 324);
 			this.lstSelected.TabIndex = 5;
-			this.lstSelected.SelectedIndexChanged += this.lstSelected_SelectedIndexChanged;
-			this.lstSelected.DoubleClick += this.lstSelected_DoubleClick;
+			this.lstSelected.SelectedIndexChanged += new EventHandler(this.lstSelected_SelectedIndexChanged);
+			this.lstSelected.DoubleClick += new EventHandler(this.lstSelected_DoubleClick);
 			this.btnAdd.Location = new Point(327, 258);
 			this.btnAdd.Name = "btnAdd";
 			this.btnAdd.Size = new Size(75, 23);
 			this.btnAdd.TabIndex = 3;
 			this.btnAdd.Text = "Add";
 			this.btnAdd.UseVisualStyleBackColor = true;
-			this.btnAdd.Click += this.btnAdd_Click;
+			this.btnAdd.Click += new EventHandler(this.btnAdd_Click);
 			this.grpUnselected.Controls.Add(this.lstUnselected);
 			this.grpUnselected.Location = new Point(86, 110);
 			this.grpUnselected.Name = "grpUnselected";
-			this.grpUnselected.Size = new Size(215, 388);
+            this.grpUnselected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.grpUnselected.Size = new Size(215, 388);
 			this.grpUnselected.TabIndex = 6;
 			this.grpUnselected.TabStop = false;
 			this.grpUnselected.Text = "Available";
-			this.lstUnselected.FormattingEnabled = true;
+            this.lstUnselected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+| System.Windows.Forms.AnchorStyles.Left)));
+            this.lstUnselected.FormattingEnabled = true;
 			this.lstUnselected.ItemHeight = 16;
 			this.lstUnselected.Location = new Point(52, 37);
 			this.lstUnselected.Name = "lstUnselected";
@@ -1096,10 +1134,10 @@ namespace DMR
 			this.btnDel.TabIndex = 4;
 			this.btnDel.Text = "Delete";
 			this.btnDel.UseVisualStyleBackColor = true;
-			this.btnDel.Click += this.btnDel_Click;
-			this.lblName.Location = new Point(245, 62);
+			this.btnDel.Click += new EventHandler(this.btnDel_Click);
+			this.lblName.Location = new Point(216, 63);
 			this.lblName.Name = "lblName";
-			this.lblName.Size = new Size(61, 23);
+			this.lblName.Size = new Size(90, 23);
 			this.lblName.TabIndex = 0;
 			this.lblName.Text = "Name";
 			this.lblName.TextAlign = ContentAlignment.MiddleRight;
@@ -1110,8 +1148,8 @@ namespace DMR
 			this.Font = new Font("Arial", 10f, FontStyle.Regular);
 			base.Name = "ZoneForm";
 			this.Text = "Zone";
-			base.Load += this.ZoneForm_Load;
-			base.FormClosing += this.ZoneForm_FormClosing;
+			base.Load += new EventHandler(this.ZoneForm_Load);
+			base.FormClosing += new FormClosingEventHandler(this.ZoneForm_FormClosing);
 			this.pnlZone.ResumeLayout(false);
 			this.pnlZone.PerformLayout();
 			this.tsrZone.ResumeLayout(false);
@@ -1132,6 +1170,10 @@ namespace DMR
 			try
 			{
 				num3 = Convert.ToInt32(base.Tag);
+				if (num3 == -1)
+				{
+					return;
+				}
 				ZoneOne value = new ZoneOne(num3);
 				if (this.txtName.Focused)
 				{
@@ -1192,6 +1234,11 @@ namespace DMR
 			try
 			{
 				num3 = Convert.ToInt32(base.Tag);
+				if (num3 == -1)
+				{
+					this.Close();
+					return;
+				}
 				ZoneOne zoneOne = ZoneForm.data[num3];
 				this.txtName.Text = zoneOne.Name;
 				this.lstSelected.Items.Clear();
@@ -1249,9 +1296,8 @@ namespace DMR
 
 		public ZoneForm()
 		{
-			
-			//base._002Ector();
 			this.InitializeComponent();
+			this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);// Roger Clark. Added correct icon on main form!
 			base.Scale(Settings.smethod_6());
 		}
 
@@ -1281,7 +1327,7 @@ namespace DMR
 			int count = this.lstUnselected.SelectedIndices.Count;
 			int num2 = this.lstUnselected.SelectedIndices[count - 1];
 			this.lstSelected.SelectedItems.Clear();
-			while (this.lstUnselected.SelectedItems.Count > 0 && this.lstSelected.Items.Count < 16)
+			while (this.lstUnselected.SelectedItems.Count > 0 && this.lstSelected.Items.Count < NUM_CHANNELS_PER_ZONE)
 			{
 				SelectedItemUtils @class = (SelectedItemUtils)this.lstUnselected.SelectedItems[0];
 				@class.method_1(this.lstSelected.Items.Count);
@@ -1431,7 +1477,7 @@ namespace DMR
 		private void method_5()
 		{
 			int num = Convert.ToInt32(base.Tag);
-			this.btnAdd.Enabled = (this.lstUnselected.Items.Count > 0 && this.lstSelected.Items.Count < 16);
+			this.btnAdd.Enabled = (this.lstUnselected.Items.Count > 0 && this.lstSelected.Items.Count < NUM_CHANNELS_PER_ZONE);
 			if (num == 0 && this.lstSelected.SelectedIndices.Contains(0))
 			{
 				this.btnDel.Enabled = false;
@@ -1518,7 +1564,7 @@ namespace DMR
 
 		private void tsmiAdd_Click(object sender, EventArgs e)
 		{
-			if (this.Node.Parent.Nodes.Count < 250)
+			if (this.Node.Parent.Nodes.Count < NUM_ZONES)
 			{
 				this.SaveData();
 				TreeNodeItem treeNodeItem = this.Node.Tag as TreeNodeItem;
@@ -1562,7 +1608,7 @@ namespace DMR
 
 		private void method_6()
 		{
-			this.tsbtnAdd.Enabled = (this.Node.Parent.Nodes.Count != 250);
+			this.tsbtnAdd.Enabled = (this.Node.Parent.Nodes.Count != NUM_ZONES);
 			this.tsbtnDel.Enabled = (this.Node.Parent.Nodes.Count != 1 && this.Node.Index != 0);
 			this.tsbtnFirst.Enabled = (this.Node != this.Node.Parent.FirstNode);
 			this.tsbtnPrev.Enabled = (this.Node != this.Node.Parent.FirstNode);
